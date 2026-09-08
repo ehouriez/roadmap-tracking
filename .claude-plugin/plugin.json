@@ -1,0 +1,9 @@
+{
+  "name": "roadmap-tracking",
+  "description": "Frame, plan, track and trace dev/config/architecture requests through plan files, a consolidated roadmap.md and linked GitHub issues (strict 7-phase workflow).",
+  "version": "1.0.0",
+  "author": { "name": "Emmanuel Houriez" },
+  "homepage": "https://github.com/ehouriez/roadmap-tracking",
+  "repository": "https://github.com/ehouriez/roadmap-tracking",
+  "license": "MIT"
+}

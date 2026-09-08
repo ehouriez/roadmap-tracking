@@ -1,0 +1,14 @@
+{
+  "name": "roadmap-tracking",
+  "owner": { "name": "Emmanuel Houriez" },
+  "metadata": {
+    "description": "Marketplace for the roadmap-tracking skill: plan, track and trace dev/config/architecture requests."
+  },
+  "plugins": [
+    {
+      "name": "roadmap-tracking",
+      "source": ".",
+      "description": "Frame, plan, track and trace requests via plan files, roadmap.md and linked GitHub issues."
+    }
+  ]
+}
