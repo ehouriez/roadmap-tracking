@@ -47,8 +47,10 @@ python3 ~/.claude/skills/roadmap-tracking/scripts/migrate_plan_ids.py --map-file
 python3 ~/.claude/skills/roadmap-tracking/scripts/migrate_plan_ids.py --mode local
 ```
 
-> En mode `local` (projet sans issue GitHub), le script ne migre **rien** et le
-> signale : la problématique du numéro d'issue ne se pose pas.
+> En mode `local` (projet sans issue GitHub), le script ne **migre rien** : il
+> **liste** à la place les plans locaux et signale, pour chacun, ce qui manque
+> au regard de `references/templates.md` (front matter incomplet, absent…).
+> Cette liste alimente la normalisation par l'agent (voir ci-dessous).
 
 ## Ce que fait le script
 
@@ -97,6 +99,37 @@ Règles pour la correspondance :
 > pas, il renomme le fichier et corrige les références `Plan NNN`, mais ne crée
 > pas de bloc YAML. Compléter le front matter (statut, priorité, complexité…)
 > reste une étape manuelle, guidée par `references/templates.md`.
+
+## Normaliser un plan au template (après le listing du script)
+
+Le script **ne réécrit jamais** le corps d'un plan : il ne fait que renommer et
+corriger des références. Mettre un plan en conformité avec `templates.md` est un
+travail de **jugement**, confié à l'agent (le skill), pas à une regex.
+
+Le contrôle du script est purement **structurel** (présence des clés requises,
+d'un titre H1) : un `missing: priority, complexity` signale qu'un champ est
+**absent**, jamais qu'une valeur présente est mauvaise. Choisir la bonne valeur
+reste sémantique.
+
+**Procédure (Option 1)** — après avoir lu le récapitulatif :
+
+1. Repère les plans marqués `missing: …` (ou `missing: front matter`).
+2. Demande à l'agent de normaliser ces plans, ex. :
+
+   > « Normalise `6-partial.md` et `9-legacy.md` selon `templates.md`. »
+
+3. Pour chaque plan, l'agent :
+   - **remplit ce qui est dérivable** du fichier : `plan.id` (préfixe local),
+     `plan.name`, `plan.link` (chemin relatif), `plan.source: local`,
+     `issue.id: null`, `issue.url: null`, `date` (via `git log` si dispo) ;
+   - **te demande** les champs de jugement qu'il ne peut pas inventer :
+     `description`, `priority`, `complexity`, et le découpage en `Étapes` ;
+   - insère les sections canoniques (`Objectif`, `Périmètre`, `Étapes` avec les
+     deux étapes obligatoires `🧪 Tests` / `✅ Validation`, `Journal de session`)
+     en s'appuyant sur le contenu déjà présent, sans le dénaturer.
+
+C'est volontairement **plan par plan** : la normalisation touche tout le
+document, donc elle se relit, elle ne se batch pas à l'aveugle.
 
 ## Limites
 

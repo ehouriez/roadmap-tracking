@@ -16,7 +16,8 @@ A plan that resolves to no issue number is left untouched and listed in a final
 report so the user knows exactly which mappings to provide. Plans that are
 explicitly local (``plan.source: local`` or ``issue.id: null``) are reported as
 local and never migrated. When the whole project is in ``local`` issue mode,
-migration does not apply and nothing is touched.
+migration does not apply: the script instead lists the local plans and, for
+each, the template elements it is missing (read-only), to feed normalization.
 
 Usage:
     python migrate_plan_ids.py [--roadmap-dir DIR] [--dry-run] [--patch-issues]
@@ -35,6 +36,23 @@ from pathlib import Path
 
 FRONT_MATTER_DELIMITER = "---"
 LEADING_ID_PATTERN = re.compile(r"^(?:\d+|draft)-(?P<slug>.+)$")
+
+# Required front-matter fields per references/templates.md, as (section, key)
+# pairs; ``section`` is ``None`` for a top-level scalar. Semantic fields
+# (description, priority, complexity) are required too: their *presence* is
+# checked here, but only a human/agent can supply meaningful *values*.
+REQUIRED_FRONT_MATTER = (
+    ("plan", "id"),
+    ("plan", "name"),
+    ("plan", "link"),
+    (None, "status"),
+    (None, "date"),
+    (None, "description"),
+    (None, "priority"),
+    (None, "complexity"),
+    ("issue", "id"),
+    ("issue", "url"),
+)
 
 
 class MigrationError(Exception):
@@ -81,6 +99,7 @@ class Outcome:
     rename: Rename | None = None
     source: str = ""
     reason: str = ""
+    gaps: list[str] | None = None
 
 
 def read_front_matter(content: str) -> list[str]:
@@ -106,6 +125,36 @@ def get_nested_value(front_matter: list[str], section: str, key: str) -> str | N
             if match:
                 return match.group(1).strip().strip("'\"")
     return None
+
+
+def get_top_value(front_matter: list[str], key: str) -> str | None:
+    """Extract a top-level (non-indented) ``key: value`` from front matter."""
+    for line in front_matter:
+        if line.startswith((" ", "\t")):
+            continue
+        match = re.match(rf"{re.escape(key)}:\s*(.+)$", line)
+        if match:
+            return match.group(1).strip().strip("'\"")
+    return None
+
+
+def template_gaps(front_matter: list[str], has_front_matter: bool, content: str) -> list[str]:
+    """Return the required template elements missing from a plan (read-only).
+
+    Only *structural presence* is checked (see ``references/templates.md``): a
+    present-but-empty semantic field is not flagged, because judging its value
+    is the agent's job (Option 1), not the script's.
+    """
+    if not has_front_matter:
+        return ["front matter"]
+    missing: list[str] = []
+    for section, key in REQUIRED_FRONT_MATTER:
+        value = get_nested_value(front_matter, section, key) if section else get_top_value(front_matter, key)
+        if value is None:
+            missing.append(f"{section}.{key}" if section else key)
+    if not re.search(r"(?m)^#\s+.*\bPlan\b", content):
+        missing.append("H1 title")
+    return missing
 
 
 def derive_slug(stem: str) -> str:
@@ -268,7 +317,8 @@ def classify_plan(path: Path, mapping: dict[str, str]) -> Outcome:
     raw_issue = get_nested_value(front_matter, "issue", "id")
     is_local = source == "local" or (raw_issue is not None and raw_issue.lower() == "null")
     if is_local:
-        return Outcome(path, "local", reason="local plan (no GitHub issue)")
+        gaps = template_gaps(front_matter, has_front_matter, content)
+        return Outcome(path, "local", reason="local plan (no GitHub issue)", gaps=gaps)
 
     issue_id, id_source = resolve_issue_id(path, front_matter, mapping)
     if not issue_id:
@@ -377,6 +427,44 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
+OPTION1_HINT = (
+    "\n→ Bring a plan up to references/templates.md by handing it to the "
+    "roadmap-tracking\n  skill/agent (Option 1): it fills the derivable fields "
+    "and asks you for the\n  judgment ones (description, priority, complexity). "
+    "The script never rewrites\n  plan bodies itself."
+)
+
+
+def local_conformance(outcome: Outcome) -> str:
+    """One-line conformance note for a local plan, for the report."""
+    gaps = outcome.gaps or []
+    return "conforms to templates.md" if not gaps else "missing: " + ", ".join(gaps)
+
+
+def report_local_plans(roadmap_dir: Path) -> int:
+    """List local plans and their template gaps (read-only; no migration)."""
+    print(
+        "ℹ️  Local issue mode — NNN→issue migration does not apply.\n"
+        "   Plans below are normalization candidates for references/templates.md:\n"
+    )
+    plans = plan_files(roadmap_dir)
+    if not plans:
+        print("   (no plan found)")
+        return 0
+    for path in plans:
+        content = path.read_text(encoding="utf-8")
+        try:
+            front_matter = read_front_matter(content)
+            has_front_matter = True
+        except MigrationError:
+            front_matter, has_front_matter = [], False
+        gaps = template_gaps(front_matter, has_front_matter, content)
+        note = "conforms to templates.md" if not gaps else "missing: " + ", ".join(gaps)
+        print(f"   {path.name}  ({note})")
+    print(OPTION1_HINT)
+    return 0
+
+
 def print_report(outcomes: list[Outcome], dry_run: bool) -> None:
     """Print a grouped summary so the user knows exactly what to do next."""
     migrated = [o for o in outcomes if o.kind == "migrate"]
@@ -393,7 +481,9 @@ def print_report(outcomes: list[Outcome], dry_run: bool) -> None:
     if local:
         print(f"\nℹ️  Local plans, no migration needed: {len(local)}")
         for outcome in local:
-            print(f"   {outcome.path.name}")
+            print(f"   {outcome.path.name}  ({local_conformance(outcome)})")
+        if any(outcome.gaps for outcome in local):
+            print(OPTION1_HINT)
 
     if pending:
         print(f"\n⚠️  Not migrated — no issue number found: {len(pending)}")
@@ -415,8 +505,7 @@ def main() -> int:
         return 1
 
     if load_issue_mode(args.roadmap_dir, args.mode) == "local":
-        print("ℹ️  Local issue mode — NNN→issue migration does not apply. Nothing to do.")
-        return 0
+        return report_local_plans(args.roadmap_dir)
 
     try:
         mapping = parse_mapping(args.mapping, args.map_file)
