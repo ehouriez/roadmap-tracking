@@ -41,6 +41,7 @@ repeat up to max_iterations (default 3, override via tests.max_iterations):
   Executor: implement / correct the step
   Executor: run all relevant tests, collect raw results
   Verifier: render verdict (PASS or FAIL)
+  Executor: persist procedure + expected + observed to plan ## Tests section
   if PASS:
     display 📦 Commit proposé
     ⏸️ STOP — wait for operator acknowledgement
@@ -57,6 +58,15 @@ Notes:
   commit/push" rule).
 - The `⏸️` stop point moves to **after PASS** (not after tests).
 - Manual interrupt ("stop") is always possible at any iteration.
+- **Plan persistence is mandatory (not chat-only).** Displaying the Verifier
+  verdict in the chat does **not** satisfy traceability. After **every**
+  verdict (PASS or FAIL), the Executor writes the test procedure, expected
+  results and the observed results to the `## Tests` section of the plan file
+  (see `references/templates.md`): the procedure + expected results under
+  "Procédure de test", and one row per verdict in the "Résultats joués et
+  vérifiés" table (date, test, attendu, observé, verdict). This is required by
+  SKILL.md "⛔ Règle absolue — traçabilité des tests dans le fichier plan" and
+  applies identically with a real Verifier sub-agent or the inline fallback.
 
 ---
 

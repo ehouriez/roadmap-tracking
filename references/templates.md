@@ -162,6 +162,29 @@ Pourquoi ce plan existe (1-3 phrases).
 | Décision | Choix retenu | Justification |
 |----------|-------------|---------------|
 
+## Tests
+
+> Section **obligatoire** renseignée aux étapes de tests (intermédiaires et
+> finaux `🧪 Tests`), **quel que soit le mode** (`manual` ou `autonomous`). Elle
+> contient la procédure, les résultats attendus **et** les résultats réellement
+> joués et vérifiés. Afficher les résultats uniquement dans le chat ne suffit
+> pas : ce fichier est la source de vérité traçable. Voir SKILL.md
+> « ⛔ Règle absolue — traçabilité des tests dans le fichier plan ».
+
+### Procédure de test
+
+```bash
+(commandes de test — respecter references/environment.md § Operator Commands Formatting)
+```
+
+**Résultats attendus :** ce que l'opérateur (mode `manual`) ou le Vérificateur
+(mode `autonomous`) doit observer si tout fonctionne.
+
+### Résultats joués et vérifiés
+
+| Date | Test | Attendu | Observé | Verdict |
+|------|------|---------|---------|---------|
+
 ## Journal de session
 
 ### Session YYYY-MM-DD
@@ -171,5 +194,7 @@ Pourquoi ce plan existe (1-3 phrases).
 - 🚧 Blocages : ...
 ```
 
-> **Décisions techniques** et **Journal de session** peuvent être vides à la
-> création et se remplissent au fil des sessions.
+> **Décisions techniques**, **Tests** et **Journal de session** peuvent être
+> vides à la création et se remplissent au fil des sessions. La section
+> **Tests** devient **obligatoirement non vide** dès qu'une étape de tests
+> (intermédiaire ou finale) est jouée, dans les deux modes.

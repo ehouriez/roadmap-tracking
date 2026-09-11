@@ -13,7 +13,7 @@ description: >
 license: MIT
 metadata:
   author: Emmanuel Houriez
-  version: "2.2.0"
+  version: "2.2.2"
   domain: workflow
   triggers: >
     plan, cadrage, roadmap, issue GitHub, suivi de tâche, planification,
@@ -216,6 +216,18 @@ en attente de réponse.
 ⛔ Un plan ne peut JAMAIS être marqué `status: done` si les étapes 🧪 Tests
    et ✅ Validation n'ont pas été explicitement complétées et cochées.
    Aucune exception.
+```
+
+## ⛔ Règle absolue — traçabilité des tests dans le fichier plan
+
+```
+⛔ Quel que soit le mode (`manual` OU `autonomous`), la procédure de test, les
+   résultats attendus ET les résultats réellement joués et vérifiés sont
+   TOUJOURS créés ou mis à jour dans la section `## Tests` du fichier plan
+   (voir references/templates.md). Vaut pour les tests intermédiaires comme
+   pour les tests finaux 🧪 Tests. Afficher les résultats uniquement dans le
+   chat (verdict Vérificateur inclus) ne suffit PAS : le fichier plan est la
+   source de vérité traçable, et l'étape ✅ Validation s'appuie dessus.
 ```
 
 ## ⛔ Règle absolue — pas de ⏸️ sans 📦
@@ -832,8 +844,9 @@ l'étape 0 de la Phase 7. À la fin de l'implémentation d'une étape sélection
 1. **Déterminer les tests unitaires pertinents** ciblés sur le périmètre de
    **cette étape uniquement**.
 
-2. **Rédiger une procédure de tests unitaires détaillée pas à pas** dans le plan,
-   dans une section dédiée entre balises de code. Cette procédure :
+2. **Rédiger une procédure de tests unitaires détaillée pas à pas** dans la
+   section `## Tests` du fichier plan (voir `references/templates.md`), entre
+   balises de code. Cette procédure :
    - Respecte **intégralement** les règles de formatage des commandes
      (voir `references/environment.md § Operator Commands Formatting`).
    - Inclut les commandes de vérification des résultats attendus.
@@ -881,8 +894,10 @@ l'étape 0 de la Phase 7. À la fin de l'implémentation d'une étape sélection
    procédure **et** un nouveau bloc `📦 Commit proposé`, re-soumettre. Boucler
    jusqu'à validation.
 
-6. **Si les tests passent** : `✅ Étape X terminée et validée.` puis enchaîner
-   l'étape suivante.
+6. **Si les tests passent** : **consigner les résultats reçus dans la section
+   `## Tests` du fichier plan** (ligne dans le tableau « Résultats joués et
+   vérifiés » : date, test, attendu, observé, verdict), puis
+   `✅ Étape X terminée et validée.` et enchaîner l'étape suivante.
 
 > Ces tests intermédiaires **complètent** et ne remplacent **jamais** la phase
 > finale `🧪 Tests` + `✅ Validation`, qui reste obligatoire et bloquante.
@@ -893,7 +908,9 @@ l'étape 0 de la Phase 7. À la fin de l'implémentation d'une étape sélection
 > chaque étape d'implémentation. Cette étape `🧪 Tests` reste **obligatoire** —
 > elle correspond aux tests finaux E2E / non-régression, exécutés dans la même
 > boucle mais sur l'ensemble du plan. Le `⏸️` se place après le `PASS` final.
-> Voir `references/autonomous-tests.md`.
+> La procédure, les résultats attendus **et** les résultats vérifiés sont écrits
+> dans la section `## Tests` du plan comme dans la boucle par étape. Voir
+> `references/autonomous-tests.md`.
 
 **Mode `manual`** (défaut) : démarre lorsque les étapes d'implémentation (1 à
 N-2) sont terminées. Tu dois :
@@ -905,8 +922,9 @@ N-2) sont terminées. Tu dois :
      inter-services, pipeline, etc.).
    - **Les deux** → modification structurelle majeure ou transverse.
 
-2. **Rédiger une procédure de test détaillée pas à pas** directement dans le
-   plan, dans une section dédiée entre balises de code. Cette procédure :
+2. **Rédiger une procédure de test détaillée pas à pas** dans la section
+   `## Tests` du fichier plan (voir `references/templates.md`), entre balises de
+   code. Cette procédure :
    - Respecte **intégralement** les règles de formatage des commandes
      (voir `references/environment.md § Operator Commands Formatting`).
    - Inclut les commandes de vérification des résultats attendus (ex : `curl`,
@@ -961,14 +979,22 @@ N-2) sont terminées. Tu dois :
 
 > **Mode `autonomous`** : démarre après le `PASS` final de la boucle
 > Exécuteur/Vérificateur sur les tests finaux. Le Vérificateur a déjà rendu son
-> verdict — reprendre ses résultats comme source de vérité pour la checklist de
-> clôture ci-dessous.
+> verdict — il a été **consigné dans la section `## Tests` du plan** par la
+> boucle (voir `references/autonomous-tests.md`). Reprendre ces résultats
+> persistés comme source de vérité pour la checklist de clôture ci-dessous.
 
 **Mode `manual`** (défaut) : démarre **uniquement** lorsque l'opérateur a
 transmis les résultats de l'étape `🧪 Tests`.
 
-- **Si tous les tests passent** → cocher l'étape, puis enchaîner la checklist de
-  clôture (plan `status: done`, `roadmap.md`, issue GitHub — voir ci-dessus).
+> **Avant toute clôture — consigner les résultats.** Écrire les résultats
+> transmis par l'opérateur dans le tableau « Résultats joués et vérifiés » de la
+> section `## Tests` du fichier plan (date, test, attendu, observé, verdict).
+> C'est un prérequis de la règle « ⛔ traçabilité des tests dans le fichier
+> plan » : sans cette consignation, la validation ne peut pas être clôturée.
+
+- **Si tous les tests passent** → consigner les résultats (ci-dessus), cocher
+  l'étape, puis enchaîner la checklist de clôture (plan `status: done`,
+  `roadmap.md`, issue GitHub — voir ci-dessus).
 - **Si un ou plusieurs tests échouent** :
   1. Analyser les résultats transmis.
   2. Corriger l'implémentation.
