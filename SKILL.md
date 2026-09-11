@@ -13,7 +13,7 @@ description: >
 license: MIT
 metadata:
   author: Emmanuel Houriez
-  version: "1.2.1"
+  version: "1.3.0"
   domain: workflow
   triggers: >
     plan, cadrage, roadmap, issue GitHub, suivi de tâche, planification,
@@ -194,6 +194,105 @@ Indique **toujours** le mode courant dans tes réponses :
 - `🔨 MODE ACT (IMPLÉMENTATION)` — j'implémente l'étape N du plan.
 - `⏸️ POINT D'ARRÊT` — en attente de validation.
 
+## Évaluation de complexité et recommandation de modèle
+
+Deux niveaux d'évaluation reposant sur la **même grille de sizing** :
+
+- **Complexité globale** du plan → alimente le champ `complexity` du front
+  matter (Phase 5, inchangé) **et** la gate de recommandation de modèle
+  (Phase 3). Une seule et même évaluation pour les deux.
+- **Complexité par étape** → indépendante de la globale : une étape `XS` peut
+  exister dans un plan globalement `L`.
+
+### Grille de sizing
+
+| Taille | Critères indicatifs |
+|---|---|
+| `XS` | Changement isolé, 1 fichier, pas de logique nouvelle |
+| `S` | Quelques fichiers, logique simple, pattern existant à reproduire |
+| `M` | Plusieurs fichiers, logique métier modérée, tests à adapter |
+| `L` | Transverse, nouvelle architecture ou pattern, coordination multi-composants |
+| `XL` | Conception système, impacts structurels, multiples dépendances croisées |
+
+### Matrice complexité → modèle
+
+| Complexité | Modèle recommandé |
+|---|---|
+| `XS`, `S`, `M` | Sonnet |
+| `L`, `XL` | Opus |
+
+### Détection du modèle actif
+
+Le modèle courant est donné par le prompt système (« You are powered by the
+model named … »). En dériver la **famille** :
+
+- Nom contenant « Sonnet » → classe **Sonnet**.
+- Nom contenant « Opus » → classe **Opus**.
+- Nom contenant « Haiku » → classe **Haiku**. La matrice ne recommande jamais
+  Haiku : cette famille est donc **toujours** en mismatch, ce qui déclenche une
+  recommandation vers le modèle attendu (Sonnet pour `XS`/`S`/`M`, Opus pour
+  `L`/`XL`).
+- Sinon (famille non reconnue) → **modèle non détectable** : ne pas afficher la
+  gate, conserver uniquement les annotations par étape.
+
+### Gate de recommandation de modèle
+
+Si le modèle actif est détectable, afficher **toujours** la gate — en
+**Phase 1.5** (avant le cadrage), re-jouée en Phase 3 seulement si le cadrage a
+changé la classe de complexité, ou lors d'une reprise si les étapes restantes
+l'exigent — dans l'un des deux cas suivants selon que le modèle actif correspond
+ou non à la complexité globale (matrice).
+
+**Cas 1 — modèle adapté** (bloc `ℹ️`) → afficher, puis **continuer
+normalement**, aucune action requise :
+
+```
+ℹ️ Complexité détectée : L
+   Modèle actif : opus
+   → Le modèle actuel convient pour ce niveau de complexité.
+```
+
+**Cas 2 — modèle non adapté** (bloc `⚠️`) → afficher, puis **point d'arrêt de
+bypass** (voir ci-dessous) :
+
+```
+⚠️ Complexité détectée : L
+   Modèle actif : sonnet
+   → Je recommande `/model opus` pour ce niveau de complexité.
+```
+
+- **Cas inverse inclus** : modèle Opus pour une demande `XS`/`S`/`M` →
+  recommander `/model sonnet` (surqualifié = gaspillage).
+- La famille **Haiku** est toujours en mismatch (cf. matrice) → toujours Cas 2.
+
+#### Point d'arrêt de bypass (uniquement en Cas 2)
+
+Juste après le bloc `⚠️`, afficher **une seule ligne de consigne**, puis
+**s'arrêter et attendre** la réponse de l'utilisateur (`⏸️`) :
+
+```
+⏸️ Réponds `bypass` pour continuer avec le modèle actuel, ou switche avec `/model opus` puis relance.
+```
+
+- **Il s'agit d'un vrai point d'arrêt** : ne rien produire d'autre, ne pas
+  enchaîner sur le plan tant que l'utilisateur n'a pas répondu.
+- Réponse **`bypass`** (ou équivalent explicite : « continue », « go ») →
+  reprendre le workflow immédiatement sur le modèle actif. Le choix est assumé.
+- Choix de **changer de modèle** → l'utilisateur tape `/model <modèle>`
+  lui-même ; le changement prend effet à son **prochain message**, qui relance
+  le workflow. Ne jamais prétendre avoir changé le modèle.
+
+> **Limite technique.** Le skill ne peut pas exécuter `/model` : c'est une
+> commande du CLI, aucun outil ne la déclenche. La branche « changer de
+> modèle » est donc toujours **manuelle** (arrêt + consigne + attente).
+
+### Tag d'étape
+
+Chaque **étape d'implémentation** porte un tag compact en fin de ligne :
+`(XS · Sonnet)`, `(M · Sonnet)`, `(L · Opus)`… — taille selon la grille,
+modèle selon la matrice. Les étapes `🧪 Tests` et `✅ Validation` ne portent
+**jamais** de tag (obligatoires et systématiques, non sizées).
+
 ## ⛔ Garde d'entrée — checkpoint universel (OBLIGATOIRE)
 
 Ce checkpoint s'exécute **à chaque invocation du skill**, quel que soit le
@@ -262,10 +361,31 @@ une **intention**, pas une **autorisation de sauter les checkpoints**.
 > 🧠 MODE PLAN — aucune écriture, aucune commande.
 
 Analyse silencieusement le prompt pour identifier : objectif principal,
-périmètre probable, zones d'ombre, complexité pressentie, dépendances avec
-d'autres plans, nécessité d'un découpage en lots.
+périmètre probable, zones d'ombre, dépendances avec d'autres plans, nécessité
+d'un découpage en lots, et **complexité pressentie — globale et par étape** —
+selon la grille de sizing (voir « Évaluation de complexité et recommandation de
+modèle »). Cette évaluation alimente la gate modèle (Phase 1.5 ci-dessous),
+les tags d'étape (Phase 3) et le champ `complexity` du front matter (Phase 5).
 
-**Ne rien proposer.** Passer à la phase 2.
+**Ne rien proposer.** Passer à la Phase 1.5.
+
+## Phase 1.5 — Gate modèle (avant le cadrage)
+
+> 🧠 MODE PLAN — aucune écriture, aucune commande.
+
+Sur la base de la **complexité globale pressentie** en Phase 1, exécuter la gate
+selon la section canonique « Gate de recommandation de modèle ». Rationnel : le
+cadrage (Phase 2) est la partie interactive la plus exigeante en jugement ;
+choisir le bon modèle **avant** de la mener aligne l'effort là où il compte.
+
+- **Cas 1 — modèle adapté** → bloc `ℹ️`, puis passer à la Phase 2.
+- **Cas 2 — modèle non adapté** → bloc `⚠️`, **puis point d'arrêt de bypass
+  `⏸️`** : s'arrêter et attendre la réponse (`bypass` pour continuer sur le
+  modèle actif, ou switch manuel via `/model` puis relance). Ne pas entamer le
+  cadrage tant que l'utilisateur n'a pas répondu.
+
+Se référer à la section canonique pour les formats exacts et le comportement
+complet. Si le modèle actif n'est pas détectable, ne pas afficher de gate.
 
 ## Phase 2 — Cadrage interactif
 
@@ -280,6 +400,21 @@ les réponses multiples, option « Autre » native).
 Termine ta compréhension par un court résumé (2-3 phrases) **avant** le premier
 appel `AskUserQuestion`.
 
+### Assistance design (UX/UI)
+
+Si la demande touche à l'**UX ou l'UI** (interface, écran, composant, layout,
+navigation, formulaire, état vide/erreur, typographie, couleur, accessibilité,
+copy, micro-interactions…) **et** que le skill `impeccable:impeccable` est
+disponible, **invoque-le en Phase 2** pour nourrir tes questions de cadrage et
+les décisions de design du plan (Phase 3).
+
+> **Référence de réflexion uniquement.** impeccable sert ici à poser de
+> meilleures questions et à prendre de meilleures décisions — **pas** à lancer
+> son pipeline de production (mocks, comps, sous-agents `impeccable-*`, revue de
+> finition). Aucune production design pendant la planification. La production
+> réelle reste en **Phase 7**, où impeccable pourra alors être invoqué pour de
+> vrai. Cette invocation ne lève aucun point d'arrêt et ne dispense d'aucun.
+
 **STOP.** Attendre les réponses.
 
 ## Phase 3 — Proposition du plan
@@ -287,22 +422,33 @@ appel `AskUserQuestion`.
 > 🧠 MODE PLAN — aucune écriture, aucune commande.
 
 En intégrant les réponses de cadrage, propose la structure complète (sans
-l'écrire) :
+l'écrire).
+
+**Re-check gate modèle (conditionnel).** La gate a déjà été jouée en Phase 1.5.
+Ne la **re-déclencher ici que si** le cadrage (Phase 2) a fait **changer la
+classe de complexité globale** — donc le modèle recommandé — par rapport à
+l'estimation pressentie. Dans ce cas, rejouer la gate (Cas 1 `ℹ️` / Cas 2 `⚠️`
++ point d'arrêt de bypass) selon la section canonique. Sinon, **ne pas la
+répéter** et enchaîner directement sur le plan.
+
+Présenter le plan (chaque étape d'implémentation portant son tag
+`(taille · modèle)`) :
 
 ```
 ### 📝 Plan proposé (🧠 MODE PLAN — rien n'est encore écrit)
 
 **Issue** : Créer `#XX — Titre` ou rattacher à `#YY` (son numéro = ID du plan)
 **Fichier** : `{ISSUE}-nom-du-plan.md`
-**Priorité** : high | **Complexité** : M
+**Priorité** : high | **Complexité** : L
 
 **Objectif** : ...
 **Périmètre** : Inclus / Hors scope
 **Étapes** :
-1. … (implémentation)
-2. … (implémentation)
-3. 🧪 Tests — Rédiger et exécuter la procédure de test
-4. ✅ Validation — Vérifier les résultats et clôturer
+1. Extraire les métriques (XS · Sonnet)
+2. Implémenter le DAG de dépendances inter-plans (L · Opus)
+3. Ajouter les endpoints REST (M · Sonnet)
+4. 🧪 Tests — Rédiger et exécuter la procédure de test
+5. ✅ Validation — Vérifier les résultats et clôturer
 **Lots** (si applicable) : Lot 1 (étapes 1-3) … Lot 2 (étapes 4-6) …
 
 ---
@@ -311,7 +457,12 @@ l'écrire) :
 
 > Les deux dernières étapes `🧪 Tests` et `✅ Validation` sont **obligatoires** et
 > doivent **toujours** figurer dans la proposition, quel que soit le nombre
-> d'étapes d'implémentation. Elles sont non supprimables et non fusionnables.
+> d'étapes d'implémentation. Elles sont non supprimables, non fusionnables, et
+> ne portent **pas** de tag `(taille · modèle)`.
+>
+> Chaque étape d'implémentation reçoit une évaluation de complexité **propre**
+> (indépendante de la complexité globale du plan) et son tag compact en fin de
+> ligne. Garder les descriptions courtes : le tag ne doit pas les alourdir.
 
 **STOP.** Attendre validation.
 
@@ -398,6 +549,35 @@ approprié (reprise ou création) avant de continuer.
   explicitement en autorisant l'implémentation.
 - [ ] L'étape 0 ci-dessous va être exécutée MAINTENANT (ou a déjà été exécutée
   dans cette session pour ce même ensemble d'étapes).
+
+### Gate modèle d'entrée (groupée, une seule fois par séquence)
+
+À l'entrée de la Phase 7, **avant l'étape 0**, vérifier une seule fois
+l'alignement du modèle sur la **séquence d'étapes demandée** (pas étape par
+étape) :
+
+1. Parmi les **étapes d'implémentation** à exécuter (exclure `🧪 Tests` et
+   `✅ Validation`), retenir le **modèle le plus exigeant** d'après leurs tags
+   `(taille · modèle)` — Opus prime sur Sonnet.
+2. Comparer au modèle actif (voir « Détection du modèle actif »).
+3. Appliquer la gate selon la section canonique « Gate de recommandation de
+   modèle », **symétrie stricte** (mismatch dans les deux sens) :
+   - **Adapté** (modèle actif = exigence de la séquence) → bloc `ℹ️`, continuer
+     vers l'étape 0.
+   - **Sous-dimensionné** (au moins une étape exige Opus alors que le modèle
+     actif est Sonnet/Haïku) → bloc `⚠️` nommant les étapes concernées,
+     recommander `/model opus`.
+   - **Surdimensionné** (séquence entièrement Sonnet alors que le modèle actif
+     est Opus) → bloc `⚠️`, recommander `/model sonnet` (surqualifié =
+     gaspillage).
+   - Dans les deux cas de mismatch → **point d'arrêt de bypass `⏸️`** : attendre
+     `bypass` (continuer sur le modèle actif) ou un switch manuel via `/model`
+     puis relance. Ne pas entamer l'étape 0 tant que l'utilisateur n'a pas
+     répondu.
+
+> Une seule gate pour toute la séquence : ne pas la rejouer à chaque étape. Si
+> le plan est antérieur aux tags par étape, s'appuyer sur la complexité globale.
+> Si le modèle actif n'est pas détectable, ne pas afficher de gate.
 
 ---
 
@@ -650,12 +830,13 @@ templates de tests ci-dessus.
 > raccourci : il signifie « je veux travailler sur ce plan », pas « saute tous
 > les checkpoints ». Voir la **règle anti-court-circuit** dans la garde d'entrée.
 
-1. 🧠 MODE PLAN — lis le fichier plan, affiche l'état :
+1. 🧠 MODE PLAN — lis le fichier plan, affiche l'état. Reprendre les tags
+   `(taille · modèle)` déjà présents dans le plan pour les étapes restantes :
 
 ```
 ### 📋 Résumé du plan #{ISSUE}
 **Statut** : 🟢 active | **Dernière session** : YYYY-MM-DD | **Progression** : 3/7
-**Étapes restantes** : 4. [ ] … 5. [ ] …
+**Étapes restantes** : 4. [ ] Migrer le schéma (L · Opus)  5. [ ] … (M · Sonnet)
 
 ---
 ⏸️ Que souhaites-tu faire ?
@@ -664,6 +845,13 @@ templates de tests ci-dessus.
 3. 📝 Modifier le plan
 4. 📋 Voir le journal
 ```
+
+> **Gate modèle sur reprise.** Si le modèle actif est détectable et ne
+> correspond pas aux **étapes restantes** (une étape `L`/`XL` restante alors que
+> le modèle actif est de classe Sonnet, ou l'inverse), afficher la gate de
+> recommandation (voir « Évaluation de complexité et recommandation de modèle »)
+> avant le point d'arrêt. Si le plan est antérieur à cette convention et ne
+> porte pas de tags, ne pas afficher de gate par étape.
 
 2. **STOP.** Attendre la validation. Ne rien implémenter, ne lire aucun code
    source applicatif, ne lancer aucune commande tant que l'utilisateur n'a pas

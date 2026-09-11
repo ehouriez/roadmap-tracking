@@ -112,10 +112,17 @@ Pourquoi ce plan existe (1-3 phrases).
 
 ## Étapes
 
-- [ ] Étape 1 — Description succincte
-- [ ] Étape 2 — Description succincte
+- [ ] Étape 1 — Description succincte (XS · Sonnet)
+- [ ] Étape 2 — Description succincte (L · Opus)
 - [ ] 🧪 Tests — Rédiger et exécuter la procédure de test (avant-dernière étape, obligatoire)
 - [ ] ✅ Validation — Vérifier les résultats des tests et clôturer (dernière étape, obligatoire)
+
+> Chaque étape d'implémentation porte un tag `(taille · modèle)` en fin de
+> ligne — taille selon la grille de sizing, modèle selon la matrice
+> complexité → modèle (voir la section « Évaluation de complexité et
+> recommandation de modèle » du SKILL). Ce tag est **persisté ici** pour que la
+> reprise d'un plan puisse le réafficher. Les étapes `🧪 Tests` et
+> `✅ Validation` n'en portent jamais.
 
 > Les deux dernières étapes (`🧪 Tests` et `✅ Validation`) sont **obligatoires,
 > non supprimables et non fusionnables** avec une étape d'implémentation. Elles

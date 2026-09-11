@@ -61,6 +61,13 @@ pas ce qui est déjà explicite.
 - Découpage en lots proposé ? (proposer un découpage concret)
 - Lot à livrer en priorité ?
 
+**🎨 UX/UI** (si la demande touche à l'interface)
+Quand la demande porte sur l'UX/UI et que `impeccable:impeccable` est disponible,
+invoque-le d'abord (voir SKILL.md § « Assistance design ») pour formuler des
+questions ciblées : hiérarchie visuelle, charge cognitive, états (vide, erreur,
+chargement), accessibilité, responsive, cohérence avec le design system existant.
+Reste en **référence de réflexion** — ne lance pas son pipeline de production.
+
 **💡 Suggestions et points d'attention** (créativité encouragée)
 Ajoute toute question hors catégorie utile : challenge une incohérence ou un
 risque technique, propose une alternative, anticipe les cas limites, suggère une
