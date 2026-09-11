@@ -86,19 +86,52 @@ def derive_slug(stem: str) -> str:
     return match.group("slug")
 
 
+def rewrite_plan_id(content: str, issue_id: str) -> str:
+    """Rewrite ``plan.id`` to ``issue_id`` regardless of key order.
+
+    The ``id`` key may not be the first entry under ``plan:`` (a plan that does
+    not follow the template ordering), so the whole ``plan:`` block is isolated
+    first and only its ``id`` line is rewritten — the ``issue.id`` block, which
+    also carries an ``id`` key, is left untouched.
+    """
+
+    def fix_block(match: re.Match) -> str:
+        return re.sub(
+            r"(?m)^(\s+id:\s*)'?[^'\"\n]*'?[ \t]*$",
+            rf"\g<1>'{issue_id}'",
+            match.group(0),
+            count=1,
+        )
+
+    return re.sub(
+        r"(?ms)^plan:[ \t]*\n(?:[ \t]+\S.*\n?)*",
+        fix_block,
+        content,
+        count=1,
+    )
+
+
+def rewrite_plan_label(text: str, old_ids: list[str], issue_id: str) -> str:
+    """Rewrite ``Plan NNN`` / ``Plan #NNN`` references to ``Plan #{issue_id}``.
+
+    Matches both the legacy ``Plan 10`` form and the current template form
+    ``Plan #10`` (see ``references/templates.md``), and anchors on word
+    boundaries so ``Plan 10`` never rewrites the start of ``Plan 100``.
+    """
+    for old_id in old_ids:
+        text = re.sub(
+            rf"\bPlan\s+#?{re.escape(old_id)}\b",
+            f"Plan #{issue_id}",
+            text,
+        )
+    return text
+
+
 def rewrite_plan_content(content: str, rename: Rename) -> str:
     """Update id, name, link and H1 title inside a plan file."""
     updated = content.replace(rename.old_basename, rename.new_basename)
-    # Replace the current plan.id value whatever it is: the front matter id may
-    # differ from the file-name prefix (e.g. file '010-...' with id '10').
-    updated = re.sub(
-        r"(\bplan:\s*\n\s+id:\s*)'?[^'\"\n]+'?",
-        rf"\g<1>'{rename.issue_id}'",
-        updated,
-        count=1,
-    )
-    for old_id in rename.old_ids():
-        updated = updated.replace(f"Plan {old_id}", f"Plan #{rename.issue_id}")
+    updated = rewrite_plan_id(updated, rename.issue_id)
+    updated = rewrite_plan_label(updated, rename.old_ids(), rename.issue_id)
     return updated
 
 
@@ -169,8 +202,7 @@ def patch_issue(rename: Rename, dry_run: bool) -> None:
         text=True,
     ).stdout
     fixed = body.replace(rename.old_basename, rename.new_basename)
-    for old_id in rename.old_ids():
-        fixed = fixed.replace(f"Plan {old_id}", f"Plan #{rename.issue_id}")
+    fixed = rewrite_plan_label(fixed, rename.old_ids(), rename.issue_id)
     print(f"🔗 issue #{rename.issue_id} patched")
     if dry_run:
         return
