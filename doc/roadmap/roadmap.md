@@ -13,16 +13,16 @@ Backlog consolidé : plans nommés d'après leur issue GitHub (voir `doc/roadmap
 
 ## À faire
 
-- **[Issue: #4] `#4` — Format tableau obligatoire pour tous les rapports** 🟢 — Bug : listing des plans en format clé-valeur au lieu de tableau markdown.
-  [`4-roadmap-tracking-rapport-format-tableau.md`](4-roadmap-tracking-rapport-format-tableau.md)
-
-
+_(vide)_
 
 ---
 
 ## Fait
 
 ### Plans livrés (2026-09-11)
+
+- **[Issue: #4] `#4` — Format tableau obligatoire pour tous les rapports** (2026-09-11) 🔵 — Règle absolue « format des rapports » + instruction de listing renforcée (interdiction du format clé-valeur).
+  [`4-roadmap-tracking-rapport-format-tableau.md`](4-roadmap-tracking-rapport-format-tableau.md)
 
 - **[Issue: #7] `#7` — Résolution tests.mode non-sautable dans la garde d'entrée** (2026-09-11) 🔵 — Nouvel item 4 dans la checklist pré-action ; table anti-court-circuit mise à jour.
   [`7-roadmap-tracking-tests-mode-garde-entree.md`](7-roadmap-tracking-tests-mode-garde-entree.md)

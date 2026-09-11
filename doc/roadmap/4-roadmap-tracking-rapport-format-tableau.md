@@ -3,7 +3,7 @@ plan:
   id: '4'
   name: 4-roadmap-tracking-rapport-format-tableau.md
   link: https://github.com/ehouriez/roadmap-tracking/blob/main/doc/roadmap/4-roadmap-tracking-rapport-format-tableau.md
-status: active
+status: done
 date: 2026-09-11
 description: >
   Corriger le bug de format de listing des plans : le skill génère un format
@@ -44,8 +44,8 @@ l'instruction de listing.
 
 - [x] Étape 1 — Ajouter la règle `⛔ Règle absolue — format des rapports` dans `SKILL.md` (XS · standard → Sonnet)
 - [x] Étape 2 — Renforcer l'instruction de listing (Règle de démarrage) avec interdiction explicite du format `clé: valeur` (XS · standard → Sonnet)
-- [ ] 🧪 Tests — Rédiger et exécuter la procédure de test
-- [ ] ✅ Validation — Vérifier les résultats et clôturer
+- [x] 🧪 Tests — Rédiger et exécuter la procédure de test
+- [x] ✅ Validation — Vérifier les résultats et clôturer
 
 ## Décisions techniques
 
@@ -85,8 +85,17 @@ awk '/## ⛔ Règle absolue/{print NR": "$0}' SKILL.md | head -1
 | 2026-09-11 | Étape 2 — listing impose tableau | count=1 | 1 | ✅ PASS |
 | 2026-09-11 | Étape 2 — listing interdit clé:valeur | count=1 | 1 | ✅ PASS |
 | 2026-09-11 | Étape 2 — renvoi à la règle absolue | count=1 | 1 | ✅ PASS |
+| 2026-09-11 | Finaux — section règle présente | 1 | 1 | ✅ PASS |
+| 2026-09-11 | Finaux — règle impose tableau | 1 | 1 | ✅ PASS |
+| 2026-09-11 | Finaux — règle interdit clé:valeur | 1 | 1 | ✅ PASS |
+| 2026-09-11 | Finaux — listing renforcé | 1 | 1 | ✅ PASS |
+| 2026-09-11 | Finaux — non-régression règles absolues | 5 | 5 | ✅ PASS |
+| 2026-09-11 | Finaux — non-régression gabarit listing | 1 | 1 | ✅ PASS |
 
 ## Journal de session
 
 ### Session 2026-09-11
-- 📋 Prochain : étape 1 — ajouter la règle transverse
+- ✅ Étape 1 — règle absolue « format des rapports » ajoutée dans `SKILL.md`
+- ✅ Étape 2 — instruction de listing renforcée (interdiction `clé: valeur`)
+- ✅ 🧪 Tests finaux + non-régression : 6/6 PASS (vérificateur autonome)
+- ✅ Validation — plan clôturé (`status: done`)
