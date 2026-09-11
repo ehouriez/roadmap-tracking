@@ -777,21 +777,21 @@ grep -niE "fork|fresh agent" references/environment.md
 
 | Test | Description | Statut | Notes |
 |---|---|---|---|
-| T1 | `claude plugin validate .` (sans warning) | ⬜ | |
-| T2 | grep anti-adhérence | ⬜ | |
-| T3 | Rétrocompat v1.3.x | ⬜ | |
-| T4 | Mode `local` Phase 5 + templates | ⬜ | |
-| T5 | Mode `autonomous` Phase 7 | ⬜ | |
-| T6a | Hook Claude Code présent → injection | ⬜ | |
-| T6b | Hook Claude Code absent → silencieux | ⬜ | |
-| T6c | `AUTOSTART=off` → silencieux | ⬜ | |
-| T7 | `plugin.json` clé `hooks` (format string) | ⬜ | |
-| T8 | Guards `github` références | ⬜ | |
-| T9 | Double injection règle+hook | ⬜ | |
-| T10 | Matrice modes 2×2 | ⬜ | |
-| T11 | Renvois croisés `SKILL.md ↔ references/*` | ⬜ | |
-| T12 | Format + injection hook Codex (`codex-hooks.json`) | ⬜ | |
-| T13 | Cohérence version 2.0.0 + isolation Vérificateur | ⬜ | |
+| T1 | `claude plugin validate .` (sans warning) | ✅ | `Validation passed`, aucun warning |
+| T2 | grep anti-adhérence | ✅ | Aucun nom de modèle versionné ni renvoi à la règle externe |
+| T3 | Rétrocompat v1.3.x | ✅ | Tiers définis dans la section canonique (pas Phase 1.5) ; clôture `gh issue` gatée `mode github` (SKILL.md:712-719) |
+| T4 | Mode `local` Phase 5 + templates | ✅ | `plan.source: local`, `issue.id/url: null`, `[Plan: {id}]`, contrôles ID/migration désactivés |
+| T5 | Mode `autonomous` Phase 7 | ✅ | Étape 0 supprimée, boucle Exécuteur/Vérificateur PASS/FAIL + garde-fou `max_iterations` |
+| T6a | Hook Claude Code présent → injection | ✅ | Message d'injection émis depuis un dir avec `doc/roadmap/` |
+| T6b | Hook Claude Code absent → silencieux | ✅ | Sortie vide hors `doc/roadmap/` |
+| T6c | `AUTOSTART=off` → silencieux | ✅ | Sortie vide avec `ROADMAP_TRACKING_AUTOSTART=off` |
+| T7 | `plugin.json` clé `hooks` (format string) | ✅ | `"hooks": "./hooks/hooks.json"` |
+| T8 | Guards `github` références | ✅ | En-têtes « Mode `github` uniquement » dans `github-issues.md` et `migration.md` |
+| T9 | Double injection règle+hook | ✅ | Aucun `~/.claude/rules/roadmap-tracking.md` → pas de double injection |
+| T10 | Matrice modes 2×2 | ✅ | Annotations `github`/`local` × `manual`/`autonomous` présentes et cohérentes |
+| T11 | Renvois croisés `SKILL.md ↔ references/*` | ✅ | Tous les `references/*.md` cités existent ; sections `##` concordantes |
+| T12 | Format + injection hook Codex (`codex-hooks.json`) | ✅ | Clé `SessionStart`, `type: command`, pas de champ `context` ; `additionalContext` len 344 |
+| T13 | Cohérence version 2.0.0 + isolation Vérificateur | ✅ | `plugin.json`, `SKILL.md`, `README.md` alignés `2.0.0` ; Vérificateur = fresh agent (pas de fork) |
 
 **Étape ✅ Validation** *(obligatoire)*
 Vérifier les résultats des tests, relire les renvois croisés `SKILL.md ↔
@@ -874,5 +874,29 @@ l'activation via manifest vs `hooks.json` en dossier de config (voir AUDIT.md).
 **📋 Prochain** : ré-exécuter la grille de tests 🧪 (T1 repasse ✅ ; corriger
 l'angle mort du test T7 qui validait le format `hooks` erroné), puis
 ✅ Validation.
+
+**🚧 Blocages** : aucun.
+
+### Session 2026-09-11 (ter) — 🧪 Tests + ✅ Validation
+
+**Modèle actif** : Claude Opus 4.8 (1M context) — tier `reasoning`
+
+**🧪 Tests** : grille complète rejouée — **13/13 ✅** (T1→T13, voir « Grille de
+résultats à reporter »). Points saillants :
+- T1 `claude plugin validate .` → `Validation passed`, sans warning.
+- T7 (angle mort corrigé) → confirme le format string `"./hooks/hooks.json"`.
+- T12 → hook Codex au format correct (`SessionStart`, `type: command`, pas de
+  champ `context` ; `additionalContext` len 344).
+- T13 → version `2.0.0` alignée (`plugin.json` / `SKILL.md` / `README.md`) ;
+  Vérificateur = fresh agent (pas de fork).
+
+**✅ Validation** : résultats confirmés, renvois croisés `SKILL.md ↔ references/*`
+relus (T11), absence de double injection règle+hook confirmée (T9). Plan
+**validé**.
+
+**🔎 Point ouvert (non bloquant)** : activation du hook Codex via manifest vs
+`hooks.json` en dossier de config — à trancher lors d'un vrai déploiement Codex
+(voir warning en tête de plan + AUDIT.md). Le format du hook est vérifié ; seule
+la voie d'activation reste à confirmer.
 
 **🚧 Blocages** : aucun.
