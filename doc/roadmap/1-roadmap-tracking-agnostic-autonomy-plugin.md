@@ -76,7 +76,7 @@ neuve. Points d'ancrage et dépendances externes à connaître :
   `/mnt/c/INETUM/AGV/agv-adm/GIT_GITHUB/skills/roadmap-tracking/` (l'utilisateur
   s'y positionne via `cd` avant de lancer l'agent). C'est la racine du repo de
   packaging (layout « skill à la racine »). Tous les fichiers à éditer sont donc
-  en **chemins relatifs** depuis le CWD : ce plan (`000-…-plugin.md`), `SKILL.md`,
+  en **chemins relatifs** depuis le CWD : ce plan (`1-…-plugin.md`), `SKILL.md`,
   `references/*`, `.claude-plugin/*`, `README.md`, `scripts/*`.
 - **Baseline** : `SKILL.md` = **v1.3.0** (contient déjà Phase 1.5, gate modèle,
   point d'arrêt de bypass, gate Phase 7). C'est la base de la rétrocompat.
@@ -473,7 +473,7 @@ local) ; `github-issues.md` (préfixe « mode github uniquement ») ; `roadmap-f
 + interrupteur, remplace la section opt-in). *Dépend des étapes 1-6.*
 
 **✅ Étape 9 — Correctifs post-audit** `(M · standard → Sonnet)`
-Corrige les écarts relevés dans `000-roadmap-tracking-agnostic-autonomy-plugin-AUDIT.md`.
+Corrige les écarts relevés dans `1-roadmap-tracking-agnostic-autonomy-plugin-AUDIT.md`.
 *Dépend des étapes 1-8. À exécuter avant les tests obligatoires.*
 
 - **[Critique] `.claude-plugin/plugin.json` — clé `hooks` au format invalide.**
@@ -911,7 +911,7 @@ références.
 **Modèle actif** : Claude Opus 4.8 (1M context) — tier `reasoning`
 
 **Audit** : rapport d'écarts complet écrit dans
-`000-roadmap-tracking-agnostic-autonomy-plugin-AUDIT.md` — 5/8 étapes conformes,
+`1-roadmap-tracking-agnostic-autonomy-plugin-AUDIT.md` — 5/8 étapes conformes,
 1 écart critique (plugin.json), 3 écarts mineurs.
 
 **✅ Correctifs appliqués** :

@@ -1,7 +1,7 @@
 # Rapport d'audit — Plan #000
 
 > Audit en lecture seule de l'implémentation réalisée sur le plan
-> `000-roadmap-tracking-agnostic-autonomy-plugin.md` (axes A→E, étapes 1-8).
+> `1-roadmap-tracking-agnostic-autonomy-plugin.md` (axes A→E, étapes 1-8).
 > Comparaison étape par étape entre ce que le plan demande et ce qui est présent
 > dans les fichiers. **Aucun fichier de l'implémentation n'a été modifié.**
 >

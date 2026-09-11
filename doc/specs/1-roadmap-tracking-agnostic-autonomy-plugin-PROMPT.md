@@ -7,7 +7,7 @@ GitHub, sans config = comportement v1.3.0) et **sans sur-ingénierie** (config
 optionnelle, chaque mode a un défaut par détection).
 
 > Ce document décrit les axes **tels qu'ils ont été tranchés et livrés** (plan
-> `000-roadmap-tracking-agnostic-autonomy-plugin.md`, plugin **v2.0.0**). Les
+> `1-roadmap-tracking-agnostic-autonomy-plugin.md`, plugin **v2.0.0**). Les
 > points laissés ouverts dans la demande initiale y figurent avec la décision
 > retenue.
 
