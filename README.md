@@ -11,7 +11,7 @@ Drives a strict **7-phase workflow** — silent analysis, interactive scoping,
 plan proposal, validation, plan creation, validation, then step-by-step
 implementation — with hard stop points between planning and coding.
 
-## Key features (v2.0.0)
+## Key features (v2.1.0)
 
 | Feature | Description |
 |---|---|
