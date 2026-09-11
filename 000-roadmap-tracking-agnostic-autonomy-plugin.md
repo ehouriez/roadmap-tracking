@@ -463,8 +463,10 @@ echo "=== Validate Plugin Manifest ==="
 claude plugin validate .
 ```
 
-**Résultat attendu** : sortie sans erreur (ou avertissements non bloquants
-uniquement). Un message de succès ou « Plugin is valid ».
+**Résultat attendu** (depuis le correctif Étape 9) : `✔ Validation passed`
+**sans aucun warning**. En particulier, plus de warning `unknown hook event`
+(la clé `hooks` du manifest est désormais un chemin string `"./hooks/hooks.json"`,
+pas un objet `{claude-code, codex}`).
 
 ---
 
@@ -720,23 +722,76 @@ grep "^##" references/templates.md
 
 ---
 
+### T12 — Format et injection du hook Codex (`codex-hooks.json`)
+
+**Objectif** : `hooks/codex-hooks.json` respecte le format réel du CLI Codex
+(vérifié en source `openai/codex` lors de l'Étape 9) — clé événement
+`SessionStart` (PascalCase) sous `hooks`, niveau `MatcherGroup`, et surtout un
+`command` dont le **stdout est un JSON parsable** portant
+`hookSpecificOutput.additionalContext` (sans quoi Codex n'injecte rien).
+
+```bash
+echo "=== Check Codex Hook Structure ==="
+python3 -c "import json; d=json.load(open('hooks/codex-hooks.json')); ev=list(d['hooks'].keys()); print('Event key:', ev); assert ev==['SessionStart'], 'event must be SessionStart (PascalCase)'; h=d['hooks']['SessionStart'][0]['hooks'][0]; assert h['type']=='command', 'handler type'; assert 'context' not in h, 'the invalid context field must be gone'; print('Structure OK')"
+
+echo "=== Check Codex Hook Stdout Is Parsable JSON With additionalContext ==="
+mkdir -p /tmp/rt-codex-t12/doc/roadmap
+CMD=$(python3 -c "import json; print(json.load(open('$PWD/hooks/codex-hooks.json'))['hooks']['SessionStart'][0]['hooks'][0]['command'])")
+( cd /tmp/rt-codex-t12 && eval "$CMD" ) | python3 -c "import sys,json; d=json.load(sys.stdin); o=d['hookSpecificOutput']; assert o['hookEventName']=='SessionStart'; assert len(o['additionalContext'])>0; print('Stdout JSON OK — additionalContext length:', len(o['additionalContext']))"
+
+echo "=== Cleanup T12 ==="
+rm -rf /tmp/rt-codex-t12
+```
+
+**Attendu** : « Structure OK » (clé `SessionStart`, `type: command`, plus de
+champ `context`) **et** « Stdout JSON OK » avec un `additionalContext` non vide.
+Si le stdout n'est pas un JSON parsable, l'injection Codex échoue silencieusement.
+
+---
+
+### T13 — Cohérence post-correctifs (version + isolation Vérificateur)
+
+**Objectif** : vérifier les correctifs de l'Étape 9 qui ne sont pas couverts
+ailleurs — alignement de version et retrait du « fork » du Vérificateur.
+
+```bash
+echo "=== Check Version Alignment (2.0.0 Everywhere) ==="
+grep -n "version" .claude-plugin/plugin.json
+grep -n "^  version:" SKILL.md
+grep -niE "v2\.0\.0|Key features \(v" README.md
+
+echo "=== Check Verifier Isolation (No Fork Offered) ==="
+grep -niE "fork|fresh agent" references/environment.md
+```
+
+**Attendu** :
+- `plugin.json`, `SKILL.md` (`metadata.version`) et `README.md` affichent tous
+  `2.0.0` (aucune divergence).
+- Le mécanisme sous-agent Vérificateur de `environment.md` mentionne « fresh
+  agent » **isolé** et **exclut** explicitement le « fork » (qui hériterait du
+  contexte parent).
+
+---
+
 ### Grille de résultats à reporter
 
 | Test | Description | Statut | Notes |
 |---|---|---|---|
-| T1 | `claude plugin validate .` | ⬜ | |
+| T1 | `claude plugin validate .` (sans warning) | ⬜ | |
 | T2 | grep anti-adhérence | ⬜ | |
 | T3 | Rétrocompat v1.3.x | ⬜ | |
 | T4 | Mode `local` Phase 5 + templates | ⬜ | |
 | T5 | Mode `autonomous` Phase 7 | ⬜ | |
-| T6a | Hook présent → injection | ⬜ | |
-| T6b | Hook absent → silencieux | ⬜ | |
+| T6a | Hook Claude Code présent → injection | ⬜ | |
+| T6b | Hook Claude Code absent → silencieux | ⬜ | |
 | T6c | `AUTOSTART=off` → silencieux | ⬜ | |
-| T7 | `plugin.json` clé `hooks` | ⬜ | |
+| T7 | `plugin.json` clé `hooks` (format string) | ⬜ | |
 | T8 | Guards `github` références | ⬜ | |
 | T9 | Double injection règle+hook | ⬜ | |
 | T10 | Matrice modes 2×2 | ⬜ | |
 | T11 | Renvois croisés `SKILL.md ↔ references/*` | ⬜ | |
+| T12 | Format + injection hook Codex (`codex-hooks.json`) | ⬜ | |
+| T13 | Cohérence version 2.0.0 + isolation Vérificateur | ⬜ | |
 
 **Étape ✅ Validation** *(obligatoire)*
 Vérifier les résultats des tests, relire les renvois croisés `SKILL.md ↔
