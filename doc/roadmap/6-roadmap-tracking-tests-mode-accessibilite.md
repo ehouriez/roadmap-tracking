@@ -52,8 +52,8 @@ Recentrer la question et les libellés sur ce critère.
 
 ## Étapes
 
-- [ ] Étape 1 — Reformuler la question + les 2 libellés dans `SKILL.md` (Phase 7) (XS · standard → Sonnet)
-- [ ] Étape 2 — Aligner la ligne descriptive de `references/autonomous-tests.md` sur le nouveau cadrage (XS · standard → Sonnet)
+- [x] Étape 1 — Reformuler la question + les 2 libellés dans `SKILL.md` (Phase 7) + message de reset post-persistance (XS · standard → Sonnet)
+- [x] Étape 2 — Aligner la ligne descriptive de `references/autonomous-tests.md` sur le nouveau cadrage (XS · standard → Sonnet)
 - [ ] 🧪 Tests — Rédiger et exécuter la procédure de test
 - [ ] ✅ Validation — Vérifier les résultats et clôturer
 
