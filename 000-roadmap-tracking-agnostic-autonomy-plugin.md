@@ -15,9 +15,12 @@ chaque mode a un défaut par détection).
 Ce plan est auto-suffisant pour reprendre l'implémentation dans une session
 neuve. Points d'ancrage et dépendances externes à connaître :
 
-- **Repo de travail** : ce fichier vit à la racine du repo de packaging
-  (`skills/roadmap-tracking/`, layout « skill à la racine »). Tous les fichiers à
-  éditer (`SKILL.md`, `references/*`, `.claude-plugin/*`, `README.md`) y sont.
+- **Répertoire de travail** : la session de reprise démarre **directement dans**
+  `/mnt/c/INETUM/AGV/agv-adm/GIT_GITHUB/skills/roadmap-tracking/` (l'utilisateur
+  s'y positionne via `cd` avant de lancer l'agent). C'est la racine du repo de
+  packaging (layout « skill à la racine »). Tous les fichiers à éditer sont donc
+  en **chemins relatifs** depuis le CWD : ce plan (`000-…-plugin.md`), `SKILL.md`,
+  `references/*`, `.claude-plugin/*`, `README.md`, `scripts/*`.
 - **Baseline** : `SKILL.md` = **v1.3.0** (contient déjà Phase 1.5, gate modèle,
   point d'arrêt de bypass, gate Phase 7). C'est la base de la rétrocompat.
 - **Numéros de ligne** (L39-46, L91-96…) : valides pour v1.3.0 **avant** toute
