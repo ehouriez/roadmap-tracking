@@ -494,6 +494,15 @@ Corrige les écarts relevés dans `1-roadmap-tracking-agnostic-autonomy-plugin-A
   parent → casse l'isolation exigée par l'axe C). Ne conserver que « fresh
   agent » réellement isolé.
 
+**✅ Étape 10 — Suite de tests e2e « installation fraîche » (black-box)** `(L · reasoning → Opus)`
+Valider l'expérience d'installation et d'usage du skill publié
+(`github.com/ehouriez/roadmap-tracking`) pour un utilisateur qui le découvre,
+sans config ni historique. Test **black-box** : le skill n'est pas modifié ;
+tout écart est documenté, pas corrigé. Procédure, environnement de fixtures et
+grille de tests détaillés en section « ## Étape 10 — Tests e2e d'installation
+fraîche » ci-dessous. *Indépendante des étapes 1-9 (valide leur résultat publié).
+Ne modifie aucune étape existante.*
+
 **Étape 🧪 Tests** *(obligatoire)*
 
 > **Procédure complète — à exécuter avant l'étape ✅ Validation.**
@@ -849,10 +858,109 @@ references/*`, confirmer l'absence de double injection règle+hook, clôturer.
 
 ---
 
+## Étape 10 — Tests e2e d'installation fraîche (black-box)
+
+**Objectif.** Vérifier que l'expérience *end-to-end* du skill publié
+(`github.com/ehouriez/roadmap-tracking`) fonctionne pour un utilisateur qui le
+découvre, sans configuration ni historique. Test **black-box** : on ne touche
+**pas** au code du skill ; tout écart est **documenté**, jamais corrigé ici.
+
+**Modèle d'exécution retenu (« Moi comme exécuteur »).** Le skill est un
+`SKILL.md` d'instructions qu'un agent *suit* ; il ne « tourne » pas. L'agent (1)
+installe le plugin pour de vrai depuis GitHub, (2) crée les projets fictifs, (3)
+lit le `SKILL.md` **installé** et déroule sa procédure contre chaque projet en
+tranchant les gates interactifs par des **choix documentés et fixes**, (4)
+vérifie les artefacts déterministes. **Limite assumée** : l'agent est à la fois
+exécuteur et vérificateur → une instruction ambiguë qu'il comblerait
+intuitivement peut passer inaperçue. La fidélité maximale exigerait un test
+manuel humain, hors périmètre.
+
+**GitHub simulé (zéro appel API).** Les fixtures « github » reçoivent un remote
+`https://github.com/ehouriez/<slug>.git` pour que la **détection de mode**
+(`git remote` + `gh auth status`) résolve `github`, mais **aucune** issue/repo
+n'est créé. La numérotation issue et la création d'issue sont **simulées** et
+signalées comme telles. Justification : idempotence, aucun effet de bord sur le
+compte GitHub réel.
+
+### Environnement de fixtures
+
+- **Racine** : `/tmp/roadmap-tracking/tests/`
+- **Setup/teardown rejouable** : `scripts/e2e_fresh_install_setup.sh`
+  (teardown `rm -rf` de la racine puis recréation à l'identique → **idempotent**).
+  Chaque projet est un repo git local autonome.
+
+| Projet fictif | Simule | Particularités |
+|---|---|---|
+| `project-github-private` | Projet GitHub avec issues | Remote github, `gh` authentifié, mode auto→github, `doc/roadmap/` vide |
+| `project-github-optout` | GitHub mais opt-out issues | Remote github + `.skill-config.yml` `issues.mode: local` |
+| `project-no-github` | Hors GitHub | Pas de remote github, 1 plan local existant (`2-existing-local.md`) |
+| `project-existing-plans` | Plans conformes | `7-conformant-active.md` (active), `9-conformant-done.md` (done) + roadmap.md |
+| `project-existing-plans-unexpected-format` | Plans non conformes | 4 fichiers obligatoires (ci-dessous) + roadmap.md les référençant |
+| `project-fresh` | Vierge | Pas de `doc/roadmap/` du tout |
+
+**4 fichiers obligatoires de `project-existing-plans-unexpected-format`** :
+
+| Fichier | Non-conformité |
+|---|---|
+| `plan-no-frontmatter.md` | Aucun front matter YAML (markdown brut) |
+| `plan-frontmatter-no-issue.md` | Front matter valide mais bloc `issue` absent |
+| `plan-frontmatter-partial.md` | Front matter incomplet (`plan.name`, `status`, `complexity` manquants) |
+| `plan-no-frontmatter-no-issue.md` | Ni front matter ni issue, structure d'étapes non standard |
+
+### Choix documentés pour les gates interactifs (rejouabilité)
+
+| Gate | Réponse fixe retenue |
+|---|---|
+| `doc/roadmap/` absent → créer ? | **oui** |
+| Nouveau plan ou reprise ? | **nouveau plan** (sauf tests de reprise → plan désigné) |
+| Cadrage (`AskUserQuestion` Phase 2) | Réponses par défaut minimales cohérentes avec la demande fictive |
+| Gate modèle (Cas 2 `⚠️`) | **`bypass`** (le modèle actif est assumé) |
+| Point d'arrêt Phase 4 / Phase 6 | **valide / implémenter** pour les tests de création ; **stop** avant écriture de code applicatif |
+| Étape 0 Phase 7 (tests intermédiaires) | **Aucun test intermédiaire** |
+
+### Grille de tests de référence (E-series)
+
+Nomenclature indépendante des tests T1-T13 du plan. Format de reporting imposé :
+`### Test X.Y`, blocs **Attendu / Résultat / Verdict** (`✅ PASS` / `❌ FAIL` /
+`⚠️ PARTIAL`), puis **tableau récapitulatif** final.
+
+| # | Test | Projet | Attendu (résumé) |
+|---|------|--------|-------------------|
+| 1.1 | Installation depuis GitHub public | (global) | Plugin cloné + `claude plugin validate` OK |
+| 1.2 | Détection d'environnement | project-fresh | IDE=claude-code, modèle actif + tier détectés |
+| 2.1 | Démarrage `doc/roadmap/` absent → offre de création | project-fresh | Le skill propose de créer `doc/roadmap/` (pas de crash, pas d'auto-création) |
+| 2.2 | Après création : listing vide + question | project-fresh | `roadmap.md` initialisé, listing vide, question nouveau plan |
+| 3.1 | Détection mode local | project-no-github | Pas de remote github → `issues.mode: local` |
+| 3.2 | Numérotation locale max+1 | project-no-github | ID calculé = 3 (max existant = 2) |
+| 3.3 | Création plan local — artefacts | project-no-github | Front matter `plan.source: local`, `issue.id/url: null`, `plan.link` relatif, roadmap `[Plan: 3]` |
+| 3.4 | Gate de complexité | project-no-github | Gate affichée selon modèle actif vs complexité |
+| 4.1 | Détection mode github | project-github-private | Remote github + gh auth → `issues.mode: github` |
+| 4.2 | Création plan github — artefacts (simulé) | project-github-private | ID = n° issue, front matter `issue.id/url` renseignés, roadmap `[Issue: #NN]` |
+| 4.3 | Contrôle ID github-only | project-github-private | `plan.id == issue.id` contrôlé (github), désactivé en local |
+| 5.1 | Opt-out respecté | project-github-optout | Remote github MAIS config `local` → mode local |
+| 5.2 | Création plan local malgré remote github | project-github-optout | Plan local #1, pas d'issue |
+| 6.1 | Listing de plans conformes | project-existing-plans | Tableau complet (statut, résumé, issue) sans anomalie |
+| 6.2 | Reprise d'un plan conforme | project-existing-plans | Résumé #7, progression 1/2, point d'arrêt, choix |
+| 6.3 | Lecture roadmap.md | project-existing-plans | roadmap lu sans erreur |
+| 7.1 | Listing de 4 plans non conformes sans crash | project-existing-plans-unexpected-format | Les 4 listés, anomalies signalées (`⚠️`/valeurs par défaut), pas de crash |
+| 7.2a | Reprise `plan-no-frontmatter.md` | idem | Mise en conformité proposée OU mode dégradé documenté OU refus explicite — jamais de crash |
+| 7.2b | Reprise `plan-frontmatter-no-issue.md` | idem | Idem 7.2a |
+| 7.2c | Reprise `plan-frontmatter-partial.md` | idem | Idem 7.2a |
+| 7.2d | Reprise `plan-no-frontmatter-no-issue.md` | idem | Idem 7.2a (cas le plus dégradé) |
+| 7.3 | Création d'un plan conforme malgré coexistence | idem | Nouveau plan conforme créé sans blocage |
+| 7.4 | Robustesse roadmap.md non conforme | idem | roadmap référençant plans non conformes lu sans erreur |
+| 8.1 | Mode tests manuel vs autonome | (config) | `tests.mode` détecté ; défaut `manual` ; `autonomous` reconnu si configuré |
+
+**Critère de succès de l'étape** : aucun **crash silencieux** ; chaque cas
+non conforme aboutit à un comportement **documenté** (conformité proposée, mode
+dégradé, ou refus explicite). Les écarts vis-à-vis de `references/templates.md`
+sont consignés comme constats, sans modification du skill.
+
 ## Décisions techniques
 
 | Décision | Choix retenu | Justification |
 |----------|-------------|---------------|
+| Tests e2e (10) | « Moi comme exécuteur » + GitHub simulé | Rejouable/idempotent ; aucun effet de bord sur le compte GitHub |
 | Dépendance aux règles externes (A) | Embarquer le contenu dans `references/environment.md` | Skill auto-suffisant : cloner le dossier suffit |
 | Modes GitHub (B) | 2 comportements effectifs `github` / `local` | Privé/public identiques → pas de branche superflue |
 | Isolation du Vérificateur (C) | Sous-agent réel obligatoire (fresh agent, pas de fork) | Vraie indépendance du verdict de test |
