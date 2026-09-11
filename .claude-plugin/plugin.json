@@ -6,8 +6,5 @@
   "homepage": "https://github.com/ehouriez/roadmap-tracking",
   "repository": "https://github.com/ehouriez/roadmap-tracking",
   "license": "MIT",
-  "hooks": {
-    "claude-code": "hooks/hooks.json",
-    "codex": "hooks/codex-hooks.json"
-  }
+  "hooks": "./hooks/hooks.json"
 }

@@ -72,7 +72,7 @@ For `tests.mode: autonomous` (see `references/autonomous-tests.md`):
 
 | IDE | Sub-agent mechanism |
 |---|---|
-| **Claude Code** | `Agent` tool — fresh agent or fork |
+| **Claude Code** | `Agent` tool — **fresh agent only** (NOT a fork: a fork inherits the parent's full context and breaks Verifier isolation) |
 | **Codex** | `spawn_agent` with `developer_instructions` (see `codex-rs/agent-roles/`) |
 | **Fallback** | No real sub-agent → use `inline` honest self-check |
 

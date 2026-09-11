@@ -415,6 +415,28 @@ local) ; `github-issues.md` (préfixe « mode github uniquement ») ; `roadmap-f
 `hooks` dans `.claude-plugin/plugin.json` ; mise à jour `README.md` (hook embarqué
 + interrupteur, remplace la section opt-in). *Dépend des étapes 1-6.*
 
+**✅ Étape 9 — Correctifs post-audit** `(M · standard → Sonnet)`
+Corrige les écarts relevés dans `000-roadmap-tracking-agnostic-autonomy-plugin-AUDIT.md`.
+*Dépend des étapes 1-8. À exécuter avant les tests obligatoires.*
+
+- **[Critique] `.claude-plugin/plugin.json` — clé `hooks` au format invalide.**
+  Le format `{ "claude-code": …, "codex": … }` fait échouer `claude plugin
+  validate` (`unknown hook event; entry ignored at runtime`) → les hooks sont
+  **ignorés au runtime**, axe E non fonctionnel. Corriger avec le format
+  reconnu par Claude Code (référence au fichier `hooks/hooks.json` embarquant
+  l'événement `SessionStart`). Le fichier `hooks/codex-hooks.json` reste dans
+  le repo comme artefact Codex documenté (README), mais n'est **plus référencé**
+  dans `plugin.json` (manifest Claude Code) pour ne pas déclencher de warning.
+- **[Mineur] Vérification du hook Codex.** Confirmer le format `sessionStart` +
+  `context: inject` de `hooks/codex-hooks.json` en source/doc Codex (exigé par
+  la note « Reprise après /clear » L33-35 du plan). Signaler si non vérifiable.
+- **[Mineur] Cohérence de version.** Aligner `SKILL.md` (`metadata.version`) sur
+  `2.0.0` (déjà porté par `plugin.json` et `README.md`).
+- **[Mineur] Isolation du Vérificateur.** `references/environment.md` : retirer
+  « fork » du mécanisme de sous-agent Claude Code (un fork hérite du contexte
+  parent → casse l'isolation exigée par l'axe C). Ne conserver que « fresh
+  agent » réellement isolé.
+
 **Étape 🧪 Tests** *(obligatoire)*
 
 > **Procédure complète — à exécuter avant l'étape ✅ Validation.**
@@ -593,13 +615,14 @@ echo "=== Check Plugin JSON Hooks Key ==="
 cat .claude-plugin/plugin.json
 ```
 
-**Attendu** :
+**Attendu** (format Claude Code reconnu — chemin string, PAS un objet
+`{claude-code, codex}` qui serait ignoré au runtime) :
 ```json
-"hooks": {
-  "claude-code": "hooks/hooks.json",
-  "codex": "hooks/codex-hooks.json"
-}
+"hooks": "./hooks/hooks.json"
 ```
+`hooks/codex-hooks.json` reste sur disque (artefact Codex) mais **n'est pas
+déclaré** dans le manifest. Vérifier en complément que `claude plugin validate .`
+passe **sans warning** `unknown hook event`.
 
 ---
 
@@ -759,3 +782,31 @@ références.
 - Vérifier absence de double injection règle perso + hook
 
 **🚧 Blocages** : aucun.
+
+### Session 2026-09-11 (bis) — Audit + correctifs (Étape 9)
+
+**Modèle actif** : Claude Opus 4.8 (1M context) — tier `reasoning`
+
+**Audit** : rapport d'écarts complet écrit dans
+`000-roadmap-tracking-agnostic-autonomy-plugin-AUDIT.md` — 5/8 étapes conformes,
+1 écart critique (plugin.json), 3 écarts mineurs.
+
+**✅ Correctifs appliqués** :
+- **[Critique]** `.claude-plugin/plugin.json` : clé `hooks` corrigée en
+  `"./hooks/hooks.json"` (format string reconnu ; format vérifié via doc Claude
+  Code). `claude plugin validate .` → **Validation passed**, plus aucun warning.
+  `hooks/codex-hooks.json` conservé mais non déclaré dans le manifest.
+- **[Mineur]** `SKILL.md` `metadata.version` → `2.0.0`.
+- **[Mineur]** `references/environment.md` : « fork » retiré du mécanisme
+  sous-agent Vérificateur (isolation axe C préservée — fresh agent uniquement).
+
+**⚠️ Non vérifié** : format du hook Codex (`sessionStart` + `context: inject`
+dans `codex-hooks.json`) — pas d'accès fiable à la source Codex dans cette
+session. Reste spéculatif, sans impact sur Claude Code. À confirmer côté Codex
+avant usage réel.
+
+**📋 Prochain** : ré-exécuter la grille de tests 🧪 (T1 repasse ✅ ; corriger
+l'angle mort du test T7 qui validait le format `hooks` erroné), puis
+✅ Validation.
+
+**🚧 Blocages** : aucun (le point Codex est signalé, non bloquant).
