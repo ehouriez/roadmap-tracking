@@ -16,6 +16,9 @@ Backlog consolidé : plans nommés d'après leur issue GitHub (voir `doc/roadmap
 - **[Issue: #4] `#4` — Format tableau obligatoire pour tous les rapports** 🟢 — Bug : listing des plans en format clé-valeur au lieu de tableau markdown.
   [`4-roadmap-tracking-rapport-format-tableau.md`](4-roadmap-tracking-rapport-format-tableau.md)
 
+- **[Issue: #5] `#5` — Proposition autonomous + re-jeu gate modèle** 🟢 — Bugs : mode manual imposé alors que l'agent peut tester ; gate modèle non rejouée au changement de modèle.
+  [`5-roadmap-tracking-autonomous-proposal-model-gate-replay.md`](5-roadmap-tracking-autonomous-proposal-model-gate-replay.md)
+
 ---
 
 ## Fait
