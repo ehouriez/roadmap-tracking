@@ -860,6 +860,11 @@ references/*`, confirmer l'absence de double injection règle+hook, clôturer.
 
 ## Étape 10 — Tests e2e d'installation fraîche (black-box)
 
+> **↪️ Promue en plan autonome #2.** Cette suite e2e est désormais suivie comme
+> le plan `2-roadmap-tracking-tests-e2e-autonomes.md` (issue #2). Les corrections
+> des findings sont suivies dans le plan #3 (issue #3). La section ci-dessous
+> reste comme trace historique du cadrage initial.
+
 **Objectif.** Vérifier que l'expérience *end-to-end* du skill publié
 (`github.com/ehouriez/roadmap-tracking`) fonctionne pour un utilisateur qui le
 découvre, sans configuration ni historique. Test **black-box** : on ne touche
