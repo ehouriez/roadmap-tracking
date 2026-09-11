@@ -369,7 +369,7 @@ Ordonnées par dépendance. Tag `(taille · tier → modèle)` : modèle résolu
 l'environnement actif (Claude Code → `standard`=Sonnet, `reasoning`=Opus). Les
 étapes 🧪 Tests et ✅ Validation ne portent pas de tag (obligatoires).
 
-**Étape 1 — `references/environment.md` (socle transverse)** `(L · reasoning → Opus)`
+**✅ Étape 1 — `references/environment.md` (socle transverse)** `(L · reasoning → Opus)`
 Créer le fichier : mapping actions génériques → `Claude Code | Codex | Fallback`
 (changer de modèle, poser une question, sortir du mode plan, détecter le modèle
 actif) ; taxonomie des tiers + défauts Anthropic ; section « Formatage des
@@ -377,39 +377,39 @@ commandes opérateur » (axe A, contenu embarqué) ; mécanisme de persona-switc
 sous-agent (axe C) ; schéma complet `.skill-config.yml` ; procédure de détection
 d'environnement. *Fondation des étapes 3-6.*
 
-**Étape 2 — `references/autonomous-tests.md` (boucle autonome)** `(L · reasoning → Opus)`
+**✅ Étape 2 — `references/autonomous-tests.md` (boucle autonome)** `(L · reasoning → Opus)`
 Créer le fichier : contrat Vérificateur/Exécuteur, boucle test→fix→retest,
 garde-fou 3 itérations, format de reporting par itération, prompt système du
 Vérificateur, secours `inline` honnête. *Dépend de l'étape 1 (mécanisme).*
 
-**Étape 3 — `SKILL.md` : agnosticisme modèle/tier** `(L · reasoning → Opus)`
+**✅ Étape 3 — `SKILL.md` : agnosticisme modèle/tier** `(L · reasoning → Opus)`
 Réécrire `## Prerequisites` (axe A, plus de règle externe) ; `Matrice complexité
 → tier` ; `Résolution du modèle actif et de son tier` ; les 3 gates (1.5 / 3 /
 Phase 7) en tiers + commandes via mapping ; tags `(taille · tier → modèle)` ;
 renommer `## Compatibilité mode plan`. *Dépend de l'étape 1.*
 
-**Étape 4 — `SKILL.md` : GitHub optionnel** `(L · reasoning → Opus)`
+**✅ Étape 4 — `SKILL.md` : GitHub optionnel** `(L · reasoning → Opus)`
 Brancher `github` / `local` : Applicabilité, démarrage + détection d'ID + migration
 conditionnés github, Phase 3 (`{ID}`), Phase 5 (2 branches), clôture, listing.
 Numérotation locale max+1 + `plan.source`. *Indépendante de 3, même fichier.*
 
-**Étape 5 — `SKILL.md` : tests manuel/autonome** `(L · reasoning → Opus)`
+**✅ Étape 5 — `SKILL.md` : tests manuel/autonome** `(L · reasoning → Opus)`
 Ajouter les deux branches (manuel actuel / autonome) sur Phase 7, tests
 intermédiaires, `🧪 Tests`, `✅ Validation`, commit, reprise ; suppression de
 l'étape 0 en autonome ; `⏸️` de clôture après `PASS`. *Dépend de l'étape 2.*
 
-**Étape 6 — `SKILL.md` : offre de création `doc/roadmap/`** `(S · standard → Sonnet)`
+**✅ Étape 6 — `SKILL.md` : offre de création `doc/roadmap/`** `(S · standard → Sonnet)`
 Section Applicabilité / Règle de démarrage : si le skill est invoqué sans
 `doc/roadmap/`, proposer de le créer (question) puis dérouler le workflow (axe E,
 cas 2). *Indépendante.*
 
-**Étape 7 — Fichiers de référence restants** `(M · standard → Sonnet)`
+**✅ Étape 7 — Fichiers de référence restants** `(M · standard → Sonnet)`
 `templates.md` (front matter nullable + `plan.source`, tags tier, `plan.link`
 local) ; `github-issues.md` (préfixe « mode github uniquement ») ; `roadmap-file.md`
 (entrée `[Plan: {id}]` locale) ; `forms.md` (fallback texte pour `AskUserQuestion`) ;
 `migration.md` (note github uniquement). *Dépend des étapes 3-5 (cohérence).*
 
-**Étape 8 — Packaging plugin (axe E)** `(M · standard → Sonnet)`
+**✅ Étape 8 — Packaging plugin (axe E)** `(M · standard → Sonnet)`
 `hooks/hooks.json` (SessionStart Claude) + variante Codex (`sessionStart`) avec
 `test -d doc/roadmap` + injection consigne + interrupteur `AUTOSTART` ; ajout clé
 `hooks` dans `.claude-plugin/plugin.json` ; mise à jour `README.md` (hook embarqué
@@ -424,3 +424,51 @@ dans la logique) ; matrice de modes (manuel/autonome × github/local).
 **Étape ✅ Validation** *(obligatoire)*
 Vérifier les résultats des tests, relire les renvois croisés `SKILL.md ↔
 references/*`, confirmer l'absence de double injection règle+hook, clôturer.
+
+---
+
+## Journal de session
+
+### Session 2026-09-11
+
+**Modèle actif** : Claude Sonnet 4.6 (1M context) — tier `standard`
+
+**✅ Fait** : étapes 1 à 8 complètes.
+
+- **Étape 1** : `references/environment.md` créé — mapping IDE, tiers+défauts
+  Anthropic, persona-switch, schéma `.skill-config.yml`, procédure de détection,
+  section « Operator Commands Formatting » embarquée (axe A).
+- **Étape 2** : `references/autonomous-tests.md` créé — boucle Exécuteur/Vérificateur,
+  garde-fou 3 itérations, format de reporting, prompt système Vérificateur,
+  fallback inline honnête.
+- **Étapes 3-6** : `SKILL.md` modifié en 26 édits chirurgicaux —
+  Prerequisites auto-suffisants, matrice → tier, tags `(taille·tier→modèle)`,
+  gates avec tiers et commandes IDE génériques, Phase 5 deux branches
+  github/local avec compteur local max+1 + `plan.source`, guards github-only
+  sur ID detection et migration, branches manual/autonomous sur step 0, tests
+  intermédiaires, 🧪 Tests, ✅ Validation et reprise, offre création
+  `doc/roadmap/` absente.
+- **Étape 7** : 5 fichiers de référence mis à jour — `templates.md` (front
+  matter nullable + `plan.source` + deux exemples github/local + tag format
+  tier), `github-issues.md` et `migration.md` (guard mode github uniquement),
+  `roadmap-file.md` (exemple `[Plan: {id}]` local), `forms.md` (fallback texte
+  AskUserQuestion).
+- **Étape 8** : `hooks/hooks.json` (Claude Code SessionStart + interrupteur
+  `AUTOSTART`) + `hooks/codex-hooks.json` (Codex sessionStart) créés,
+  `.claude-plugin/plugin.json` mis à jour (clé `hooks`, version 2.0.0),
+  `README.md` réécrit (features v2.0.0, hook embarqué, warning double injection,
+  config optionnelle).
+
+**grep anti-adhérence** : aucune référence résiduelle à `operator-commands-formatting.md`
+ni à l'ancien format de tag `(· Sonnet)` / `(· Opus)` dans `SKILL.md` et les
+références.
+
+**📋 Prochain** : étapes 🧪 Tests et ✅ Validation à exécuter :
+- `claude plugin validate .`
+- Walkthrough rétrocompat (absent config + CC + gh = v1.3.x)
+- Scénario local + autonome
+- Hook présent/absent + `AUTOSTART=off`
+- Relecture croisée `SKILL.md ↔ references/*`
+- Vérifier absence de double injection règle perso + hook
+
+**🚧 Blocages** : aucun.
