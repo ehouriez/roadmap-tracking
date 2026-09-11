@@ -42,7 +42,7 @@ l'instruction de listing.
 
 ## Étapes
 
-- [ ] Étape 1 — Ajouter la règle `⛔ Règle absolue — format des rapports` dans `SKILL.md` (XS · standard → Sonnet)
+- [x] Étape 1 — Ajouter la règle `⛔ Règle absolue — format des rapports` dans `SKILL.md` (XS · standard → Sonnet)
 - [ ] Étape 2 — Renforcer l'instruction de listing (Règle de démarrage) avec interdiction explicite du format `clé: valeur` (XS · standard → Sonnet)
 - [ ] 🧪 Tests — Rédiger et exécuter la procédure de test
 - [ ] ✅ Validation — Vérifier les résultats et clôturer
@@ -53,6 +53,35 @@ l'instruction de listing.
 |----------|-------------|---------------|
 | Emplacement de la règle transverse | Nouvelle section `⛔ Règle absolue — format des rapports` juste avant les autres règles absolues | Cohérence avec les autres règles absolues du skill ; visibilité maximale |
 | Formulation de l'interdiction | `⛔ Interdit : format clé: valeur, listes séparées par ───, puces non structurées` | Précis sur les formats observés en production |
+
+## Tests
+
+### Procédure de test
+
+```bash
+echo "=== Check New Absolute Rule Section Exists ==="
+grep -c "## ⛔ Règle absolue — format des rapports" SKILL.md
+
+echo "=== Check Table Format Is Mandated ==="
+grep -c "DOIT être rendu sous forme de tableau markdown" SKILL.md
+
+echo "=== Check Key-Value Format Is Forbidden ==="
+grep -c "Interdit : format \`clé: valeur\`" SKILL.md
+
+echo "=== Check Section Precedes Other Absolute Rules ==="
+awk '/## ⛔ Règle absolue/{print NR": "$0}' SKILL.md | head -1
+```
+
+**Résultats attendus :** section présente (count=1), format tableau imposé (count=1), format `clé: valeur` interdit (count=1), et la 1ʳᵉ règle absolue du fichier est « format des rapports ».
+
+### Résultats joués et vérifiés
+
+| Date | Test | Attendu | Observé | Verdict |
+|------|------|---------|---------|---------|
+| 2026-09-11 | Étape 1 — section existe | count=1 | 1 | ✅ PASS |
+| 2026-09-11 | Étape 1 — format tableau imposé | count=1 | 1 | ✅ PASS |
+| 2026-09-11 | Étape 1 — format `clé: valeur` interdit | count=1 | 1 | ✅ PASS |
+| 2026-09-11 | Étape 1 — 1ʳᵉ règle absolue = format rapports | ligne 198 | ligne 198 | ✅ PASS |
 
 ## Journal de session
 

@@ -195,6 +195,19 @@ Poser un choix à **3 options** via `AskUserQuestion` :
    Si le dry-run signale une anomalie, **ne pas** lancer la migration : la
    remonter à l'utilisateur.
 
+## ⛔ Règle absolue — format des rapports
+
+```
+⛔ Tout rapport listant des plans, étapes, résultats ou entrées structurées
+   (listing des plans, résumés, tableaux de décisions, résultats de tests)
+   DOIT être rendu sous forme de tableau markdown (`| … | … |`).
+
+⛔ Interdit : format `clé: valeur` sur plusieurs lignes, listes séparées par
+   des filets (`───`, `═══`), puces non structurées en remplacement d'un
+   tableau. Les exemples de tableau du skill sont des GABARITS CONTRAIGNANTS,
+   pas des suggestions.
+```
+
 ## ⛔ Règle absolue — séparation création / implémentation
 
 La **création d'un plan** et l'**implémentation de son contenu** sont TOUJOURS
