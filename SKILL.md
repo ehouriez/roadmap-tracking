@@ -1110,3 +1110,11 @@ templates de tests ci-dessus.
 > Si un plan repris ne contient pas encore les étapes `🧪 Tests` / `✅ Validation`
 > (plan antérieur à cette convention), **les ajouter** comme deux dernières
 > étapes avant de poursuivre.
+
+> Si un plan repris ne contient pas encore de section `## Tests` (plan antérieur
+> à cette convention), **la créer à la volée** — vide — dès la première étape de
+> tests jouée (voir `references/templates.md` pour sa structure), puis y
+> consigner procédure, résultats attendus et résultats vérifiés comme l'exige la
+> règle « ⛔ traçabilité des tests dans le fichier plan ». Ne pas éditer
+> rétroactivement les plans déjà `done` : la section n'est créée que sur un plan
+> effectivement repris et travaillé.
