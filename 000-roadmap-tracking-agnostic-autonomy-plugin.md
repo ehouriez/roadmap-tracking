@@ -416,10 +416,297 @@ local) ; `github-issues.md` (préfixe « mode github uniquement ») ; `roadmap-f
 + interrupteur, remplace la section opt-in). *Dépend des étapes 1-6.*
 
 **Étape 🧪 Tests** *(obligatoire)*
-`claude plugin validate .` ; `claude --plugin-dir .` ; walkthrough rétrocompat
-(Claude Code + GitHub sans config = v1.3.0) ; scénario local + autonome ; hook
-présent/absent + `AUTOSTART=off` ; `grep` anti-adhérence (aucun modèle versionné
-dans la logique) ; matrice de modes (manuel/autonome × github/local).
+
+> **Procédure complète — à exécuter avant l'étape ✅ Validation.**
+> Chaque test produit un résultat à reporter dans le Journal de session.
+> Tous les tests sont exécutés dans le répertoire
+> `/mnt/c/INETUM/AGV/agv-adm/GIT_GITHUB/skills/roadmap-tracking/`.
+
+---
+
+### T1 — Validation du plugin
+
+**Objectif** : vérifier que `plugin.json` est syntaxiquement valide et que le
+plugin est installable.
+
+```bash
+echo "=== Validate Plugin Manifest ==="
+claude plugin validate .
+```
+
+**Résultat attendu** : sortie sans erreur (ou avertissements non bloquants
+uniquement). Un message de succès ou « Plugin is valid ».
+
+---
+
+### T2 — grep anti-adhérence (modèles versionnés + règle externe)
+
+**Objectif** : aucune référence résiduelle à un nom de modèle versionné ni à
+l'ancienne règle externe dans la logique du skill.
+
+```bash
+echo "=== Grep Versioned Model Names ==="
+grep -rn "sonnet-3\|opus-3\|haiku-3\|claude-3\|gpt-4\|(· Sonnet)\|(· Opus)" SKILL.md references/
+
+echo "=== Grep External Rule Reference ==="
+grep -rn "operator-commands-formatting" SKILL.md references/
+```
+
+**Résultat attendu** : les deux commandes retournent **zéro ligne**.
+
+---
+
+### T3 — Walkthrough rétrocompatibilité (comportement v1.3.x)
+
+**Objectif** : confirmer que l'absence de `.skill-config.yml` + Claude Code +
+`gh` disponible → comportement identique à v1.3.x (issues auto, tests manuels,
+gates sur Sonnet/Opus).
+
+**Protocole** : lecture mentale du SKILL.md, sans fichier `.skill-config.yml`
+dans `./doc/roadmap/`.
+
+1. Ouvrir `SKILL.md` et simuler mentalement un démarrage standard :
+   - Vérifier que la **Règle de démarrage** liste les plans existants.
+   - Vérifier que la **gate modèle Phase 1.5** utilise bien les tiers
+     (`standard`/`reasoning`) et non des noms versionnés.
+   - Vérifier que la **Phase 5** emprunte la branche **mode `github`** (défaut
+     sans config).
+   - Vérifier que **l'étape 0** de Phase 7 est bien présente en mode `manual`
+     (défaut).
+   - Vérifier que la **clôture** exécute `gh issue close/comment`.
+
+2. Confirmer les valeurs par défaut de `references/environment.md` :
+   ```bash
+   echo "=== Check Default Config Values ==="
+   grep -A 15 "entirely optional" references/environment.md
+   ```
+   **Attendu** : `ide: auto`, `issues.mode: auto`, `tests.mode: manual`.
+
+**Résultat attendu** : toutes les vérifications passent — comportement v1.3.x
+préservé sans config.
+
+---
+
+### T4 — Scénario mode `local` (Phase 5 + templates)
+
+**Objectif** : la branche `local` de Phase 5 est correctement implémentée et
+`templates.md` contient le front matter nullable + `plan.source`.
+
+1. Lire la **Phase 5 branche `local`** dans `SKILL.md` :
+   ```bash
+   echo "=== Read Phase 5 Local Branch ==="
+   grep -A 20 "Mode \`local\`" SKILL.md | head -30
+   ```
+   **Attendu** :
+   - Calcul ID = `max(préfixes numériques) + 1`.
+   - `plan.source: local` dans le front matter.
+   - `issue.id: null` / `issue.url: null`.
+   - Mise à jour `roadmap.md` avec `[Plan: {id}]`.
+
+2. Vérifier `references/templates.md` :
+   ```bash
+   echo "=== Check Templates Local Front Matter ==="
+   grep -n "plan\.source\|plan\.link\|issue\.id.*null\|issue\.url.*null" references/templates.md
+   ```
+   **Attendu** : présence de `plan.source`, `plan.link` chemin relatif en mode
+   local, `issue.id: null`, `issue.url: null`.
+
+3. Vérifier `references/roadmap-file.md` :
+   ```bash
+   echo "=== Check Roadmap File Local Entry ==="
+   grep -n "\[Plan:" references/roadmap-file.md
+   ```
+   **Attendu** : au moins une ligne montrant `[Plan: {id}]`.
+
+---
+
+### T5 — Scénario mode `autonomous` (Phase 7)
+
+**Objectif** : la branche `autonomous` de Phase 7 supprime l'étape 0 et pointe
+vers `references/autonomous-tests.md`.
+
+```bash
+echo "=== Check Autonomous Branch Phase 7 ==="
+grep -n "autonomous\|étape 0.*supprimée\|autonomous-tests" SKILL.md | head -20
+```
+
+**Attendu** :
+- En mode `autonomous` : l'étape 0 (sélection tests intermédiaires) est
+  **supprimée** ou marquée non applicable.
+- Le renvoi vers `references/autonomous-tests.md` est présent.
+- Le `📦 Commit proposé` n'apparaît qu'après `PASS` (jamais exécuté).
+
+Vérifier le contenu de `references/autonomous-tests.md` :
+```bash
+echo "=== Check Autonomous Tests Reference ==="
+grep -n "PASS\|FAIL\|Vérificateur\|Exécuteur\|max_iterations\|inline\|subagent" references/autonomous-tests.md | head -20
+```
+**Attendu** : présence de la boucle, du garde-fou 3 itérations, du prompt
+Vérificateur, et du fallback `inline` honnête.
+
+---
+
+### T6 — Hook `SessionStart` présent et silencieux
+
+**Objectif** :
+- (T6a) Le hook injecte la consigne quand `doc/roadmap/` **existe**.
+- (T6b) Le hook est **silencieux** quand `doc/roadmap/` est **absent**.
+- (T6c) L'interrupteur `ROADMAP_TRACKING_AUTOSTART=off` coupe l'injection.
+
+```bash
+echo "=== Test Hook With doc/roadmap Present ==="
+mkdir -p /tmp/test-roadmap-present/doc/roadmap
+cd /tmp/test-roadmap-present
+HOOK_CMD=$(cat /mnt/c/INETUM/AGV/agv-adm/GIT_GITHUB/skills/roadmap-tracking/hooks/hooks.json | python3 -c "import sys,json; d=json.load(sys.stdin); print(d['hooks']['SessionStart'][0]['hooks'][0]['command'])")
+eval "$HOOK_CMD" && echo "OUTPUT ABOVE (should contain injection message)" || echo "EMPTY (unexpected)"
+
+echo "=== Test Hook Without doc/roadmap ==="
+cd /tmp
+HOOK_CMD2=$(cat /mnt/c/INETUM/AGV/agv-adm/GIT_GITHUB/skills/roadmap-tracking/hooks/hooks.json | python3 -c "import sys,json; d=json.load(sys.stdin); print(d['hooks']['SessionStart'][0]['hooks'][0]['command'])")
+eval "$HOOK_CMD2" && echo "EMPTY = OK (silent)" || echo "EMPTY = OK (silent)"
+
+echo "=== Test Hook With AUTOSTART=off ==="
+cd /tmp/test-roadmap-present
+ROADMAP_TRACKING_AUTOSTART=off eval "$HOOK_CMD" && echo "EMPTY = OK (disabled)" || echo "EMPTY = OK (disabled)"
+```
+
+**Résultats attendus** :
+- T6a : la commande affiche le message d'injection (roadmap-tracking skill).
+- T6b : aucune sortie (silencieux).
+- T6c : aucune sortie (interrupteur actif).
+
+Nettoyage :
+```bash
+echo "=== Cleanup Temp Dir ==="
+rm -rf /tmp/test-roadmap-present
+```
+
+---
+
+### T7 — Vérification structure `plugin.json` (clé `hooks`)
+
+**Objectif** : `.claude-plugin/plugin.json` contient bien la clé `hooks` avec
+les deux variantes Claude Code et Codex.
+
+```bash
+echo "=== Check Plugin JSON Hooks Key ==="
+cat .claude-plugin/plugin.json
+```
+
+**Attendu** :
+```json
+"hooks": {
+  "claude-code": "hooks/hooks.json",
+  "codex": "hooks/codex-hooks.json"
+}
+```
+
+---
+
+### T8 — Vérification guards `github` dans les fichiers de référence
+
+**Objectif** : `github-issues.md` et `migration.md` signalent clairement qu'ils
+ne s'appliquent qu'en mode `github`.
+
+```bash
+echo "=== Check GitHub-Only Guards ==="
+head -10 references/github-issues.md
+echo "---"
+head -10 references/migration.md
+```
+
+**Attendu** : les deux fichiers commencent (ou contiennent en tête) par un
+avertissement explicite « mode `github` uniquement ».
+
+---
+
+### T9 — Absence de double injection règle perso + hook
+
+**Objectif** : identifier si `~/.claude/rules/roadmap-tracking.md` (règle
+perso) est active en parallèle du hook embarqué — les deux ensemble causent une
+double injection.
+
+```bash
+echo "=== Check Personal Rule File ==="
+ls -la ~/.claude/rules/roadmap-tracking.md 2>/dev/null && echo "FICHIER PRÉSENT — double injection possible" || echo "ABSENT ou chemin différent"
+
+echo "=== Check Windows Path Rule File ==="
+ls -la "/mnt/c/Users/emmanuel.houriez/.claude/rules/roadmap-tracking.md" 2>/dev/null && echo "FICHIER PRÉSENT — double injection possible" || echo "ABSENT ou chemin différent"
+```
+
+**Résultat attendu** : si la règle perso **est présente** (cas probable), noter
+qu'une des deux sources doit être désactivée avant déploiement réel du plugin
+(la règle perso OU le hook embarqué, pas les deux). Ce test est informatif, il
+ne bloque pas la validation.
+
+---
+
+### T10 — Matrice de modes : vérification croisée des combinaisons
+
+**Objectif** : s'assurer que toutes les combinaisons (2 × 2 = 4) sont couvertes
+sans divergence dans `SKILL.md`.
+
+Lire les sections Phase 5, Phase 7, clôture pour chaque combinaison :
+
+```bash
+echo "=== Check All Mode Combinations Coverage ==="
+grep -n "mode \`github\`\|mode \`local\`\|mode \`manual\`\|mode \`autonomous\`\|Mode \`github\`\|Mode \`local\`\|Mode \`manual\`\|Mode \`autonomous\`" SKILL.md
+```
+
+**Attendu** : chaque combinaison (github+manual, github+autonomous, local+manual,
+local+autonomous) est mentionnée ou couverte par les branches conditionnelles.
+
+---
+
+### T11 — Relecture croisée `SKILL.md ↔ references/*`
+
+**Objectif** : tous les renvois `SKILL.md → references/*.md` pointent vers des
+sections qui existent réellement.
+
+```bash
+echo "=== Extract All References Cross-Links ==="
+grep -n "references/" SKILL.md
+```
+
+Pour chaque fichier mentionné, vérifier qu'il existe et que la section
+référencée (§ ou titre) est présente :
+
+```bash
+echo "=== List All Reference Files ==="
+ls references/
+
+echo "=== Check Environment Section Headers ==="
+grep "^##" references/environment.md
+
+echo "=== Check Autonomous Tests Section Headers ==="
+grep "^##" references/autonomous-tests.md
+
+echo "=== Check Templates Section Headers ==="
+grep "^##" references/templates.md
+```
+
+**Attendu** : tous les fichiers cités dans `SKILL.md` existent, et les sections
+§ référencées correspondent à des en-têtes `##` présents dans ces fichiers.
+
+---
+
+### Grille de résultats à reporter
+
+| Test | Description | Statut | Notes |
+|---|---|---|---|
+| T1 | `claude plugin validate .` | ⬜ | |
+| T2 | grep anti-adhérence | ⬜ | |
+| T3 | Rétrocompat v1.3.x | ⬜ | |
+| T4 | Mode `local` Phase 5 + templates | ⬜ | |
+| T5 | Mode `autonomous` Phase 7 | ⬜ | |
+| T6a | Hook présent → injection | ⬜ | |
+| T6b | Hook absent → silencieux | ⬜ | |
+| T6c | `AUTOSTART=off` → silencieux | ⬜ | |
+| T7 | `plugin.json` clé `hooks` | ⬜ | |
+| T8 | Guards `github` références | ⬜ | |
+| T9 | Double injection règle+hook | ⬜ | |
+| T10 | Matrice modes 2×2 | ⬜ | |
+| T11 | Renvois croisés `SKILL.md ↔ references/*` | ⬜ | |
 
 **Étape ✅ Validation** *(obligatoire)*
 Vérifier les résultats des tests, relire les renvois croisés `SKILL.md ↔
