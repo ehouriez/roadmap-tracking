@@ -699,9 +699,9 @@ le mode de tests :
      **proposer** (étape 2 ci-dessous).
 
 2. **Proposer via `AskUserQuestion`** (une seule fois) :
-   « Comment veux-tu exécuter les tests de ce plan ? » — 2 options :
-   - `Manuel — tu me fournis les résultats des tests que je te propose` (`manual`)
-   - `Autonome — j'exécute et vérifie les tests moi-même après chaque étape` (`autonomous`)
+   « L'environnement de test de ce projet est-il directement accessible depuis cet IDE ? » — 2 options :
+   - **Non → tests en mode `Manuel`** : je te propose les procédures de test, tu les exécutes et me transmets les résultats. (`manual`)
+   - **Oui → tests en mode `Autonome`** : un agent vérificateur indépendant (si disponible) exécute et vérifie les tests après chaque étape. (`autonomous`)
 
 3. **Persister le choix** dans `./doc/roadmap/.skill-config.yml` sous
    `tests.mode` (créer le fichier et la clé `tests:` s'ils sont absents, sans

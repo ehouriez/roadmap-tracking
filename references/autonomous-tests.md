@@ -8,10 +8,12 @@ see SKILL.md Phase 7.
 >
 > **Where the proposal happens.** When `tests.mode` is unset in
 > `./doc/roadmap/.skill-config.yml`, SKILL.md Phase 7 ("Proposition du mode de
-> tests") asks the operator to pick `manual` or `autonomous` and persists the
-> choice to the config. The signal is "config unset", never "shell access
-> detected" — Bash access is nearly always present in Claude Code and would
-> re-propose every session.
+> tests") asks the operator whether the test environment is directly accessible
+> from the IDE: **No → `manual`** (operator runs tests and reports results),
+> **Yes → `autonomous`** (an independent verifier agent runs and checks tests).
+> The choice is persisted to the config. The signal is "config unset", never
+> "shell access detected" — Bash access is nearly always present in Claude Code
+> and would re-propose every session.
 
 ---
 
