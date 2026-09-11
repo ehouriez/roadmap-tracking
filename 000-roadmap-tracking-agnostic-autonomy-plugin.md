@@ -1,4 +1,55 @@
-# Plan — `roadmap-tracking` : agnostique IDE/modèles + autonomie + plugin (axes A→E)
+---
+plan:
+  id: '0'
+  name: 000-roadmap-tracking-agnostic-autonomy-plugin.md
+  link: 000-roadmap-tracking-agnostic-autonomy-plugin.md
+  source: local
+status: done
+date: 2026-09-11
+enriched: 2026-09-11
+description: >
+  Généraliser le skill roadmap-tracking pour un partage en équipe : agnostique
+  IDE/modèles, exécution autonome des tests, GitHub optionnel, cohérence
+  transverse et packaging plugin (axes A→E), en restant rétrocompatible
+  (Claude Code + GitHub sans config) et sans sur-ingénierie.
+priority: high
+complexity: XL
+scope:
+  modules:
+    - SKILL.md
+    - references/
+    - .claude-plugin/
+    - hooks/
+    - README.md
+    - scripts/
+issue:
+  id: null
+  url: null
+---
+
+# [🧩] Plan #0 - roadmap-tracking : agnostique IDE/modèles + autonomie + plugin (axes A→E)
+
+## Objectif
+
+Généraliser le skill `roadmap-tracking` en vue d'un partage dans l'équipe : le
+rendre agnostique IDE / fournisseur de modèles et lui ajouter cinq axes (zéro
+dépendance externe, GitHub optionnel, exécution autonome des tests, cohérence
+transverse, hook + packaging plugin), tout en restant rétrocompatible avec
+Claude Code + GitHub sans configuration.
+
+## Périmètre
+
+### Inclus
+- Axe A — zéro dépendance aux règles externes (contenu embarqué).
+- Axe B — gestion GitHub optionnelle (modes `github` / `local`).
+- Axe C — exécution autonome des tests (boucle Exécuteur/Vérificateur).
+- Axe D — configuration unique `.skill-config.yml`.
+- Axe E — déclenchement par hook `SessionStart` + packaging plugin.
+
+### Hors scope
+- Tier `light` / Haiku pour la planification.
+- Verrou distribué pour la numérotation locale (git arbitre au merge).
+- IDE hors Claude Code / Codex (fallback texte uniquement).
 
 > ⚠️ **Ambiguïté à confirmer (déploiement Codex).** `plugin-json-spec.md:215`
 > note que la validation du scaffold marketplace rejette le champ `hooks` dans
@@ -370,7 +421,7 @@ le modèle).
   le skill propose de créer `doc/roadmap/`. Interrupteur `AUTOSTART=off` → pas
   d'injection. Vérifier l'absence de double injection règle perso + hook.
 
-## Étapes d'implémentation
+## Étapes
 
 Ordonnées par dépendance. Tag `(taille · tier → modèle)` : modèle résolu sur
 l'environnement actif (Claude Code → `standard`=Sonnet, `reasoning`=Opus). Les
@@ -798,6 +849,17 @@ Vérifier les résultats des tests, relire les renvois croisés `SKILL.md ↔
 references/*`, confirmer l'absence de double injection règle+hook, clôturer.
 
 ---
+
+## Décisions techniques
+
+| Décision | Choix retenu | Justification |
+|----------|-------------|---------------|
+| Dépendance aux règles externes (A) | Embarquer le contenu dans `references/environment.md` | Skill auto-suffisant : cloner le dossier suffit |
+| Modes GitHub (B) | 2 comportements effectifs `github` / `local` | Privé/public identiques → pas de branche superflue |
+| Isolation du Vérificateur (C) | Sous-agent réel obligatoire (fresh agent, pas de fork) | Vraie indépendance du verdict de test |
+| Garde-fou d'itérations (C) | Max 3 par défaut, surchargeable | Borne coût/temps sans brider l'autonomie utile |
+| Configuration (D) | Un seul `.skill-config.yml` optionnel | Défauts par détection = rétrocompat v1.3.0 |
+| Distribution (E) | Plugin + hook `SessionStart` embarqué | Sort le déclencheur des prérequis externes |
 
 ## Journal de session
 
