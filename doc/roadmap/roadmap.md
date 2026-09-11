@@ -16,6 +16,9 @@ Backlog consolidé : plans nommés d'après leur issue GitHub (voir `doc/roadmap
 - **[Issue: #4] `#4` — Format tableau obligatoire pour tous les rapports** 🟢 — Bug : listing des plans en format clé-valeur au lieu de tableau markdown.
   [`4-roadmap-tracking-rapport-format-tableau.md`](4-roadmap-tracking-rapport-format-tableau.md)
 
+- **[Issue: #7] `#7` — Résolution tests.mode non-sautable dans la garde d'entrée** 🟢 — Bug : la proposition manual/autonomous n'est pas dans la checklist pré-action, donc contournable.
+  [`7-roadmap-tracking-tests-mode-garde-entree.md`](7-roadmap-tracking-tests-mode-garde-entree.md)
+
 
 ---
 
