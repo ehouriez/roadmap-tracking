@@ -3,13 +3,24 @@
 A Claude Code skill (packaged as a plugin) to **frame, plan, track and trace**
 any development, configuration or architecture request through:
 
-- plan files in `./doc/roadmap/{issue}-slug.md` (named after the linked GitHub issue),
+- plan files in `./doc/roadmap/{id}-slug.md`,
 - a consolidated backlog in `./doc/roadmap/roadmap.md`,
-- linked GitHub issues.
+- linked GitHub issues *(optional — local mode available)*.
 
-It drives a strict **7-phase workflow** — silent analysis, interactive scoping,
-plan proposal, validation, plan/issue/roadmap creation, validation, then
-step-by-step implementation — with hard stop points between planning and coding.
+Drives a strict **7-phase workflow** — silent analysis, interactive scoping,
+plan proposal, validation, plan creation, validation, then step-by-step
+implementation — with hard stop points between planning and coding.
+
+## Key features (v2.0.0)
+
+| Feature | Description |
+|---|---|
+| **Multi-IDE** | Claude Code, Codex, or any IDE (fallback text mode) |
+| **IDE-agnostic tiers** | Reasons in `standard`/`reasoning` tiers, not model versions |
+| **GitHub optional** | `issues.mode: github` (default) or `local` (counter-based IDs, no `gh` needed) |
+| **Autonomous tests** | `tests.mode: autonomous` — Executor/Verifier loop with real sub-agents |
+| **Self-contained** | No external rule files needed — all formatting rules embedded |
+| **Embedded hook** | `SessionStart` hook fires automatically when `doc/roadmap/` exists |
 
 ## Install
 
@@ -19,39 +30,64 @@ step-by-step implementation — with hard stop points between planning and codin
 /reload-plugins
 ```
 
-The skill is then invoked as `/roadmap-tracking:roadmap-tracking` (plugin skills
-are always namespaced). It is also model-invoked automatically when a task
-matches its description (a dev/config/architecture request, a reference to an
-existing plan, or on demand).
+The skill is then available as `/roadmap-tracking:roadmap-tracking` and is also
+model-invoked automatically when a task matches its description.
 
-## Optional: auto-trigger at session start
+## Auto-trigger at session start
 
-By default the skill is invoked by the model when relevant, or on demand. If you
-want it to run its startup rule **unconditionally at the first prompt** of every
-session in a project that has a `doc/roadmap/` directory, add a `SessionStart`
-hook to your own configuration.
+The plugin ships with an **embedded `SessionStart` hook** that fires
+automatically when `doc/roadmap/` exists in the current project. No manual
+configuration needed.
 
-Create `hooks/hooks.json` (in your `.claude/` or in a personal plugin):
+The hook injects a short instruction at session start. The model then invokes
+the skill before handling the first prompt.
 
-```json
-{
-  "hooks": {
-    "SessionStart": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "test -d ./doc/roadmap && printf 'This project has doc/roadmap/. Before handling the first prompt, invoke the roadmap-tracking skill to run its startup rule (list plans, detect inconsistent IDs). On any reference to an existing plan, follow its resume workflow. On a new dev/config/architecture request, follow its new-plan workflow.' || true"
-          }
-        ]
-      }
-    ]
-  }
-}
+### Disable the hook
+
+Set `ROADMAP_TRACKING_AUTOSTART=off` in your environment to suppress the
+injection while keeping the plugin active:
+
+```bash
+export ROADMAP_TRACKING_AUTOSTART=off
 ```
 
-This is intentionally **opt-in**: it fires on every session and is a personal
-preference, not shipped enabled in the plugin.
+### Double-injection warning
+
+If you also have a personal rule `~/.claude/rules/roadmap-tracking.md` that
+triggers the skill, you will get **duplicate injection**. Remove one of the
+two:
+- Keep the personal rule → remove the plugin hook (set `AUTOSTART=off`).
+- Keep the embedded hook → remove the personal rule.
+
+## Hooks
+
+| IDE | File | Event |
+|---|---|---|
+| Claude Code | `hooks/hooks.json` | `SessionStart` |
+| Codex | `hooks/codex-hooks.json` | `sessionStart` |
+
+Codex: the hook must be validated via `/hooks` before it takes effect
+(`allow_managed_hooks_only`). This is a one-time manual step.
+
+## Configuration (optional)
+
+All behavior has sensible defaults. Customize via `./doc/roadmap/.skill-config.yml`:
+
+```yaml
+ide: auto                 # auto | claude-code | codex
+models:
+  map:
+    - { name: gpt-5,      tier: reasoning }
+    - { name: gpt-5-mini, tier: standard }
+issues:
+  mode: auto              # auto | github | local
+tests:
+  mode: manual            # manual | autonomous
+  max_iterations: 3
+  verifier: auto          # auto | subagent | inline
+```
+
+Absent config + Claude Code + `gh` present = v1.3.x behavior (full retrocompat).
 
 ## Local development
 

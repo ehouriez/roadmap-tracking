@@ -1,5 +1,10 @@
 # Gestion des issues GitHub
 
+> **Mode `github` uniquement.** Ce fichier ne s'applique pas en mode `local`
+> (`issues.mode: local` dans `.skill-config.yml`, ou détection automatique sans
+> `gh` + remote GitHub). En mode `local`, l'ID du plan est un compteur local et
+> il n'y a pas d'issue à créer ni à fermer.
+
 Chaque plan est rattaché à une issue GitHub, et **le numéro de cette issue est
 l'identifiant du plan** (nom de fichier `{ISSUE}-slug.md`). L'issue se crée donc
 **avant** le fichier plan. L'intégration est **configurable** : elle utilise

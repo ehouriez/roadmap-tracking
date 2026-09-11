@@ -50,6 +50,17 @@ Description succincte de ce qui reste à faire.
 
 ---
 
+### [Plan: 5] Titre du plan [PRIORITÉ: MOYENNE] [Complexité: S] 🟢
+
+Plan : [`5-nom-du-plan.md`](5-nom-du-plan.md)
+
+> Utiliser `[Plan: {id}]` en mode `local` (pas d'issue GitHub) au lieu de
+> `[Issue: #NN]`. L'en-tête reste identique sinon.
+
+Description succincte de ce qui reste à faire.
+
+---
+
 ### [Issue: #34] Titre du plan [PRIORITÉ: MOYENNE] [Complexité: S] 🔴
 
 Plan : [`34-nom-du-plan.md`](34-nom-du-plan.md)

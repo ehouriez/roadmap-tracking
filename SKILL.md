@@ -38,12 +38,12 @@ architecture via des **fichiers plan**, un **roadmap.md** consolidé et des
 
 ## Prerequisites
 
-This skill requires strict compliance with the rule defined in:
-  `operator-commands-formatting.md`
-This file is located in the `rules/` directory of the operator's personal `.claude` folder (the one used by Claude Code for personal rules).
+This skill is self-contained: all required rules and environment mappings are
+embedded in `references/environment.md`. No external files needed.
 
-Toute commande manuelle présentée à l'opérateur dans le contexte de ce skill
-**doit** respecter cette règle de formatage.
+Every shell command presented for manual execution **must** follow the
+**Operator Commands Formatting** rules defined in
+`references/environment.md § Operator Commands Formatting`.
 
 ## Fichiers de référence
 
@@ -51,11 +51,13 @@ Charge-les **à la demande**, seulement quand la phase l'exige :
 
 | Fichier | Quand le lire |
 |---|---|
+| `references/environment.md` | **Toujours au démarrage** — mapping IDE, tiers, défauts, schéma config, formatage commandes |
 | `references/forms.md` | Phase 2 — construire le formulaire de cadrage interactif |
 | `references/templates.md` | Phase 5 — nommage `NNN-kebab`, front matter YAML, template de plan |
 | `references/roadmap-file.md` | Phase 5 et à chaque changement de statut — structure et tri de `roadmap.md` |
-| `references/github-issues.md` | Dès qu'une issue doit être créée ou mise à jour |
-| `references/migration.md` | Migrer d'anciens plans `NNN-*` vers l'ID = numéro d'issue (script) |
+| `references/github-issues.md` | **Mode `github` uniquement** — dès qu'une issue doit être créée ou mise à jour |
+| `references/migration.md` | **Mode `github` uniquement** — migrer d'anciens plans `NNN-*` vers l'ID = numéro d'issue |
+| `references/autonomous-tests.md` | Phase 7 avec `tests.mode: autonomous` — boucle vérif/exéc, reporting, garde-fou |
 
 ## Applicabilité
 
@@ -69,7 +71,28 @@ Il **ne s'applique PAS** pour :
 
 En cas de doute, applique le workflow.
 
+> **`doc/roadmap/` absent** : si le skill est invoqué sur un projet sans
+> répertoire `doc/roadmap/`, il ne refuse pas — il propose de le créer (voir
+> « Règle de démarrage » ci-dessous). Si l'utilisateur refuse, le workflow
+> roadmap-tracking ne s'applique pas à cette session.
+
 ## Règle de démarrage
+
+### Cas préalable : `doc/roadmap/` absent
+
+Si le répertoire `./doc/roadmap/` n'existe **pas** dans le projet courant :
+
+> « Ce projet n'a pas encore de répertoire `doc/roadmap/`. Souhaites-tu le créer
+> pour activer le suivi de plans roadmap-tracking ? (oui / non) »
+
+- **Oui** → `mkdir -p ./doc/roadmap` + initialiser `roadmap.md` → dérouler la
+  règle de démarrage standard ci-dessous.
+- **Non** → le workflow roadmap-tracking ne s'applique pas à ce projet pour
+  cette session. Traiter le prompt normalement.
+
+---
+
+### Démarrage standard (quand `doc/roadmap/` est présent)
 
 Si l'utilisateur ne référence pas un plan existant dans son premier prompt :
 
@@ -84,11 +107,19 @@ Si l'utilisateur ne référence pas un plan existant dans son premier prompt :
 | 1 | `27-nom.md` | 🟢 Active | Description (front matter ou ligne "Description") | `#27` ou ❌ Non rattachée |
 ```
 
+> **Mode `local`** : la colonne « Issue GitHub » affiche `❌ Local` pour tous les
+> plans sans issue rattachée. Les contrôles d'ID et la migration (ci-dessous) ne
+> s'appliquent qu'en mode `github`.
+
 2. **Demander** : « Souhaites-tu repartir d'un de ces plans existants (indique
    le numéro) ou créer un nouveau plan pour cette session ? »
 3. **Attendre la réponse** avant de traiter le prompt.
 
 ## Détection d'ID de plan incohérents
+
+> **Mode `github` uniquement.** En mode `local`, le contrôle `plan.id ==
+> issue.id` et la migration n'ont pas de sens — ils sont désactivés. Si le mode
+> est `local`, passer directement à la question « Nouveau plan ou reprise ? ».
 
 En listant les plans (règle de démarrage), compare pour chacun le **`plan.id`**
 au **`issue.id`** de son issue rattachée. Si au moins un plan a un `plan.id`
@@ -214,26 +245,28 @@ Deux niveaux d'évaluation reposant sur la **même grille de sizing** :
 | `L` | Transverse, nouvelle architecture ou pattern, coordination multi-composants |
 | `XL` | Conception système, impacts structurels, multiples dépendances croisées |
 
-### Matrice complexité → modèle
+### Matrice complexité → tier
 
-| Complexité | Modèle recommandé |
-|---|---|
-| `XS`, `S`, `M` | Sonnet |
-| `L`, `XL` | Opus |
+Tier résolu via `references/environment.md § Tier Taxonomy & Anthropic Defaults`.
 
-### Détection du modèle actif
+| Complexité | Tier | Défaut Anthropic |
+|---|---|---|
+| `XS`, `S`, `M` | `standard` | Sonnet |
+| `L`, `XL` | `reasoning` | Opus |
 
-Le modèle courant est donné par le prompt système (« You are powered by the
-model named … »). En dériver la **famille** :
+### Détection du modèle actif et de son tier
 
-- Nom contenant « Sonnet » → classe **Sonnet**.
-- Nom contenant « Opus » → classe **Opus**.
-- Nom contenant « Haiku » → classe **Haiku**. La matrice ne recommande jamais
-  Haiku : cette famille est donc **toujours** en mismatch, ce qui déclenche une
-  recommandation vers le modèle attendu (Sonnet pour `XS`/`S`/`M`, Opus pour
-  `L`/`XL`).
-- Sinon (famille non reconnue) → **modèle non détectable** : ne pas afficher la
-  gate, conserver uniquement les annotations par étape.
+Procédure complète et mapping : voir `references/environment.md § Model Tier
+Resolution`. Résumé :
+
+- « Sonnet » dans le nom → tier `standard`.
+- « Opus » dans le nom → tier `reasoning`.
+- « Haiku » dans le nom → tier `light` — toujours en mismatch avec la matrice.
+- Inconnu → tier non détectable : ne pas afficher la gate, conserver
+  uniquement les tags par étape.
+
+Les mappings personnalisés (`models.map` dans `.skill-config.yml`) priment
+sur les défauts Anthropic.
 
 ### Gate de recommandation de modèle
 
@@ -243,27 +276,29 @@ changé la classe de complexité, ou lors d'une reprise si les étapes restantes
 l'exigent — dans l'un des deux cas suivants selon que le modèle actif correspond
 ou non à la complexité globale (matrice).
 
-**Cas 1 — modèle adapté** (bloc `ℹ️`) → afficher, puis **continuer
+**Cas 1 — tier adapté** (bloc `ℹ️`) → afficher, puis **continuer
 normalement**, aucune action requise :
 
 ```
-ℹ️ Complexité détectée : L
-   Modèle actif : opus
+ℹ️ Complexité détectée : L → tier requis : reasoning
+   Modèle actif : opus → tier : reasoning
    → Le modèle actuel convient pour ce niveau de complexité.
 ```
 
-**Cas 2 — modèle non adapté** (bloc `⚠️`) → afficher, puis **point d'arrêt de
+**Cas 2 — tier non adapté** (bloc `⚠️`) → afficher, puis **point d'arrêt de
 bypass** (voir ci-dessous) :
 
 ```
-⚠️ Complexité détectée : L
-   Modèle actif : sonnet
-   → Je recommande `/model opus` pour ce niveau de complexité.
+⚠️ Complexité détectée : L → tier requis : reasoning
+   Modèle actif : sonnet → tier : standard
+   → Recommande un modèle de tier reasoning (ex. `/model opus`).
+      Voir references/environment.md § Generic Action Mapping pour la commande
+      exacte selon ton IDE.
 ```
 
-- **Cas inverse inclus** : modèle Opus pour une demande `XS`/`S`/`M` →
-  recommander `/model sonnet` (surqualifié = gaspillage).
-- La famille **Haiku** est toujours en mismatch (cf. matrice) → toujours Cas 2.
+- **Cas inverse inclus** : modèle reasoning pour une demande `XS`/`S`/`M` →
+  recommander un modèle `standard` (surqualifié = gaspillage).
+- Le tier **`light`** (Haiku) est toujours en mismatch (cf. matrice) → toujours Cas 2.
 
 #### Point d'arrêt de bypass (uniquement en Cas 2)
 
@@ -271,26 +306,31 @@ Juste après le bloc `⚠️`, afficher **une seule ligne de consigne**, puis
 **s'arrêter et attendre** la réponse de l'utilisateur (`⏸️`) :
 
 ```
-⏸️ Réponds `bypass` pour continuer avec le modèle actuel, ou switche avec `/model opus` puis relance.
+⏸️ Réponds `bypass` pour continuer avec le modèle actuel, ou change de modèle
+   via la commande de ton IDE (voir references/environment.md § Generic Action
+   Mapping) puis relance.
 ```
 
 - **Il s'agit d'un vrai point d'arrêt** : ne rien produire d'autre, ne pas
   enchaîner sur le plan tant que l'utilisateur n'a pas répondu.
 - Réponse **`bypass`** (ou équivalent explicite : « continue », « go ») →
   reprendre le workflow immédiatement sur le modèle actif. Le choix est assumé.
-- Choix de **changer de modèle** → l'utilisateur tape `/model <modèle>`
-  lui-même ; le changement prend effet à son **prochain message**, qui relance
-  le workflow. Ne jamais prétendre avoir changé le modèle.
+- Choix de **changer de modèle** → l'utilisateur utilise la commande de son
+  IDE ; le changement prend effet à son **prochain message**, qui relance le
+  workflow. Ne jamais prétendre avoir changé le modèle.
 
-> **Limite technique.** Le skill ne peut pas exécuter `/model` : c'est une
-> commande du CLI, aucun outil ne la déclenche. La branche « changer de
-> modèle » est donc toujours **manuelle** (arrêt + consigne + attente).
+> **Limite technique.** Le skill ne peut pas exécuter la commande de changement
+> de modèle : c'est une action IDE, aucun outil ne la déclenche. La branche
+> « changer de modèle » est donc toujours **manuelle** (arrêt + consigne + attente).
 
 ### Tag d'étape
 
 Chaque **étape d'implémentation** porte un tag compact en fin de ligne :
-`(XS · Sonnet)`, `(M · Sonnet)`, `(L · Opus)`… — taille selon la grille,
-modèle selon la matrice. Les étapes `🧪 Tests` et `✅ Validation` ne portent
+`(XS · standard → Sonnet)`, `(M · standard → Sonnet)`, `(L · reasoning → Opus)`…
+
+Format : `(taille · tier → modèle)` — taille selon la grille, tier selon la
+matrice, modèle résolu au moment de la création depuis le mapping de
+`references/environment.md`. Les étapes `🧪 Tests` et `✅ Validation` ne portent
 **jamais** de tag (obligatoires et systématiques, non sizées).
 
 ## ⛔ Garde d'entrée — checkpoint universel (OBLIGATOIRE)
@@ -438,15 +478,16 @@ Présenter le plan (chaque étape d'implémentation portant son tag
 ### 📝 Plan proposé (🧠 MODE PLAN — rien n'est encore écrit)
 
 **Issue** : Créer `#XX — Titre` ou rattacher à `#YY` (son numéro = ID du plan)
-**Fichier** : `{ISSUE}-nom-du-plan.md`
+  *(mode `github`)* — ou : **ID local** calculé en Phase 5, pas d'issue GitHub *(mode `local`)*
+**Fichier** : `{ISSUE-ou-ID}-nom-du-plan.md`
 **Priorité** : high | **Complexité** : L
 
 **Objectif** : ...
 **Périmètre** : Inclus / Hors scope
 **Étapes** :
-1. Extraire les métriques (XS · Sonnet)
-2. Implémenter le DAG de dépendances inter-plans (L · Opus)
-3. Ajouter les endpoints REST (M · Sonnet)
+1. Extraire les métriques (XS · standard → Sonnet)
+2. Implémenter le DAG de dépendances inter-plans (L · reasoning → Opus)
+3. Ajouter les endpoints REST (M · standard → Sonnet)
 4. 🧪 Tests — Rédiger et exécuter la procédure de test
 5. ✅ Validation — Vérifier les résultats et clôturer
 **Lots** (si applicable) : Lot 1 (étapes 1-3) … Lot 2 (étapes 4-6) …
@@ -477,29 +518,47 @@ Présenter le plan (chaque étape d'implémentation portant son tag
 
 > ⚠️ « oui » = autorisation de CRÉER LE PLAN, pas d'implémenter.
 
-## Compatibilité avec le mode plan de Claude Code
+## Compatibilité avec le mode plan
 
 Les phases 1→4 sont en lecture seule et se déroulent normalement en mode plan.
 La phase 5 est la première à mutier le dépôt (plan file, issue, roadmap).
 
-- Si le mode plan est actif à la fin de la phase 4 : appeler `ExitPlanMode`
-  avec le plan validé comme contenu d'approbation. Le point d'arrêt `⏸️` de la
-  phase 4 et l'approbation `ExitPlanMode` ne font alors qu'un seul gate.
-- Ne jamais tenter de `Write`/`gh`/`git` tant que le mode plan est actif.
+**Claude Code** : utiliser l'action « Exit plan mode » (`ExitPlanMode` tool)
+avec le plan validé comme contenu d'approbation. Le point d'arrêt `⏸️` de la
+phase 4 et l'approbation `ExitPlanMode` ne font alors qu'un seul gate.
+
+**Autres IDE** : voir `references/environment.md § Generic Action Mapping` pour
+l'équivalent « Exit plan mode » dans ton environnement.
+
+Ne jamais tenter de `Write`/`gh`/`git` tant que le mode plan est actif.
 
 ## Phase 5 — Act limité (création du plan)
 
 > 🔨 MODE ACT (PLAN) — écriture LIMITÉE au plan, à l'issue et au roadmap.
 
-**UNIQUEMENT et dans cet ordre** (l'issue d'abord : son numéro est l'ID du plan) :
-0. **Prérequis** : s'assurer que `./doc/roadmap/` existe (`mkdir -p ./doc/roadmap`) ; si `./doc/roadmap/roadmap.md` est absent, l'initialiser depuis la structure de `references/roadmap-file.md`.
+**UNIQUEMENT et dans cet ordre** — deux branches selon le mode `issues` détecté :
+
+#### Mode `github`
+
+0. **Prérequis** : s'assurer que `./doc/roadmap/` existe (`mkdir -p ./doc/roadmap`) ; si `./doc/roadmap/roadmap.md` est absent, l'initialiser depuis `references/roadmap-file.md`.
 1. Créer ou rattacher l'issue GitHub, récupérer son **numéro** (voir `references/github-issues.md`).
 2. Créer `./doc/roadmap/{ISSUE}-nom-du-plan.md` avec ce numéro comme ID (voir `references/templates.md`).
-3. **Mettre à jour l'issue** : maintenant que le nom du fichier est décidé, ajouter dans le corps de l'issue la référence vers le plan sous la forme `Plan: doc/roadmap/{ISSUE}-nom-du-plan.md` (voir `references/github-issues.md`).
-4. Mettre à jour `./doc/roadmap/roadmap.md` (voir `references/roadmap-file.md`).
+3. **Mettre à jour l'issue** : ajouter `Plan: doc/roadmap/{ISSUE}-nom-du-plan.md` au début du corps de l'issue (voir `references/github-issues.md`).
+4. Mettre à jour `./doc/roadmap/roadmap.md` avec `[Issue: #NN]` (voir `references/roadmap-file.md`).
 
 > Si aucune issue ne peut être créée maintenant, utiliser le fallback
 > `draft-nom.md` décrit dans `references/templates.md`, à renommer plus tard.
+
+#### Mode `local`
+
+0. **Prérequis** : s'assurer que `./doc/roadmap/` existe (`mkdir -p ./doc/roadmap`) ; si `./doc/roadmap/roadmap.md` est absent, l'initialiser depuis `references/roadmap-file.md`.
+1. Calculer l'**ID local** = `max(préfixes numériques de ./doc/roadmap/*.md) + 1` (entier nu, ex. `5`). Si aucun plan existant : commencer à `1`.
+2. Créer `./doc/roadmap/{ID}-nom-du-plan.md` avec `plan.source: local` dans le front matter et `issue.id: null` / `issue.url: null` (voir `references/templates.md`).
+3. Mettre à jour `./doc/roadmap/roadmap.md` avec `[Plan: {id}]` au lieu de `[Issue: #NN]` (voir `references/roadmap-file.md`).
+
+> Pas de verrou distribué sur la numérotation locale : deux créations simultanées
+> → collision de nom de fichier / conflit `roadmap.md` résolus par git au merge.
+> Documenté comme tel, pas masqué.
 
 **Interdit ici :** lire/modifier/créer du code source, lancer build/test/install,
 réfléchir à l'implémentation, proposer du code.
@@ -509,8 +568,8 @@ Puis confirme et pose le point d'arrêt :
 ```
 ### ✅ Plan créé (🔨 MODE ACT — exécuté)
 
-- 📄 Fichier créé : `./doc/roadmap/{ISSUE}-nom-du-plan.md`
-- 🔗 Issue GitHub : #XX (créée / mise à jour / manuel)
+- 📄 Fichier créé : `./doc/roadmap/{ISSUE-ou-ID}-nom-du-plan.md`
+- 🔗 Issue GitHub : #XX (créée / mise à jour / manuel) *(mode github)* — ou : ❌ Local (ID {n}) *(mode local)*
 - 📋 roadmap.md : mis à jour
 
 ---
@@ -557,22 +616,24 @@ l'alignement du modèle sur la **séquence d'étapes demandée** (pas étape par
 étape) :
 
 1. Parmi les **étapes d'implémentation** à exécuter (exclure `🧪 Tests` et
-   `✅ Validation`), retenir le **modèle le plus exigeant** d'après leurs tags
-   `(taille · modèle)` — Opus prime sur Sonnet.
-2. Comparer au modèle actif (voir « Détection du modèle actif »).
+   `✅ Validation`), retenir le **tier le plus exigeant** d'après leurs tags
+   `(taille · tier → modèle)` — `reasoning` prime sur `standard`.
+2. Comparer au tier du modèle actif (voir « Détection du modèle actif et de son
+   tier »).
 3. Appliquer la gate selon la section canonique « Gate de recommandation de
    modèle », **symétrie stricte** (mismatch dans les deux sens) :
-   - **Adapté** (modèle actif = exigence de la séquence) → bloc `ℹ️`, continuer
+   - **Adapté** (tier actif = tier requis par la séquence) → bloc `ℹ️`, continuer
      vers l'étape 0.
-   - **Sous-dimensionné** (au moins une étape exige Opus alors que le modèle
-     actif est Sonnet/Haïku) → bloc `⚠️` nommant les étapes concernées,
-     recommander `/model opus`.
-   - **Surdimensionné** (séquence entièrement Sonnet alors que le modèle actif
-     est Opus) → bloc `⚠️`, recommander `/model sonnet` (surqualifié =
-     gaspillage).
+   - **Sous-dimensionné** (au moins une étape exige `reasoning` alors que le tier
+     actif est `standard` ou `light`) → bloc `⚠️` nommant les étapes concernées,
+     recommander un modèle `reasoning` (voir `references/environment.md §
+     Generic Action Mapping`).
+   - **Surdimensionné** (séquence entièrement `standard` alors que le tier actif
+     est `reasoning`) → bloc `⚠️`, recommander un modèle `standard` (surqualifié
+     = gaspillage).
    - Dans les deux cas de mismatch → **point d'arrêt de bypass `⏸️`** : attendre
-     `bypass` (continuer sur le modèle actif) ou un switch manuel via `/model`
-     puis relance. Ne pas entamer l'étape 0 tant que l'utilisateur n'a pas
+     `bypass` (continuer sur le modèle actif) ou un switch manuel via la commande
+     IDE puis relance. Ne pas entamer l'étape 0 tant que l'utilisateur n'a pas
      répondu.
 
 > Une seule gate pour toute la séquence : ne pas la rejouer à chaque étape. Si
@@ -582,9 +643,15 @@ l'alignement du modèle sur la **séquence d'étapes demandée** (pas étape par
 ---
 
 0. **Sélection des tests intermédiaires (avant de commencer la 1ʳᵉ étape).**
-   Quand l'opérateur demande l'implémentation d'une ou plusieurs étapes (« Démarre
-   l'étape 3 », « Exécute les étapes 1 et 4 », « Enchaîne les étapes 3 à 7 »,
-   voire une seule étape) :
+
+   > **Mode `autonomous`** : cette étape 0 est **supprimée** — tous les tests
+   > s'exécutent après chaque étape automatiquement via la boucle
+   > Exécuteur/Vérificateur. Passer directement à l'étape 1.
+   > Voir `references/autonomous-tests.md`.
+
+   **Mode `manual`** (défaut) : quand l'opérateur demande l'implémentation
+   d'une ou plusieurs étapes (« Démarre l'étape 3 », « Exécute les étapes 1 et
+   4 », « Enchaîne les étapes 3 à 7 », voire une seule étape) :
    - Lister les **étapes d'implémentation** concernées (exclure `🧪 Tests` et
      `✅ Validation`).
    - Poser via `AskUserQuestion` (`multiSelect: true`, **toutes désélectionnées
@@ -614,13 +681,19 @@ Je commence. Tu peux m'interrompre à tout moment.
 ```
 
 2. Travailler **étape par étape**, jamais tout d'un coup.
-3. À la fin de chaque étape d'implémentation, selon la sélection de l'étape 0 :
+3. À la fin de chaque étape d'implémentation :
+
+   **Mode `manual`** — selon la sélection de l'étape 0 :
    - **Non sélectionnée** → `✅ Étape X terminée.` et enchaîner directement
      l'étape suivante, sans attendre de retour.
    - **Sélectionnée** → dérouler la **procédure de tests unitaires
      intermédiaires** (voir ci-dessous) incluant le **bloc `📦 Commit proposé`**
      obligatoire, **STOP** en attente des résultats, puis
      `✅ Étape X terminée et validée.` une fois les tests passés.
+
+   **Mode `autonomous`** → déclencher la **boucle Exécuteur/Vérificateur** définie
+   dans `references/autonomous-tests.md`. Le `📦 Commit proposé` et le `⏸️` ne
+   s'affichent qu'après un verdict `PASS`.
 4. Une fois les étapes d'implémentation (1 à N-2) terminées, dérouler
    **obligatoirement** l'étape `🧪 Tests` puis l'étape `✅ Validation` (voir
    ci-dessous). Ces deux étapes ne sont **jamais** optionnelles, que des tests
@@ -636,15 +709,18 @@ Je commence. Tu peux m'interrompre à tout moment.
 >    dernière étape et consigner la validation dans le journal de session.
 > 2. **`roadmap.md`** : déplacer l'entrée de la section « À faire » vers
 >    **« Fait »** (statut `done` 🔵).
-> 3. **Issue GitHub rattachée** : la **fermer** (`gh issue close <issue.id>`),
->    idéalement précédée d'un commentaire de clôture récapitulant ce qui a été
->    livré et validé (`gh issue comment <issue.id> --body "…"`). Voir
->    `references/github-issues.md`. Si le plan n'a pas d'issue rattachée
->    (`issue.id` absent / fallback `draft-`), sauter cette étape et le signaler.
+> 3. **Issue GitHub rattachée** *(mode `github` uniquement)* : la **fermer**
+>    (`gh issue close <issue.id>`), idéalement précédée d'un commentaire de
+>    clôture récapitulant ce qui a été livré et validé (`gh issue comment
+>    <issue.id> --body "…"`). Voir `references/github-issues.md`. Si le plan n'a
+>    pas d'issue rattachée (`issue.id` absent / fallback `draft-`), sauter et
+>    signaler.
+>    **Mode `local`** : cette étape n'existe pas — `status: done` + `roadmap.md`
+>    suffisent. Le signaler explicitement à l'utilisateur.
 >
-> Ces trois actions vont **ensemble** : `status: done` dans le plan implique une
-> entrée en « Fait » **et** une issue fermée. Ne jamais laisser une issue ouverte
-> alors que son plan est `done`.
+> Ces trois actions vont **ensemble** en mode `github` : `status: done` dans le
+> plan implique une entrée en « Fait » **et** une issue fermée. Ne jamais laisser
+> une issue ouverte alors que son plan est `done`.
 >
 > **Ne jamais** déplacer un plan validé vers `_archives/roadmap_done.md` : ce
 > fichier est un historique figé qui n'est plus utilisé. L'archivage physique
@@ -653,16 +729,19 @@ Je commence. Tu peux m'interrompre à tout moment.
 
 ## Tests unitaires intermédiaires (optionnels, par étape)
 
-Ne s'appliquent qu'aux étapes **sélectionnées** à l'étape 0 de la Phase 7. À la
-fin de l'implémentation d'une étape sélectionnée :
+> **Mode `autonomous`** : cette section ne s'applique pas. La boucle
+> Exécuteur/Vérificateur de `references/autonomous-tests.md` prend le relais.
+
+**Mode `manual`** (défaut) : ne s'applique qu'aux étapes **sélectionnées** à
+l'étape 0 de la Phase 7. À la fin de l'implémentation d'une étape sélectionnée :
 
 1. **Déterminer les tests unitaires pertinents** ciblés sur le périmètre de
    **cette étape uniquement**.
 
 2. **Rédiger une procédure de tests unitaires détaillée pas à pas** dans le plan,
    dans une section dédiée entre balises de code. Cette procédure :
-   - Respecte **intégralement** la règle `operator-commands-formatting.md`
-     (voir `## Prerequisites`).
+   - Respecte **intégralement** les règles de formatage des commandes
+     (voir `references/environment.md § Operator Commands Formatting`).
    - Inclut les commandes de vérification des résultats attendus.
    - Précise les **résultats attendus** pour chaque vérification.
 
@@ -716,7 +795,14 @@ fin de l'implémentation d'une étape sélectionnée :
 
 ## Étape 🧪 Tests (avant-dernière étape — obligatoire)
 
-Démarre lorsque les étapes d'implémentation (1 à N-2) sont terminées. Tu dois :
+> **Mode `autonomous`** : la boucle Exécuteur/Vérificateur a déjà tourné après
+> chaque étape d'implémentation. Cette étape `🧪 Tests` reste **obligatoire** —
+> elle correspond aux tests finaux E2E / non-régression, exécutés dans la même
+> boucle mais sur l'ensemble du plan. Le `⏸️` se place après le `PASS` final.
+> Voir `references/autonomous-tests.md`.
+
+**Mode `manual`** (défaut) : démarre lorsque les étapes d'implémentation (1 à
+N-2) sont terminées. Tu dois :
 
 1. **Déterminer le type de tests requis** selon cette heuristique :
    - **Tests unitaires** → modification d'une fonction, d'un service ou d'un
@@ -727,8 +813,8 @@ Démarre lorsque les étapes d'implémentation (1 à N-2) sont terminées. Tu do
 
 2. **Rédiger une procédure de test détaillée pas à pas** directement dans le
    plan, dans une section dédiée entre balises de code. Cette procédure :
-   - Respecte **intégralement** la règle `operator-commands-formatting.md`
-     (voir `## Prerequisites`).
+   - Respecte **intégralement** les règles de formatage des commandes
+     (voir `references/environment.md § Operator Commands Formatting`).
    - Inclut les commandes de vérification des résultats attendus (ex : `curl`,
      `grep`, `docker ps`, assertions visuelles, etc.).
    - Précise les **résultats attendus** pour chaque vérification (ce que
@@ -779,8 +865,13 @@ Démarre lorsque les étapes d'implémentation (1 à N-2) sont terminées. Tu do
 
 ## Étape ✅ Validation (dernière étape — obligatoire)
 
-Démarre **uniquement** lorsque l'opérateur a transmis les résultats de l'étape
-`🧪 Tests`.
+> **Mode `autonomous`** : démarre après le `PASS` final de la boucle
+> Exécuteur/Vérificateur sur les tests finaux. Le Vérificateur a déjà rendu son
+> verdict — reprendre ses résultats comme source de vérité pour la checklist de
+> clôture ci-dessous.
+
+**Mode `manual`** (défaut) : démarre **uniquement** lorsque l'opérateur a
+transmis les résultats de l'étape `🧪 Tests`.
 
 - **Si tous les tests passent** → cocher l'étape, puis enchaîner la checklist de
   clôture (plan `status: done`, `roadmap.md`, issue GitHub — voir ci-dessus).
@@ -836,7 +927,7 @@ templates de tests ci-dessus.
 ```
 ### 📋 Résumé du plan #{ISSUE}
 **Statut** : 🟢 active | **Dernière session** : YYYY-MM-DD | **Progression** : 3/7
-**Étapes restantes** : 4. [ ] Migrer le schéma (L · Opus)  5. [ ] … (M · Sonnet)
+**Étapes restantes** : 4. [ ] Migrer le schéma (L · reasoning → Opus)  5. [ ] … (M · standard → Sonnet)
 
 ---
 ⏸️ Que souhaites-tu faire ?
@@ -846,9 +937,9 @@ templates de tests ci-dessus.
 4. 📋 Voir le journal
 ```
 
-> **Gate modèle sur reprise.** Si le modèle actif est détectable et ne
-> correspond pas aux **étapes restantes** (une étape `L`/`XL` restante alors que
-> le modèle actif est de classe Sonnet, ou l'inverse), afficher la gate de
+> **Gate modèle sur reprise.** Si le modèle actif est détectable et son tier
+> ne correspond pas aux **étapes restantes** (ex. étape `L`/`XL` restante alors
+> que le tier actif est `standard`, ou l'inverse), afficher la gate de
 > recommandation (voir « Évaluation de complexité et recommandation de modèle »)
 > avant le point d'arrêt. Si le plan est antérieur à cette convention et ne
 > porte pas de tags, ne pas afficher de gate par étape.
@@ -861,10 +952,15 @@ templates de tests ci-dessus.
    les étapes restantes.
 
 4. **Transition vers Phase 7** — Si l'utilisateur choisit d'implémenter
-   (option 1) : basculer en Phase 7 **en commençant impérativement par
-   l'étape 0** (sélection des tests intermédiaires via `AskUserQuestion`).
-   Ne JAMAIS sauter l'étape 0, même si l'utilisateur a dit « démarre tout »
-   dans son prompt initial ou dans sa réponse au point d'arrêt.
+   (option 1) :
+   - **Mode `manual`** (défaut) : basculer en Phase 7 **en commençant
+     impérativement par l'étape 0** (sélection des tests intermédiaires via
+     `AskUserQuestion`). Ne JAMAIS sauter l'étape 0, même si l'utilisateur a
+     dit « démarre tout » dans son prompt initial ou dans sa réponse au point
+     d'arrêt.
+   - **Mode `autonomous`** : l'étape 0 est supprimée — basculer directement
+     à l'étape 1 de la Phase 7. La boucle Exécuteur/Vérificateur prend le
+     relais (voir `references/autonomous-tests.md`).
 
 5. 🔨 MODE ACT — exécuter étape par étape, puis dérouler **obligatoirement** les
    étapes `🧪 Tests` et `✅ Validation` (voir Phase 7) avant de clôturer, et

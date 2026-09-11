@@ -4,23 +4,26 @@
 
 Les fichiers de plan sont créés dans `./doc/roadmap/` du projet courant.
 
-- Format : `{ISSUE}-nom-du-plan.md`, où **`{ISSUE}` est le numéro de l'issue
-  GitHub rattachée** (sans `#`, sans padding). Ex. issue #27 →
-  `27-image-versioning-policy.md`.
-- L'identifiant vient donc de GitHub : **aucune numérotation manuelle**, aucun
-  scan de dossier, aucune collision possible.
+Le **préfixe numérique** vient de deux sources selon le mode `issues` :
+
+| Mode | Source de l'ID | Exemple |
+|---|---|---|
+| `github` | Numéro de l'issue GitHub rattachée | `27-image-versioning.md` |
+| `local` | Compteur local = max(préfixes existants) + 1 | `5-new-feature.md` |
+
 - Nom après le préfixe : **kebab-case**, concis et descriptif.
-- ⚠️ **L'issue doit exister avant le fichier plan** (son numéro est l'ID). Si
-  l'issue n'est pas encore créée, voir le fallback ci-dessous.
+- **Mode `github`** ⚠️ : l'issue doit exister avant le fichier plan (son numéro est l'ID). Si l'issue n'est pas encore créée, voir le fallback ci-dessous.
+- **Mode `local`** : pas de collision distribuée possible (git arbitre au merge).
 
 ```
 ./doc/roadmap/
+├── 5-new-feature.md              ← ID local (mode local)
 ├── 8-setup-initial.md
 ├── 12-auth-module.md
-└── 27-image-versioning-policy.md   ← nom = numéro d'issue GitHub
+└── 27-image-versioning-policy.md ← ID = numéro d'issue GitHub (mode github)
 ```
 
-### Fallback : plan sans issue (temporaire)
+### Fallback : plan sans issue (mode `github` temporaire)
 
 Si tu dois esquisser un plan avant de créer l'issue, nomme-le
 `draft-nom-du-plan.md`. Dès que l'issue est créée, **renomme** le fichier en
@@ -42,9 +45,10 @@ lien), et un emoji cohérent :
 
 | Attribut | Obligatoire | Description |
 |---|---|---|
-| `plan.id` | ✅ | **Numéro de l'issue GitHub**, string sans padding (ex. `'27'`). Égal à `issue.id`. |
+| `plan.id` | ✅ | Identifiant du plan — numéro d'issue GitHub *(mode `github`)* ou compteur local *(mode `local`)*. String sans padding (ex. `'27'`). |
 | `plan.name` | ✅ | Nom du fichier (ex. `27-saas-v2.md`) |
-| `plan.link` | ✅ | URL GitHub du fichier (branche `main`) |
+| `plan.link` | ✅ | URL GitHub du fichier *(mode `github`)* ou chemin relatif `doc/roadmap/{id}-slug.md` *(mode `local`)* |
+| `plan.source` | ❌ | `local` si créé en mode local (absent = mode github, rétrocompat) |
 | `status` | ✅ | `active`, `done`, `archived` ou `blocked` |
 | `date` | ✅ | Date de création (`YYYY-MM-DD`) |
 | `enriched` | ❌ | Dernière modif significative (`YYYY-MM-DD`) |
@@ -53,10 +57,12 @@ lien), et un emoji cohérent :
 | `complexity` | ✅ | `XS`, `S`, `M`, `L`, `XL` |
 | `scope.modules` | ❌ | Dossiers/fichiers principaux impactés |
 | `scope.patterns` | ❌ | Glob patterns concernés |
-| `issue.id` | ✅ | Numéro d'issue GitHub (ou `null`) |
-| `issue.url` | ✅ | URL de l'issue (ou `null`) |
+| `issue.id` | ✅ | Numéro d'issue GitHub ou `null` *(mode `local` → toujours `null`)* |
+| `issue.url` | ✅ | URL de l'issue ou `null` *(mode `local` → toujours `null`)* |
 
 ### Exemple
+
+**Mode `github`** :
 
 ```yaml
 ---
@@ -83,11 +89,33 @@ issue:
 ---
 ```
 
-> `plan.id` = `issue.id` (le numéro d'issue est l'identifiant du plan).
-> Convertir les dates relatives en dates absolues. `plan.link` et `issue.url`
-> supposent le dépôt GitHub du projet courant — dériver l'`owner/repo` via
+**Mode `local`** :
+
+```yaml
+---
+plan:
+  id: '5'
+  name: 5-new-feature.md
+  link: doc/roadmap/5-new-feature.md
+  source: local
+status: active
+date: 2026-06-14
+description: >
+  Ajouter la fonctionnalité X.
+priority: medium
+complexity: M
+issue:
+  id: null
+  url: null
+---
+```
+
+> **Mode `github`** : `plan.id` = `issue.id`. Dériver l'`owner/repo` via
 > `gh repo view --json nameWithOwner -q .nameWithOwner` ou
-> `git remote get-url origin`.
+> `git remote get-url origin`. Convertir les dates relatives en dates absolues.
+>
+> **Mode `local`** : `plan.link` est un chemin relatif, pas une URL.
+> `issue.id` et `issue.url` sont toujours `null`.
 
 ## Template de contenu
 
@@ -112,17 +140,17 @@ Pourquoi ce plan existe (1-3 phrases).
 
 ## Étapes
 
-- [ ] Étape 1 — Description succincte (XS · Sonnet)
-- [ ] Étape 2 — Description succincte (L · Opus)
+- [ ] Étape 1 — Description succincte (XS · standard → Sonnet)
+- [ ] Étape 2 — Description succincte (L · reasoning → Opus)
 - [ ] 🧪 Tests — Rédiger et exécuter la procédure de test (avant-dernière étape, obligatoire)
 - [ ] ✅ Validation — Vérifier les résultats des tests et clôturer (dernière étape, obligatoire)
 
-> Chaque étape d'implémentation porte un tag `(taille · modèle)` en fin de
-> ligne — taille selon la grille de sizing, modèle selon la matrice
-> complexité → modèle (voir la section « Évaluation de complexité et
-> recommandation de modèle » du SKILL). Ce tag est **persisté ici** pour que la
-> reprise d'un plan puisse le réafficher. Les étapes `🧪 Tests` et
-> `✅ Validation` n'en portent jamais.
+> Chaque étape d'implémentation porte un tag `(taille · tier → modèle)` en
+> fin de ligne — taille selon la grille de sizing, tier selon la matrice
+> complexité → tier, modèle résolu au moment de la création depuis le mapping
+> de `references/environment.md` (voir la section « Évaluation de complexité »
+> du SKILL). Ce tag est **persisté ici** pour que la reprise d'un plan puisse
+> le réafficher. Les étapes `🧪 Tests` et `✅ Validation` n'en portent jamais.
 
 > Les deux dernières étapes (`🧪 Tests` et `✅ Validation`) sont **obligatoires,
 > non supprimables et non fusionnables** avec une étape d'implémentation. Elles

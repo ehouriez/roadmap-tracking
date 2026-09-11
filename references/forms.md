@@ -1,7 +1,13 @@
 # Formulaire de cadrage interactif (Phase 2)
 
-Le cadrage se fait avec l'outil **`AskUserQuestion`** — des choix cliquables,
-pas un formulaire texte où l'utilisateur répond « 1a, 2c, 3ab ».
+Le cadrage se fait avec l'outil **`AskUserQuestion`** quand il est disponible
+(Claude Code, Codex) — des choix cliquables, pas un formulaire texte.
+
+**Fallback IDE sans `AskUserQuestion`** : afficher les questions en texte plain
+sous forme numérotée avec les options sous forme de liste `a) … b) … c) …`.
+Inviter l'utilisateur à répondre avec les numéros/lettres. L'option « Autre »
+doit être explicitement proposée en dernière option.
+Voir `references/environment.md § Generic Action Mapping`.
 
 ## Contraintes de l'outil et batching
 

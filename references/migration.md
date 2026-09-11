@@ -1,5 +1,9 @@
 # Migration rétroactive : NNN → numéro d'issue
 
+> **Mode `github` uniquement.** La migration repose sur le `issue.id` de chaque
+> plan. En mode `local` (pas d'issue GitHub), le contrôle `plan.id == issue.id`
+> n'a pas de sens — cette procédure ne s'applique pas.
+
 Les plans historiques nommés `NNN-slug.md` (numérotation séquentielle) se
 migrent vers `{issue}-slug.md` avec le script
 `scripts/migrate_plan_ids.py`. À lancer **dans chaque dépôt concerné**, à la
