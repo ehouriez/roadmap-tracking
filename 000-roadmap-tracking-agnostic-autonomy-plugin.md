@@ -800,13 +800,17 @@ références.
 - **[Mineur]** `references/environment.md` : « fork » retiré du mécanisme
   sous-agent Vérificateur (isolation axe C préservée — fresh agent uniquement).
 
-**⚠️ Non vérifié** : format du hook Codex (`sessionStart` + `context: inject`
-dans `codex-hooks.json`) — pas d'accès fiable à la source Codex dans cette
-session. Reste spéculatif, sans impact sur Claude Code. À confirmer côté Codex
-avant usage réel.
+**✅ Hook Codex vérifié et corrigé** : format confirmé en source `openai/codex`
+(clone `/tmp/codex-src`). Le format initial était triplement erroné
+(`sessionStart` vs `SessionStart` PascalCase ; structure sans niveau
+`{"hooks":[…]}` ; `context:"inject"` inexistant ; `printf` brut alors que
+`parse_session_start` exige un JSON `hookSpecificOutput.additionalContext`).
+`hooks/codex-hooks.json` réécrit au format correct ; command vérifié (stdout
+parse en JSON valide, `hookEventName: SessionStart`). Ambiguïté résiduelle sur
+l'activation via manifest vs `hooks.json` en dossier de config (voir AUDIT.md).
 
 **📋 Prochain** : ré-exécuter la grille de tests 🧪 (T1 repasse ✅ ; corriger
 l'angle mort du test T7 qui validait le format `hooks` erroné), puis
 ✅ Validation.
 
-**🚧 Blocages** : aucun (le point Codex est signalé, non bloquant).
+**🚧 Blocages** : aucun.

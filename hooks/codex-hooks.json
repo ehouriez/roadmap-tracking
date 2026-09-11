@@ -1,10 +1,13 @@
 {
   "hooks": {
-    "sessionStart": [
+    "SessionStart": [
       {
-        "type": "command",
-        "command": "test -d ./doc/roadmap && test \"${ROADMAP_TRACKING_AUTOSTART:-on}\" != \"off\" && printf 'This project has a doc/roadmap/ directory. Before handling the first prompt, invoke the roadmap-tracking skill to run its startup rule (list plans, detect inconsistent IDs, handle absent doc/roadmap/ case). On any reference to an existing plan, follow its resume workflow. On a new dev/config/architecture request, follow its new-plan workflow.' || true",
-        "context": "inject"
+        "hooks": [
+          {
+            "type": "command",
+            "command": "test -d ./doc/roadmap && test \"${ROADMAP_TRACKING_AUTOSTART:-on}\" != \"off\" && printf '{\"hookSpecificOutput\":{\"hookEventName\":\"SessionStart\",\"additionalContext\":\"This project has a doc/roadmap/ directory. Before handling the first prompt, invoke the roadmap-tracking skill to run its startup rule (list plans, detect inconsistent IDs, handle absent doc/roadmap/ case). On any reference to an existing plan, follow its resume workflow. On a new dev/config/architecture request, follow its new-plan workflow.\"}}' || true"
+          }
+        ]
       }
     ]
   }
