@@ -59,12 +59,50 @@ Corriger deux déclenchements manquants du workflow, repérés en session :
 
 ## Étapes
 
-- [ ] Étape 1 — (b) Règle « changement de modèle = re-jeu de la gate » : mémoriser le dernier modèle évalué, comparer à chaque entrée de gate (Phase 1.5, entrée Phase 7, reprise), rejouer si différent — dans `SKILL.md` (S · standard → Sonnet)
-- [ ] Étape 2 — (a) Proposition autonomous à l'entrée Phase 7 : si `tests.mode` non fixé → `AskUserQuestion` manual/autonomous → écrire le choix dans `.skill-config.yml` ; réconcilier `autonomous-tests.md:6` et le schéma de `environment.md` (M · standard → Sonnet)
+- [x] Étape 1 — (b) Règle « changement de modèle = re-jeu de la gate » : mémoriser le dernier modèle évalué, comparer à chaque entrée de gate (Phase 1.5, entrée Phase 7, reprise), rejouer si différent — dans `SKILL.md` (S · standard → Sonnet)
+- [x] Étape 2 — (a) Proposition autonomous à l'entrée Phase 7 : si `tests.mode` non fixé → `AskUserQuestion` manual/autonomous → écrire le choix dans `.skill-config.yml` ; réconcilier `autonomous-tests.md:6` et le schéma de `environment.md` (M · standard → Sonnet)
 - [ ] 🧪 Tests — Rédiger et exécuter la procédure de test
 - [ ] ✅ Validation — Vérifier les résultats et clôturer
+
+## Procédure de tests finaux
+
+```bash
+echo "=== Go To Project Root ==="
+cd /mnt/c/INETUM/AGV/agv-adm/GIT_GITHUB/skills/roadmap-tracking
+
+echo "=== Verify Step 1 - Model-Change Replay Section Exists ==="
+grep -n "Re-jeu de la gate sur changement de modèle" SKILL.md
+
+echo "=== Verify Step 1 - Referenced At Phase 1.5 ==="
+grep -n "Mémoriser le modèle évalué" SKILL.md
+
+echo "=== Verify Step 1 - Referenced At Phase 7 Entry Gate ==="
+grep -n "Exception — changement de modèle" SKILL.md
+
+echo "=== Verify Step 1 - Referenced At Resume Gate ==="
+grep -n "Rejouer aussi la gate" SKILL.md
+
+echo "=== Verify Step 2 - Test-Mode Proposal Section Exists ==="
+grep -n "Proposition du mode de tests" SKILL.md
+
+echo "=== Verify Step 2 - Proposal Persists To Config ==="
+grep -n "Persister le choix" SKILL.md
+
+echo "=== Verify Step 2 - autonomous-tests.md Reconciled ==="
+grep -n "Where the proposal happens" references/autonomous-tests.md
+
+echo "=== Verify Step 2 - environment.md Schema Reconciled ==="
+grep -n "unset → proposed at Phase 7" references/environment.md
+
+echo "=== Verify Step 2 - environment.md Detection Procedure Reconciled ==="
+grep -n "SKILL.md.*Phase 7 proposes" references/environment.md
+```
+
+**Résultats attendus :** chaque `grep` renvoie **au moins une ligne** (numéro + texte). Aucun `grep` ne doit sortir vide (code retour 1). Les 10 vérifications confirment que les deux règles sont bien câblées à leurs points d'ancrage et que les deux fichiers de référence sont réconciliés.
 
 ## Journal de session
 
 ### Session 2026-09-11
-- 📋 Prochain : étape 1 — règle de re-jeu de gate sur changement de modèle
+- ✅ Étape 1 — règle de re-jeu de gate sur changement de modèle ajoutée dans `SKILL.md` (section canonique + 3 points d'ancrage).
+- ✅ Étape 2 — proposition `manual`/`autonomous` à l'entrée Phase 7 + persistance `.skill-config.yml` ; `autonomous-tests.md` et `environment.md` réconciliés.
+- 📋 Prochain : exécution de la procédure de tests finaux, puis validation/clôture.

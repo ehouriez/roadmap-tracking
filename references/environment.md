@@ -98,7 +98,10 @@ At skill invocation:
 3. Read `models.active` if set; otherwise detect from system prompt.
 4. Resolve tier: apply `models.map` first, then Anthropic defaults above.
 5. Read `issues.mode` (auto → detect `.git/` + remote GitHub + `gh auth status`).
-6. Read `tests.mode` (default: `manual`).
+6. Read `tests.mode`. If **set** (`manual` or `autonomous`), use it. If **unset**
+   (key/file absent or `null`), do **not** silently assume a mode here: SKILL.md
+   Phase 7 proposes `manual` vs `autonomous` once and persists the choice. Until
+   resolved, the effective fallback is `manual` (retrocompat).
 
 ---
 
@@ -118,10 +121,15 @@ models:
 issues:
   mode: auto              # auto | github | local
 tests:
-  mode: manual            # manual | autonomous   (manual = default, retrocompat)
+  mode: manual            # manual | autonomous | null (unset → proposed at Phase 7, then persisted)
   max_iterations: 3       # autonomous mode only
   verifier: auto          # auto | subagent | inline
 ```
+
+When `tests.mode` is **unset** (key or file absent, or `null`), SKILL.md Phase 7
+proposes `manual` vs `autonomous` once and writes the answer back here. A **set**
+value is honored as-is and never re-proposed. Effective fallback before the first
+answer: `manual` (retrocompat).
 
 **Defaults = retrocompat**: absent config + Claude Code + `gh` present →
 `ide: claude-code`, `issues: github`, `tests: manual` = v1.3.x behavior.

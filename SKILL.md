@@ -336,6 +336,34 @@ Juste après le bloc `⚠️`, afficher **une seule ligne de consigne**, puis
 > de modèle : c'est une action IDE, aucun outil ne la déclenche. La branche
 > « changer de modèle » est donc toujours **manuelle** (arrêt + consigne + attente).
 
+### Re-jeu de la gate sur changement de modèle
+
+Le modèle actif peut changer **en cours de session** (l'utilisateur lance
+`/model opus`, `/model sonnet`…). Sans re-jeu, un mismatch introduit après la
+première gate passerait inaperçu.
+
+Règle, **sans état externe** :
+
+1. À chaque exécution de la gate (Phase 1.5, entrée Phase 7, reprise),
+   **mémoriser le modèle actif évalué** comme « dernier modèle évalué » de la
+   session.
+2. À **chaque nouvelle entrée de gate**, comparer le modèle actif au dernier
+   modèle évalué :
+   - **Identique** → appliquer les règles de re-jeu propres à la phase
+     (Phase 1.5 : jouée une fois ; Phase 3 : seulement si le cadrage a changé
+     la classe de complexité ; entrée Phase 7 : jouée une fois par séquence).
+   - **Différent** → **toujours rejouer la gate immédiatement** (Cas 1 `ℹ️` /
+     Cas 2 `⚠️` + point d'arrêt de bypass), quel que soit l'état de re-jeu de la
+     phase. Le changement de modèle prime sur les conditions de re-jeu
+     habituelles. Mettre ensuite à jour le dernier modèle évalué.
+3. Si le modèle actif n'est pas détectable, il n'y a pas de comparaison
+   possible : ne pas afficher de gate (comportement inchangé).
+
+> La comparaison porte sur le **modèle** (donc son tier résolu), pas sur la
+> complexité : un passage `opus → sonnet` alors que les étapes restantes sont
+> `standard` fait disparaître un mismatch (Cas 2 → Cas 1) tout autant qu'un
+> passage inverse en crée un.
+
 ### Tag d'étape
 
 Chaque **étape d'implémentation** porte un tag compact en fin de ligne :
@@ -439,6 +467,7 @@ choisir le bon modèle **avant** de la mener aligne l'effort là où il compte.
 
 Se référer à la section canonique pour les formats exacts et le comportement
 complet. Si le modèle actif n'est pas détectable, ne pas afficher de gate.
+Mémoriser le modèle évalué (voir « Re-jeu de la gate sur changement de modèle »).
 
 ## Phase 2 — Cadrage interactif
 
@@ -652,6 +681,40 @@ l'alignement du modèle sur la **séquence d'étapes demandée** (pas étape par
 > Une seule gate pour toute la séquence : ne pas la rejouer à chaque étape. Si
 > le plan est antérieur aux tags par étape, s'appuyer sur la complexité globale.
 > Si le modèle actif n'est pas détectable, ne pas afficher de gate.
+>
+> **Exception — changement de modèle.** Si le modèle actif diffère du dernier
+> modèle évalué (l'utilisateur a changé de modèle depuis la dernière gate),
+> rejouer la gate même à l'intérieur d'une séquence déjà entamée (voir « Re-jeu
+> de la gate sur changement de modèle »).
+
+### Proposition du mode de tests (entrée Phase 7, avant l'étape 0)
+
+À l'entrée de la Phase 7, **après la gate modèle et avant l'étape 0**, résoudre
+le mode de tests :
+
+1. **Lire `tests.mode` dans `./doc/roadmap/.skill-config.yml`.**
+   - **Fixé** (`manual` ou `autonomous`) → l'utiliser tel quel, ne rien
+     proposer. Passer à la suite (étape 0 en `manual`, étape 1 en `autonomous`).
+   - **Non fixé** (clé absente, fichier absent, ou `tests.mode: null`) →
+     **proposer** (étape 2 ci-dessous).
+
+2. **Proposer via `AskUserQuestion`** (une seule fois) :
+   « Comment veux-tu exécuter les tests de ce plan ? » — 2 options :
+   - `Manuel — tu me fournis les résultats des tests que je te propose` (`manual`)
+   - `Autonome — j'exécute et vérifie les tests moi-même après chaque étape` (`autonomous`)
+
+3. **Persister le choix** dans `./doc/roadmap/.skill-config.yml` sous
+   `tests.mode` (créer le fichier et la clé `tests:` s'ils sont absents, sans
+   écraser les autres clés). L'opérateur n'est plus resollicité aux sessions
+   suivantes.
+
+4. **Enchaîner selon le mode retenu** : `manual` → étape 0 ; `autonomous` →
+   étape 1 directement (l'étape 0 est supprimée, voir `references/autonomous-tests.md`).
+
+> **Signal de proposition = « config non fixée », pas « accès shell détecté ».**
+> L'accès Bash étant quasi toujours présent en Claude Code, se baser sur lui
+> reproposerait à chaque session. « `tests.mode` non fixé » est un signal stable
+> et non redondant : proposé une fois, persisté, jamais reposé.
 
 ---
 
@@ -974,7 +1037,9 @@ templates de tests ci-dessus.
 > que le tier actif est `standard`, ou l'inverse), afficher la gate de
 > recommandation (voir « Évaluation de complexité et recommandation de modèle »)
 > avant le point d'arrêt. Si le plan est antérieur à cette convention et ne
-> porte pas de tags, ne pas afficher de gate par étape.
+> porte pas de tags, ne pas afficher de gate par étape. Rejouer aussi la gate
+> si le modèle actif a changé depuis la dernière évaluation (voir « Re-jeu de la
+> gate sur changement de modèle »).
 
 2. **STOP.** Attendre la validation. Ne rien implémenter, ne lire aucun code
    source applicatif, ne lancer aucune commande tant que l'utilisateur n'a pas

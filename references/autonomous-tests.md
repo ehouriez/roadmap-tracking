@@ -5,6 +5,13 @@ see SKILL.md Phase 7.
 
 > ⚠️ Autonomous mode never activates from shell-access detection alone.
 > Detection *proposes*; explicit config or user confirmation *activates*.
+>
+> **Where the proposal happens.** When `tests.mode` is unset in
+> `./doc/roadmap/.skill-config.yml`, SKILL.md Phase 7 ("Proposition du mode de
+> tests") asks the operator to pick `manual` or `autonomous` and persists the
+> choice to the config. The signal is "config unset", never "shell access
+> detected" — Bash access is nearly always present in Claude Code and would
+> re-propose every session.
 
 ---
 
