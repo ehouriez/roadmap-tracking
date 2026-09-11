@@ -16,6 +16,9 @@ Backlog consolidé : plans nommés d'après leur issue GitHub (voir `doc/roadmap
 - **[Issue: #4] `#4` — Format tableau obligatoire pour tous les rapports** 🟢 — Bug : listing des plans en format clé-valeur au lieu de tableau markdown.
   [`4-roadmap-tracking-rapport-format-tableau.md`](4-roadmap-tracking-rapport-format-tableau.md)
 
+- **[Issue: #6] `#6` — Proposition du mode de tests axée sur l'accessibilité de l'environnement** 🟢 — Reformuler la question Phase 7 `manual`/`autonomous` autour du critère « l'environnement de test est-il accessible à l'agent ? ».
+  [`6-roadmap-tracking-tests-mode-accessibilite.md`](6-roadmap-tracking-tests-mode-accessibilite.md)
+
 ---
 
 ## Fait
