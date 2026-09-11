@@ -1,5 +1,12 @@
 # Plan — `roadmap-tracking` : agnostique IDE/modèles + autonomie + plugin (axes A→E)
 
+> ⚠️ **Ambiguïté à confirmer (déploiement Codex).** `plugin-json-spec.md:215`
+> note que la validation du scaffold marketplace rejette le champ `hooks` dans
+> le manifest — alors que le field guide le liste comme valide (`:18`, `:65`).
+> L'activation d'un hook de plugin côté Codex passe donc peut-être par un
+> `hooks.json` déposé dans un dossier de config plutôt que par le manifest.
+> Point à trancher au moment d'un vrai déploiement Codex.
+
 ## Context
 
 Généralisation du skill `roadmap-tracking` en vue d'un partage dans l'équipe.
