@@ -3,7 +3,7 @@ plan:
   id: '6'
   name: 6-roadmap-tracking-tests-mode-accessibilite.md
   link: https://github.com/ehouriez/roadmap-tracking/blob/main/doc/roadmap/6-roadmap-tracking-tests-mode-accessibilite.md
-status: active
+status: done
 date: 2026-09-11
 description: >
   Reformuler la proposition Phase 7 du choix manual/autonomous pour ancrer la
@@ -54,8 +54,8 @@ Recentrer la question et les libellés sur ce critère.
 
 - [x] Étape 1 — Reformuler la question + les 2 libellés dans `SKILL.md` (Phase 7) + message de reset post-persistance (XS · standard → Sonnet)
 - [x] Étape 2 — Aligner la ligne descriptive de `references/autonomous-tests.md` sur le nouveau cadrage (XS · standard → Sonnet)
-- [ ] 🧪 Tests — Rédiger et exécuter la procédure de test
-- [ ] ✅ Validation — Vérifier les résultats et clôturer
+- [x] 🧪 Tests — Rédiger et exécuter la procédure de test
+- [x] ✅ Validation — Vérifier les résultats et clôturer
 
 ## Décisions techniques
 
@@ -68,4 +68,7 @@ Recentrer la question et les libellés sur ce critère.
 ## Journal de session
 
 ### Session 2026-09-11
-- 📋 Prochain : étape 1 — reformuler la question + libellés dans `SKILL.md`
+- ✅ Étape 1 : question + libellés reformulés dans `SKILL.md` + message de reset post-persistance ajouté
+- ✅ Étape 2 : `references/autonomous-tests.md` aligné sur le nouveau cadrage
+- ✅ Tests : vérification grep — tous les checks passent
+- ✅ Validation : plan clôturé, version bumpée à `2.2.0`

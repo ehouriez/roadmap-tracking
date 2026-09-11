@@ -16,14 +16,15 @@ Backlog consolidé : plans nommés d'après leur issue GitHub (voir `doc/roadmap
 - **[Issue: #4] `#4` — Format tableau obligatoire pour tous les rapports** 🟢 — Bug : listing des plans en format clé-valeur au lieu de tableau markdown.
   [`4-roadmap-tracking-rapport-format-tableau.md`](4-roadmap-tracking-rapport-format-tableau.md)
 
-- **[Issue: #6] `#6` — Proposition du mode de tests axée sur l'accessibilité de l'environnement** 🟢 — Reformuler la question Phase 7 `manual`/`autonomous` autour du critère « l'environnement de test est-il accessible à l'agent ? ».
-  [`6-roadmap-tracking-tests-mode-accessibilite.md`](6-roadmap-tracking-tests-mode-accessibilite.md)
 
 ---
 
 ## Fait
 
 ### Plans livrés (2026-09-11)
+
+- **[Issue: #6] `#6` — Proposition du mode de tests axée sur l'accessibilité de l'environnement** (2026-09-11) 🔵 — Question Phase 7 recentrée sur « l'env de test est-il accessible à l'agent ? » + message de reset post-persistance + version `2.2.0`.
+  [`6-roadmap-tracking-tests-mode-accessibilite.md`](6-roadmap-tracking-tests-mode-accessibilite.md)
 
 - **[Issue: #5] `#5` — Proposition autonomous + re-jeu gate modèle** (2026-09-11) 🔵 — Proposition `manual`/`autonomous` à l'entrée Phase 7 avec persistance `.skill-config.yml` ; re-jeu de la gate modèle au changement de modèle en cours de session.
   [`5-roadmap-tracking-autonomous-proposal-model-gate-replay.md`](5-roadmap-tracking-autonomous-proposal-model-gate-replay.md)
