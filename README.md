@@ -24,14 +24,49 @@ implementation — with hard stop points between planning and coding.
 
 ## Install
 
-```
-/plugin marketplace add ehouriez/roadmap-tracking
-/plugin install roadmap-tracking@roadmap-tracking
-/reload-plugins
+```bash
+echo "=== Add Public Marketplace From GitHub ==="
+claude plugin marketplace add ehouriez/roadmap-tracking
+
+echo "=== Install The Skill Plugin ==="
+claude plugin install roadmap-tracking@roadmap-tracking
+
+echo "=== Verify Marketplace ==="
+claude plugin marketplace list
+
+echo "=== Verify Plugin Installation ==="
+claude plugin list
 ```
 
 The skill is then available as `/roadmap-tracking:roadmap-tracking` and is also
 model-invoked automatically when a task matches its description.
+
+## Update
+
+From a fresh session launched in the repo:
+
+```bash
+echo "=== Start A Fresh Session In The Repo ==="
+cd /path/to/your/project && claude
+```
+
+Then inside the session:
+
+```
+/plugin marketplace update roadmap-tracking
+/plugin update roadmap-tracking
+/clear
+```
+
+## Uninstall
+
+```bash
+echo "=== Uninstall Plugin ==="
+claude plugin uninstall roadmap-tracking@roadmap-tracking
+
+echo "=== Remove Marketplace ==="
+claude plugin marketplace remove roadmap-tracking
+```
 
 ## Auto-trigger at session start
 
