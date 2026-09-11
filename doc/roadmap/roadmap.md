@@ -13,19 +13,16 @@ Backlog consolidé : plans nommés d'après leur issue GitHub (voir `doc/roadmap
 
 ## À faire
 
-### [Issue: #3] Correction des findings e2e [PRIORITÉ: MOYENNE] [Complexité: M] 🟢
-
-Plan : [`3-roadmap-tracking-corrections-findings-e2e.md`](3-roadmap-tracking-corrections-findings-e2e.md)
-
-Corriger les 4 findings de la campagne e2e (plan #2) : signalement des plans
-malformés au listing, branche de reprise dédiée, réconciliation de la
-numérotation locale, couverture du chemin github end-to-end.
+_(vide)_
 
 ---
 
 ## Fait
 
 ### Plans livrés (2026-09-11)
+
+- **[Issue: #3] `#3` — Correction des findings e2e** (2026-09-11) 🔵 — F1 listing tolérant, F2 branche reprise non conforme, F3 numérotation union, F4 limite github documentée.
+  [`3-roadmap-tracking-corrections-findings-e2e.md`](3-roadmap-tracking-corrections-findings-e2e.md)
 
 - **[Issue: #1] `#1` — roadmap-tracking : agnostique IDE/modèles + autonomie + plugin (axes A→E)** (2026-09-11) 🔵 — Généralisation du skill (5 axes), packaging plugin v2.0.0.
   [`1-roadmap-tracking-agnostic-autonomy-plugin.md`](1-roadmap-tracking-agnostic-autonomy-plugin.md)

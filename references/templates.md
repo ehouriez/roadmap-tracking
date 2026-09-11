@@ -9,7 +9,7 @@ Le **préfixe numérique** vient de deux sources selon le mode `issues` :
 | Mode | Source de l'ID | Exemple |
 |---|---|---|
 | `github` | Numéro de l'issue GitHub rattachée | `27-image-versioning.md` |
-| `local` | Compteur local = max(préfixes existants) + 1 | `5-new-feature.md` |
+| `local` | Compteur local = max(préfixes de fichiers ∪ `plan.id` déclarés en front matter) + 1 | `5-new-feature.md` |
 
 - Nom après le préfixe : **kebab-case**, concis et descriptif.
 - **Mode `github`** ⚠️ : l'issue doit exister avant le fichier plan (son numéro est l'ID). Si l'issue n'est pas encore créée, voir le fallback ci-dessous.

@@ -111,6 +111,19 @@ Si l'utilisateur ne référence pas un plan existant dans son premier prompt :
 > plans sans issue rattachée. Les contrôles d'ID et la migration (ci-dessous) ne
 > s'appliquent qu'en mode `github`.
 
+> **Plans non conformes (listing tolérant).** Un fichier `./doc/roadmap/*.md`
+> peut ne pas respecter `references/templates.md` (front matter absent, partiel,
+> ou bloc `issue` manquant). Le listing est **tolérant et ne crashe jamais** :
+> - **Toujours lister le fichier**, même sans front matter exploitable.
+> - Pour toute colonne non dérivable (`Statut`, `Résumé`, `Issue GitHub`),
+>   afficher `⚠️` (donnée manquante) plutôt qu'une valeur inventée. Le `Résumé`
+>   retombe sur la 1ʳᵉ ligne de titre `#` ou la 1ʳᵉ ligne non vide du fichier.
+> - Ajouter une note sous le tableau récapitulant les fichiers non conformes
+>   détectés (ex. « ⚠️ 2 plan(s) non conforme(s) : `x.md` (pas de front matter),
+>   `y.md` (front matter partiel : `status`, `complexity` manquants) »).
+> - La reprise d'un plan non conforme suit la branche dédiée (voir
+>   « Workflow : reprise d'un plan existant § Plan non conforme »).
+
 2. **Demander** : « Souhaites-tu repartir d'un de ces plans existants (indique
    le numéro) ou créer un nouveau plan pour cette session ? »
 3. **Attendre la réponse** avant de traiter le prompt.
@@ -552,7 +565,7 @@ Ne jamais tenter de `Write`/`gh`/`git` tant que le mode plan est actif.
 #### Mode `local`
 
 0. **Prérequis** : s'assurer que `./doc/roadmap/` existe (`mkdir -p ./doc/roadmap`) ; si `./doc/roadmap/roadmap.md` est absent, l'initialiser depuis `references/roadmap-file.md`.
-1. Calculer l'**ID local** = `max(préfixes numériques de ./doc/roadmap/*.md) + 1` (entier nu, ex. `5`). Si aucun plan existant : commencer à `1`.
+1. Calculer l'**ID local** = `max(ensemble des IDs déjà pris) + 1` (entier nu, ex. `5`), où l'ensemble réunit **à la fois** les préfixes numériques des noms de fichiers `./doc/roadmap/*.md` **et** les `plan.id` déclarés dans leur front matter. Prendre l'union des deux évite qu'un plan sans préfixe de fichier (mais avec un `plan.id` en front matter) provoque une collision d'ID. Si aucun plan existant : commencer à `1`.
 2. Créer `./doc/roadmap/{ID}-nom-du-plan.md` avec `plan.source: local` dans le front matter et `issue.id: null` / `issue.url: null` (voir `references/templates.md`).
 3. Mettre à jour `./doc/roadmap/roadmap.md` avec `[Plan: {id}]` au lieu de `[Issue: #NN]` (voir `references/roadmap-file.md`).
 
@@ -920,6 +933,25 @@ templates de tests ci-dessus.
 > Un prompt d'action directe (« Démarre les étapes de #109 ») n'est PAS un
 > raccourci : il signifie « je veux travailler sur ce plan », pas « saute tous
 > les checkpoints ». Voir la **règle anti-court-circuit** dans la garde d'entrée.
+
+> **Plan non conforme (branche dédiée — jamais de reprise silencieuse).** Avant
+> d'afficher le résumé, vérifier que le plan respecte `references/templates.md`
+> (front matter présent et exploitable : `plan.id`, `status`, `complexity` ;
+> structure d'étapes reconnaissable). **Si le plan est malformé** (pas de front
+> matter, front matter partiel, ou étapes non standard), ne pas reprendre en
+> aveugle : présenter le constat puis proposer explicitement, via l'action
+> « poser une question » (`AskUserQuestion` — voir `references/environment.md §
+> Generic Action Mapping`), **3 options** :
+>
+> | Choix | Action |
+> |---|---|
+> | **Mettre en conformité** | Compléter le plan selon `references/templates.md` (Option 1 : dériver les champs calculables, demander à l'utilisateur les champs de jugement — `description`, `priority`, `complexity`), puis reprendre normalement. |
+> | **Mode dégradé** | Reprendre malgré tout, en documentant explicitement les limites (progression/tags/gate non fiables si absents). Aucune donnée n'est inventée : les champs manquants restent `⚠️`. |
+> | **Annuler** | Ne pas reprendre ce plan ; laisser l'utilisateur choisir un autre plan ou en créer un. |
+>
+> Ne jamais afficher un résumé « propre » avec des valeurs inventées à partir
+> d'un plan malformé. Le choix « Mode dégradé » est le seul qui reprend un plan
+> non conforme, et il est **explicitement documenté** à l'utilisateur.
 
 1. 🧠 MODE PLAN — lis le fichier plan, affiche l'état. Reprendre les tags
    `(taille · modèle)` déjà présents dans le plan pour les étapes restantes :

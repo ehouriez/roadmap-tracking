@@ -42,9 +42,31 @@ corrections font l'objet du plan #3).
 - Robustesse face aux plans non conformes.
 
 ### Hors scope
-- Chaîne GitHub end-to-end sur l'API réelle (issue simulée, zéro appel).
+- Chaîne GitHub end-to-end sur l'API réelle (issue simulée, zéro appel) —
+  **limite assumée et documentée**, voir « Limite de couverture github e2e » ci-dessous.
 - Sessions Claude Code headless réelles (gates interactifs non automatisables).
 - Correction des écarts (→ plan #3).
+
+### Limite de couverture github e2e (finding F4 — tranché par le plan #3)
+
+La création réelle d'issue GitHub n'est **pas** exercée par la campagne
+automatique, par choix d'idempotence et d'absence d'effet de bord sur le compte
+réel. Cette limite est **assumée**, pas masquée. Pour la lever ponctuellement,
+une **procédure opt-in manuelle** (hors CI, sur repo jetable) est disponible :
+
+```bash
+echo "=== Create A Throwaway GitHub Repo For Real E2E ==="
+gh repo create rt-e2e-throwaway --private --clone
+
+echo "=== Run The Skill In GitHub Mode And Verify Issue Creation ==="
+cd rt-e2e-throwaway && mkdir -p doc/roadmap
+
+echo "=== Cleanup: Delete The Throwaway Repo ==="
+gh repo delete rt-e2e-throwaway --yes
+```
+
+> ⚠️ Cette procédure crée et supprime un vrai dépôt : à lancer manuellement, en
+> connaissance de cause. Elle ne fait **pas** partie de la campagne rejouable.
 
 ## Modèle d'exécution retenu (« Moi comme exécuteur »)
 
