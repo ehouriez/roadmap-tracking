@@ -5,6 +5,5 @@
   "author": { "name": "Emmanuel Houriez" },
   "homepage": "https://github.com/ehouriez/roadmap-tracking",
   "repository": "https://github.com/ehouriez/roadmap-tracking",
-  "license": "MIT",
-  "hooks": "./hooks/hooks.json"
+  "license": "MIT"
 }
