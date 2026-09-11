@@ -1,9 +1,8 @@
 ---
 plan:
-  id: '0'
-  name: 000-roadmap-tracking-agnostic-autonomy-plugin.md
-  link: 000-roadmap-tracking-agnostic-autonomy-plugin.md
-  source: local
+  id: '1'
+  name: 1-roadmap-tracking-agnostic-autonomy-plugin.md
+  link: https://github.com/ehouriez/roadmap-tracking/blob/main/doc/roadmap/1-roadmap-tracking-agnostic-autonomy-plugin.md
 status: done
 date: 2026-09-11
 enriched: 2026-09-11
@@ -23,11 +22,11 @@ scope:
     - README.md
     - scripts/
 issue:
-  id: null
-  url: null
+  id: 1
+  url: https://github.com/ehouriez/roadmap-tracking/issues/1
 ---
 
-# [🧩] Plan #0 - roadmap-tracking : agnostique IDE/modèles + autonomie + plugin (axes A→E)
+# [🧩] Plan #1 - roadmap-tracking : agnostique IDE/modèles + autonomie + plugin (axes A→E)
 
 ## Objectif
 
