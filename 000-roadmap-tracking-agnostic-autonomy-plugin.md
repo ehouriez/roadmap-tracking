@@ -10,6 +10,30 @@ l'agent (C), cohérence transverse (D), déclenchement par hook + packaging plug
 comportement v1.3.0 actuel) et **sans sur-ingénierie** (config optionnelle,
 chaque mode a un défaut par détection).
 
+## Reprise après `/clear` (à lire en premier)
+
+Ce plan est auto-suffisant pour reprendre l'implémentation dans une session
+neuve. Points d'ancrage et dépendances externes à connaître :
+
+- **Repo de travail** : ce fichier vit à la racine du repo de packaging
+  (`skills/roadmap-tracking/`, layout « skill à la racine »). Tous les fichiers à
+  éditer (`SKILL.md`, `references/*`, `.claude-plugin/*`, `README.md`) y sont.
+- **Baseline** : `SKILL.md` = **v1.3.0** (contient déjà Phase 1.5, gate modèle,
+  point d'arrêt de bypass, gate Phase 7). C'est la base de la rétrocompat.
+- **Numéros de ligne** (L39-46, L91-96…) : valides pour v1.3.0 **avant** toute
+  édition ; ils dérivent ensuite → **relire le fichier avant chaque édition**,
+  ne pas éditer à l'aveugle sur ces numéros.
+- **Dépendance Axe A** : le contenu à embarquer vient de
+  `~/.claude/rules/operator-commands-formatting.md` (règle globale, rechargée
+  automatiquement dans le system prompt à chaque session → disponible pour
+  l'agent). Le recopier dans `references/environment.md`.
+- **À re-vérifier (Étape 8, variante Codex)** : la **structure de config exacte**
+  du hook Codex (`sessionStart`, fichier/format, modèle de *trust* `/hooks`)
+  n'est pas figée ici → re-confirmer en doc/source Codex avant de l'écrire.
+- **Faits Codex déjà vérifiés** (inutile de re-chercher) : `/model`, mode `/plan`,
+  vrais sous-agents (`spawn_agent`, `agent-roles/` avec `developer_instructions`),
+  événements de hook `sessionStart`/`userPromptSubmit` + injection `context`.
+
 ## Socle validé (rappel condensé)
 
 - Le skill raisonne en **tiers** (`standard`/`reasoning` ; `light`/Haiku
