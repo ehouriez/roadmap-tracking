@@ -13,7 +13,8 @@ Backlog consolidé : plans nommés d'après leur issue GitHub (voir `doc/roadmap
 
 ## À faire
 
-_(vide)_
+- **[Issue: #4] `#4` — Format tableau obligatoire pour tous les rapports** 🟢 — Bug : listing des plans en format clé-valeur au lieu de tableau markdown.
+  [`4-roadmap-tracking-rapport-format-tableau.md`](4-roadmap-tracking-rapport-format-tableau.md)
 
 ---
 
