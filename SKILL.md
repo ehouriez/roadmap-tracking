@@ -97,7 +97,11 @@ Si le répertoire `./doc/roadmap/` n'existe **pas** dans le projet courant :
 Si l'utilisateur ne référence pas un plan existant dans son premier prompt :
 
 1. **Lister les plans existants** (mémoires, contexte projet, et inspection de
-   `./doc/roadmap/`) :
+   `./doc/roadmap/`) **impérativement sous forme de tableau markdown** — voir
+   « ⛔ Règle absolue — format des rapports ». Ne JAMAIS rendre ce listing en
+   format `clé: valeur` (`#: 1` / `Fichier: …` / `Statut: …`), en lignes
+   séparées par des filets (`───`), ni en puces : le gabarit ci-dessous est
+   contraignant.
 
 ```
 ### 📋 Plans existants

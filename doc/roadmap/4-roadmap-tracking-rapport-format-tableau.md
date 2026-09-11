@@ -43,7 +43,7 @@ l'instruction de listing.
 ## Étapes
 
 - [x] Étape 1 — Ajouter la règle `⛔ Règle absolue — format des rapports` dans `SKILL.md` (XS · standard → Sonnet)
-- [ ] Étape 2 — Renforcer l'instruction de listing (Règle de démarrage) avec interdiction explicite du format `clé: valeur` (XS · standard → Sonnet)
+- [x] Étape 2 — Renforcer l'instruction de listing (Règle de démarrage) avec interdiction explicite du format `clé: valeur` (XS · standard → Sonnet)
 - [ ] 🧪 Tests — Rédiger et exécuter la procédure de test
 - [ ] ✅ Validation — Vérifier les résultats et clôturer
 
@@ -82,6 +82,9 @@ awk '/## ⛔ Règle absolue/{print NR": "$0}' SKILL.md | head -1
 | 2026-09-11 | Étape 1 — format tableau imposé | count=1 | 1 | ✅ PASS |
 | 2026-09-11 | Étape 1 — format `clé: valeur` interdit | count=1 | 1 | ✅ PASS |
 | 2026-09-11 | Étape 1 — 1ʳᵉ règle absolue = format rapports | ligne 198 | ligne 198 | ✅ PASS |
+| 2026-09-11 | Étape 2 — listing impose tableau | count=1 | 1 | ✅ PASS |
+| 2026-09-11 | Étape 2 — listing interdit clé:valeur | count=1 | 1 | ✅ PASS |
+| 2026-09-11 | Étape 2 — renvoi à la règle absolue | count=1 | 1 | ✅ PASS |
 
 ## Journal de session
 
