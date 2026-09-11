@@ -706,7 +706,12 @@ le mode de tests :
 3. **Persister le choix** dans `./doc/roadmap/.skill-config.yml` sous
    `tests.mode` (créer le fichier et la clé `tests:` s'ils sont absents, sans
    écraser les autres clés). L'opérateur n'est plus resollicité aux sessions
-   suivantes.
+   suivantes. **Après écriture, afficher** :
+   > ✅ Mode de tests `<manual|autonomous>` enregistré dans
+   > `./doc/roadmap/.skill-config.yml`.
+   > Pour réinitialiser : supprime la clé `tests.mode` dans ce fichier
+   > (ou supprime le fichier entièrement) — le choix te sera reproposé à la
+   > prochaine session.
 
 4. **Enchaîner selon le mode retenu** : `manual` → étape 0 ; `autonomous` →
    étape 1 directement (l'étape 0 est supprimée, voir `references/autonomous-tests.md`).
