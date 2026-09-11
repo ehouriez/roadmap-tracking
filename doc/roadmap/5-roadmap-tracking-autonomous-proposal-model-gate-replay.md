@@ -3,7 +3,7 @@ plan:
   id: '5'
   name: 5-roadmap-tracking-autonomous-proposal-model-gate-replay.md
   link: https://github.com/ehouriez/roadmap-tracking/blob/main/doc/roadmap/5-roadmap-tracking-autonomous-proposal-model-gate-replay.md
-status: active
+status: done
 date: 2026-09-11
 description: >
   Corriger deux déclenchements manquants du workflow : (a) proposer le mode
@@ -61,8 +61,8 @@ Corriger deux déclenchements manquants du workflow, repérés en session :
 
 - [x] Étape 1 — (b) Règle « changement de modèle = re-jeu de la gate » : mémoriser le dernier modèle évalué, comparer à chaque entrée de gate (Phase 1.5, entrée Phase 7, reprise), rejouer si différent — dans `SKILL.md` (S · standard → Sonnet)
 - [x] Étape 2 — (a) Proposition autonomous à l'entrée Phase 7 : si `tests.mode` non fixé → `AskUserQuestion` manual/autonomous → écrire le choix dans `.skill-config.yml` ; réconcilier `autonomous-tests.md:6` et le schéma de `environment.md` (M · standard → Sonnet)
-- [ ] 🧪 Tests — Rédiger et exécuter la procédure de test
-- [ ] ✅ Validation — Vérifier les résultats et clôturer
+- [x] 🧪 Tests — Rédiger et exécuter la procédure de test
+- [x] ✅ Validation — Vérifier les résultats et clôturer
 
 ## Procédure de tests finaux
 
