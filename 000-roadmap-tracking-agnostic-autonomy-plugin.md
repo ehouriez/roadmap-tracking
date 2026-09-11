@@ -215,46 +215,68 @@ install` depuis un marketplace git interne) embarquant `skills/` + `hooks/`.
 fait aucune détection d'intention (tâche sémantique = modèle) ; il ne fait que
 la **porte déterministe** + l'injection d'une consigne courte.
 
-**1. Conversion du déclencheur en hook `userPromptSubmit`** :
-- Script (node, comme ponytail) recevant `cwd`/`CLAUDE_PROJECT_DIR` par stdin.
-- Logique : si `doc/roadmap/` existe dans le projet → **injecter une consigne
-  courte** (exit 0 + stdout Claude / entrée `context` Codex) du type : « Projet
-  roadmap-tracking : si le prompt concerne la création/analyse/cadrage/
-  implémentation/reprise/test d'un plan, invoquer le skill roadmap-tracking et
-  suivre son workflow. » Le **détail des 7 phases reste dans le skill**, pas
-  dans l'injection (coût token maîtrisé).
-- Injection **conditionnelle** → aucun surcoût sur les projets non-roadmap.
-- Détection d'intention (créer/cadrer/reprendre…) faite par le **modèle** à
-  partir de la consigne + du prompt réel — comme la règle actuelle.
+> **État existant du repo** : `plugin.json` (v1.0.0, sans clé `hooks`) et
+> `marketplace.json` (`source: "."`) déjà présents ; **layout « skill à la
+> racine »** (`SKILL.md`, `references/`, `scripts/` à la racine, `.claude-plugin/`
+> au même niveau — PAS de sous-dossier `skills/`). Le README documente déjà un
+> hook `SessionStart` **opt-in** (`test -d ./doc/roadmap && printf '…'`).
+
+**Deux cas séparés sur deux mécanismes (anti-harcèlement)** :
+
+- **Cas 1 — `doc/roadmap/` présent** → le **hook** (embarqué) injecte la consigne.
+- **Cas 2 — `doc/roadmap/` absent** → le hook reste **silencieux** (zéro nag dans
+  les projets sans rapport). L'offre de créer `doc/roadmap/` vient du **skill**,
+  quand l'utilisateur fait une demande de dev/plan (invocation par le modèle via
+  la description). **Ajout SKILL.md** : dans « Applicabilité / Règle de démarrage »,
+  si le skill est invoqué sans `doc/roadmap/` → proposer de le créer (question),
+  puis dérouler le workflow si accepté.
+
+**1. Déclencheur = hook `SessionStart` embarqué** (décision : `SessionStart`
+suffit ; embarqué dans le plugin) :
+- Commande shell : si `doc/roadmap/` existe → **injecter une consigne courte**
+  (stdout, injecté en contexte) du type : « Projet roadmap-tracking : si le prompt
+  concerne la création/analyse/cadrage/implémentation/reprise/test d'un plan,
+  invoquer le skill roadmap-tracking et suivre son workflow. » Le **détail des 7
+  phases reste dans le skill**.
+- Injecté **une fois par session** (économe), **conditionnel** (`test -d` — rien
+  hors projet roadmap, donc pas de nag). Pas de dépendance MCP → fiable au
+  lancement.
+- Interrupteur simple pour couper l'auto-déclenchement même si `doc/roadmap/`
+  existe (env var, ex. `ROADMAP_TRACKING_AUTOSTART=off`).
+- `userPromptSubmit` écarté : coût par tour non justifié pour un déclencheur qui
+  joue surtout en début de session.
 
 **2. Deux variantes de hook** (vérifié en source Codex) :
-- Claude Code : `hooks/hooks.json`, événement `UserPromptSubmit`.
-- Codex : événement `userPromptSubmit` (casse ≠), modèle de *trust* (`/hooks` à
-  valider par l'utilisateur, `allow_managed_hooks_only`). Injection via entrée
-  `context`.
+- Claude Code : `hooks/hooks.json`, événement `SessionStart`.
+- Codex : événement `sessionStart` (casse ≠), modèle de *trust* (`/hooks` à
+  valider par l'utilisateur, `allow_managed_hooks_only`). Injection via `context`.
 - Le plugin embarque les **deux** jeux (patron ponytail).
 
-**3. Packaging plugin** :
+**3. Packaging plugin** (layout réel du repo à respecter) :
 ```
-roadmap-tracking-plugin/
-├── .claude-plugin/plugin.json      # manifeste (name, hooks, description)
-├── hooks/hooks.json                # variante Claude Code
-├── hooks/<codex-hooks>             # variante Codex
-├── hooks/trigger.mjs               # script de déclenchement conditionnel
-└── skills/roadmap-tracking/        # le skill (auto-suffisant, axe A inclus)
+roadmap-tracking/            # racine = le plugin
+├── .claude-plugin/
+│   ├── plugin.json          # AJOUTER la clé "hooks"
+│   └── marketplace.json     # existant, inchangé
+├── hooks/hooks.json         # variante Claude Code (SessionStart)  [NOUVEAU]
+├── hooks/<codex-hooks>      # variante Codex                        [NOUVEAU]
+├── SKILL.md                 # à la racine (auto-suffisant, axe A inclus)
+├── references/
+└── scripts/
 ```
-- Installer le plugin apporte skill + hook ensemble : **plus aucune règle
-  externe** requise.
+- Pas de script node nécessaire : la commande `test -d … && printf …` suffit
+  (plus léger que ponytail). `hooks/trigger.*` seulement si logique plus riche.
 
-**4. Prérequis dégradable** : `node` sur le PATH (comme ponytail). Absent → le
-skill fonctionne toujours, seul l'auto-déclenchement se tait (pas d'erreur).
+**4. Embarqué (décidé)** : le hook est livré actif dans le plugin (remplace la
+section opt-in du README), avec l'interrupteur ci-dessus pour le couper.
 
-**5. Retrait de la règle** : `rules/roadmap-tracking.md` devient redondant pour
-les utilisateurs du plugin. ⚠️ Sur ta propre machine (règle + plugin présents),
-risque de **double injection** → retirer la règle à l'install du plugin.
+**5. Règle `~/.claude/rules/roadmap-tracking.md`** : hors du repo plugin (c'est
+ta config perso). Elle n'est **pas un livrable** ici. ⚠️ Sur ta machine, si tu
+installes le plugin avec hook embarqué **et** gardes la règle → **double
+injection** ; retirer l'une des deux.
 
-**Force d'application** : identique à la règle actuelle (consigne NL suivie par
-le modèle), voire meilleure (réinjectée fraîche chaque tour, conditionnelle).
+**Force d'application** : équivalente à la règle actuelle (consigne NL suivie par
+le modèle).
 
 ---
 
@@ -262,7 +284,7 @@ le modèle), voire meilleure (réinjectée fraîche chaque tour, conditionnelle)
 
 | Fichier | Nature |
 |---|---|
-| `SKILL.md` | Prerequisites, section complexité→tier, 3 gates, mode plan, Phase 5, clôture, Phase 7 (branches manuel/autonome), démarrage/migration conditionnels github |
+| `SKILL.md` | Prerequisites, section complexité→tier, 3 gates, mode plan, Phase 5, clôture, Phase 7 (branches manuel/autonome), démarrage/migration conditionnels github, **Applicabilité : proposer de créer `doc/roadmap/` si absent (axe E, cas 2)** |
 | `references/environment.md` | **Nouveau** : mapping IDE, tiers+défauts Anthropic, formatage commandes (axe A), persona-switch (axe C), schéma config, détection |
 | `references/autonomous-tests.md` | **Nouveau** : boucle vérif/exéc, reporting, garde-fou, prompt Vérificateur |
 | `references/github-issues.md` | Conditionné « mode github uniquement » |
@@ -270,9 +292,9 @@ le modèle), voire meilleure (réinjectée fraîche chaque tour, conditionnelle)
 | `references/roadmap-file.md` | Format d'entrée sans issue (`[Plan: {id}]`) |
 | `references/forms.md` | `AskUserQuestion` = mécanisme Claude Code + fallback texte |
 | `references/migration.md` | Noter : github uniquement |
-| `.claude-plugin/plugin.json` | **Nouveau** (axe E) : manifeste plugin |
-| `hooks/hooks.json` + variante Codex + `hooks/trigger.mjs` | **Nouveau** (axe E) : hook de déclenchement conditionnel |
-| `rules/roadmap-tracking.md` | **Retiré** (axe E) : remplacé par le hook ; contenu résumé en consigne injectée |
+| `.claude-plugin/plugin.json` | Existant (axe E) : **ajouter la clé `hooks`** |
+| `hooks/hooks.json` + variante Codex | **Nouveau** (axe E) : hook `SessionStart` conditionnel (commande shell `test -d`) |
+| `README.md` | (axe E) : documenter le hook embarqué + l'interrupteur, remplacer la section opt-in actuelle |
 
 ## Risques identifiés
 
@@ -290,10 +312,12 @@ le modèle), voire meilleure (réinjectée fraîche chaque tour, conditionnelle)
    si mal câblé → tests de non-régression ciblés.
 5. **Double-branche partout** : multiplier manuel/autonome × github/local peut
    créer des combinaisons non testées. Mitigation : matrice de cas explicite.
-6. **Axe E — double injection** : règle `rules/` + hook plugin actifs ensemble →
-   consigne dupliquée. Mitigation : retirer la règle à l'install.
-7. **Axe E — dépendances** : `node` sur le PATH (dégradable), étape de *trust*
-   Codex manuelle, coût token par tour (mitigé par injection conditionnelle).
+6. **Axe E — double injection** : règle perso `~/.claude/rules/` + hook plugin
+   actifs ensemble → consigne dupliquée. Mitigation : retirer l'une des deux.
+7. **Axe E — trust Codex** : l'étape `/hooks` de validation reste manuelle côté
+   Codex (le hook n'agit qu'une fois approuvé).
+8. **Axe E — layout** : le repo est un plugin « skill à la racine » ; ne pas
+   introduire de sous-dossier `skills/` (le plan initial le supposait à tort).
 
 ## Vérification
 
@@ -306,16 +330,70 @@ le modèle), voire meilleure (réinjectée fraîche chaque tour, conditionnelle)
 - `grep` anti-adhérence : aucun nom de modèle versionné dans la logique de
   SKILL.md.
 - Relecture croisée des renvois `SKILL.md ↔ references/*`.
-- **Axe E** : installer le plugin sur un projet avec `doc/roadmap/` → la consigne
-  s'injecte ; sur un projet sans → rien. `node` absent → skill OK, pas d'erreur.
-  Vérifier l'absence de double injection règle+hook.
+- **Axe E** : `claude plugin validate .` puis `claude --plugin-dir .` ; session
+  dans un projet avec `doc/roadmap/` → consigne `SessionStart` injectée ; sans
+  `doc/roadmap/` → hook silencieux (pas de nag), et une demande de dev/plan →
+  le skill propose de créer `doc/roadmap/`. Interrupteur `AUTOSTART=off` → pas
+  d'injection. Vérifier l'absence de double injection règle perso + hook.
 
-## Ordre de rédaction proposé (après approbation)
+## Étapes d'implémentation
 
-1. `references/environment.md` (socle A + agnostic + persona-switch).
-2. `references/autonomous-tests.md` (axe C).
-3. `SKILL.md` (branchements + gates + prerequisites).
-4. `templates.md`, `github-issues.md`, `roadmap-file.md`, `forms.md`,
-   `migration.md`.
-5. **Axe E** : `.claude-plugin/plugin.json`, `hooks/` (variantes Claude+Codex +
-   `trigger.mjs`), retrait de `rules/roadmap-tracking.md`.
+Ordonnées par dépendance. Tag `(taille · tier → modèle)` : modèle résolu sur
+l'environnement actif (Claude Code → `standard`=Sonnet, `reasoning`=Opus). Les
+étapes 🧪 Tests et ✅ Validation ne portent pas de tag (obligatoires).
+
+**Étape 1 — `references/environment.md` (socle transverse)** `(L · reasoning → Opus)`
+Créer le fichier : mapping actions génériques → `Claude Code | Codex | Fallback`
+(changer de modèle, poser une question, sortir du mode plan, détecter le modèle
+actif) ; taxonomie des tiers + défauts Anthropic ; section « Formatage des
+commandes opérateur » (axe A, contenu embarqué) ; mécanisme de persona-switch
+sous-agent (axe C) ; schéma complet `.skill-config.yml` ; procédure de détection
+d'environnement. *Fondation des étapes 3-6.*
+
+**Étape 2 — `references/autonomous-tests.md` (boucle autonome)** `(L · reasoning → Opus)`
+Créer le fichier : contrat Vérificateur/Exécuteur, boucle test→fix→retest,
+garde-fou 3 itérations, format de reporting par itération, prompt système du
+Vérificateur, secours `inline` honnête. *Dépend de l'étape 1 (mécanisme).*
+
+**Étape 3 — `SKILL.md` : agnosticisme modèle/tier** `(L · reasoning → Opus)`
+Réécrire `## Prerequisites` (axe A, plus de règle externe) ; `Matrice complexité
+→ tier` ; `Résolution du modèle actif et de son tier` ; les 3 gates (1.5 / 3 /
+Phase 7) en tiers + commandes via mapping ; tags `(taille · tier → modèle)` ;
+renommer `## Compatibilité mode plan`. *Dépend de l'étape 1.*
+
+**Étape 4 — `SKILL.md` : GitHub optionnel** `(L · reasoning → Opus)`
+Brancher `github` / `local` : Applicabilité, démarrage + détection d'ID + migration
+conditionnés github, Phase 3 (`{ID}`), Phase 5 (2 branches), clôture, listing.
+Numérotation locale max+1 + `plan.source`. *Indépendante de 3, même fichier.*
+
+**Étape 5 — `SKILL.md` : tests manuel/autonome** `(L · reasoning → Opus)`
+Ajouter les deux branches (manuel actuel / autonome) sur Phase 7, tests
+intermédiaires, `🧪 Tests`, `✅ Validation`, commit, reprise ; suppression de
+l'étape 0 en autonome ; `⏸️` de clôture après `PASS`. *Dépend de l'étape 2.*
+
+**Étape 6 — `SKILL.md` : offre de création `doc/roadmap/`** `(S · standard → Sonnet)`
+Section Applicabilité / Règle de démarrage : si le skill est invoqué sans
+`doc/roadmap/`, proposer de le créer (question) puis dérouler le workflow (axe E,
+cas 2). *Indépendante.*
+
+**Étape 7 — Fichiers de référence restants** `(M · standard → Sonnet)`
+`templates.md` (front matter nullable + `plan.source`, tags tier, `plan.link`
+local) ; `github-issues.md` (préfixe « mode github uniquement ») ; `roadmap-file.md`
+(entrée `[Plan: {id}]` locale) ; `forms.md` (fallback texte pour `AskUserQuestion`) ;
+`migration.md` (note github uniquement). *Dépend des étapes 3-5 (cohérence).*
+
+**Étape 8 — Packaging plugin (axe E)** `(M · standard → Sonnet)`
+`hooks/hooks.json` (SessionStart Claude) + variante Codex (`sessionStart`) avec
+`test -d doc/roadmap` + injection consigne + interrupteur `AUTOSTART` ; ajout clé
+`hooks` dans `.claude-plugin/plugin.json` ; mise à jour `README.md` (hook embarqué
++ interrupteur, remplace la section opt-in). *Dépend des étapes 1-6.*
+
+**Étape 🧪 Tests** *(obligatoire)*
+`claude plugin validate .` ; `claude --plugin-dir .` ; walkthrough rétrocompat
+(Claude Code + GitHub sans config = v1.3.0) ; scénario local + autonome ; hook
+présent/absent + `AUTOSTART=off` ; `grep` anti-adhérence (aucun modèle versionné
+dans la logique) ; matrice de modes (manuel/autonome × github/local).
+
+**Étape ✅ Validation** *(obligatoire)*
+Vérifier les résultats des tests, relire les renvois croisés `SKILL.md ↔
+references/*`, confirmer l'absence de double injection règle+hook, clôturer.
