@@ -16,8 +16,6 @@ Backlog consolidé : plans nommés d'après leur issue GitHub (voir `doc/roadmap
 - **[Issue: #4] `#4` — Format tableau obligatoire pour tous les rapports** 🟢 — Bug : listing des plans en format clé-valeur au lieu de tableau markdown.
   [`4-roadmap-tracking-rapport-format-tableau.md`](4-roadmap-tracking-rapport-format-tableau.md)
 
-- **[Issue: #7] `#7` — Résolution tests.mode non-sautable dans la garde d'entrée** 🟢 — Bug : la proposition manual/autonomous n'est pas dans la checklist pré-action, donc contournable.
-  [`7-roadmap-tracking-tests-mode-garde-entree.md`](7-roadmap-tracking-tests-mode-garde-entree.md)
 
 
 ---
@@ -25,6 +23,9 @@ Backlog consolidé : plans nommés d'après leur issue GitHub (voir `doc/roadmap
 ## Fait
 
 ### Plans livrés (2026-09-11)
+
+- **[Issue: #7] `#7` — Résolution tests.mode non-sautable dans la garde d'entrée** (2026-09-11) 🔵 — Nouvel item 4 dans la checklist pré-action ; table anti-court-circuit mise à jour.
+  [`7-roadmap-tracking-tests-mode-garde-entree.md`](7-roadmap-tracking-tests-mode-garde-entree.md)
 
 - **[Issue: #6] `#6` — Proposition du mode de tests axée sur l'accessibilité de l'environnement** (2026-09-11) 🔵 — Question Phase 7 recentrée sur « l'env de test est-il accessible à l'agent ? » + message de reset post-persistance + version `2.2.0`.
   [`6-roadmap-tracking-tests-mode-accessibilite.md`](6-roadmap-tracking-tests-mode-accessibilite.md)

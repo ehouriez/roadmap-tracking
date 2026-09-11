@@ -3,7 +3,7 @@ plan:
   id: '7'
   name: 7-roadmap-tracking-tests-mode-garde-entree.md
   link: https://github.com/ehouriez/roadmap-tracking/blob/main/doc/roadmap/7-roadmap-tracking-tests-mode-garde-entree.md
-status: active
+status: done
 date: 2026-09-11
 description: >
   Rendre la résolution de tests.mode (proposition manual/autonomous quand non
@@ -44,10 +44,10 @@ déclencheur ; ce plan le rend **non-sautable**, au même niveau que l'étape 0.
 
 ## Étapes
 
-- [ ] Étape 1 — Insérer le nouvel item « `tests.mode` résolu ? » comme item 4 de la checklist pré-action ; l'étape 0 devient item 5 (XS · standard → Sonnet)
-- [ ] Étape 2 — Mettre à jour les lignes de la table anti-court-circuit pour intégrer la résolution `tests.mode` dans la séquence (XS · standard → Sonnet)
-- [ ] 🧪 Tests — Rédiger et exécuter la procédure de test
-- [ ] ✅ Validation — Vérifier les résultats et clôturer
+- [x] Étape 1 — Insérer le nouvel item « `tests.mode` résolu ? » comme item 4 de la checklist pré-action ; l'étape 0 devient item 5 (XS · standard → Sonnet)
+- [x] Étape 2 — Mettre à jour les lignes de la table anti-court-circuit pour intégrer la résolution `tests.mode` dans la séquence (XS · standard → Sonnet)
+- [x] 🧪 Tests — Rédiger et exécuter la procédure de test
+- [x] ✅ Validation — Vérifier les résultats et clôturer
 
 ## Décisions techniques
 
@@ -59,4 +59,7 @@ déclencheur ; ce plan le rend **non-sautable**, au même niveau que l'étape 0.
 ## Journal de session
 
 ### Session 2026-09-11
-- 📋 Prochain : étape 1 — insérer l'item tests.mode dans la checklist pré-action
+- ✅ Étape 1 : nouvel item 4 « tests.mode résolu ? » inséré dans la checklist pré-action, étape 0 renommée item 5.
+- ✅ Étape 2 : table anti-court-circuit mise à jour — séquences « Démarre » et « Implémente » incluent `résoudre tests.mode` ; principe final étendu aux 3 éléments non-sautables.
+- ✅ Tests E2E (mode autonomous) : T1–T5 PASS, aucune régression.
+- ✅ Validé et clôturé.

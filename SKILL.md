@@ -408,9 +408,21 @@ Vérifier **dans l'ordre** :
    implémentation. Vérifier qu'il a été posé ET que l'utilisateur y a répondu
    explicitement.
 
-4. **Phase 7 étape 0 exécutée ?**
-   → Si on entre en implémentation : la question `AskUserQuestion` sur les
-   tests intermédiaires a-t-elle été posée ?
+4. **`tests.mode` résolu ?**
+   → Si on entre en implémentation : lire `tests.mode` dans
+   `./doc/roadmap/.skill-config.yml`.
+   → **Fixé** (`manual` ou `autonomous`) → continuer.
+   → **Non fixé** (clé absente, fichier absent, ou `null`) → poser
+   **MAINTENANT** la question `AskUserQuestion` « L'environnement de test de ce
+   projet est-il directement accessible depuis cet IDE ? » et persister le choix
+   dans `.skill-config.yml` avant de continuer. Ne pas passer à l'item 5 tant
+   que ce choix n'est pas persisté.
+
+5. **Phase 7 étape 0 exécutée ?**
+   → **Mode `autonomous`** : cette étape est supprimée — passer directement à
+   l'implémentation.
+   → **Mode `manual`** : la question `AskUserQuestion` sur les tests
+   intermédiaires a-t-elle été posée ?
    → Si non : la poser **MAINTENANT**, avant la première ligne de code.
 
 ### Règle anti-court-circuit
@@ -423,13 +435,14 @@ une **intention**, pas une **autorisation de sauter les checkpoints**.
 
 | L'utilisateur dit | Ce que ça signifie pour le skill |
 |---|---|
-| « Démarre toutes les étapes de #109 » | Reprendre #109 → résumé → `⏸️` → Phase 7 étape 0 → implémenter |
-| « Implémente l'étape 3 » | Reprendre le plan → `⏸️` → Phase 7 étape 0 (même pour 1 seule étape) → implémenter |
+| « Démarre toutes les étapes de #109 » | Reprendre #109 → résumé → `⏸️` → résoudre `tests.mode` → Phase 7 étape 0 (mode `manual`) → implémenter |
+| « Implémente l'étape 3 » | Reprendre le plan → `⏸️` → résoudre `tests.mode` → Phase 7 étape 0 (mode `manual`) → implémenter |
 | « Go » / « Fais tout » | ≠ autorisation de bypass. Dérouler le workflow normalement |
 | « Continue » / « Reprends » | Reprendre le plan → résumé → `⏸️` → choix utilisateur |
 
 > **Principe : aucune formulation utilisateur, aussi impérative soit-elle,
-> n'autorise à sauter un point d'arrêt `⏸️` ou l'étape 0 de la Phase 7.**
+> n'autorise à sauter un point d'arrêt `⏸️`, la résolution de `tests.mode`
+> ou l'étape 0 de la Phase 7.**
 
 ---
 
