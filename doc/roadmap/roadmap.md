@@ -13,6 +13,9 @@ Backlog consolidé : plans nommés d'après leur issue GitHub (voir `doc/roadmap
 
 ## À faire
 
+- **[Issue: #10] `#10` — Invocation guard pour les fichiers du skill** (2026-09-12) 🟢 — Ajout règle garde d'entrée + entrée bypass tacite pour couvrir l'accès direct aux fichiers du skill sans invocation préalable.
+  [`10-roadmap-tracking-invocation-guard.md`](10-roadmap-tracking-invocation-guard.md)
+
 - **[Issue: #8] `#8` — Grilling adaptatif phases 2/4/6** (2026-09-12) 🟢 — Intégration du grilling (design tree, rounds pré-amorcés, frontier réduite) pour les plans complexes L/XL.
   [`8-roadmap-tracking-grilling.md`](8-roadmap-tracking-grilling.md)
 
