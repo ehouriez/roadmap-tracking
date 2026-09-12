@@ -13,7 +13,7 @@ description: >
 license: MIT
 metadata:
   author: Emmanuel Houriez
-  version: "2.5.5"
+  version: "2.5.6"
   domain: workflow
   triggers: >
     plan, cadrage, roadmap, issue GitHub, suivi de tâche, planification,
@@ -572,6 +572,7 @@ Tant que la checklist ci-dessous n'est pas satisfaite, il est **interdit** de :
 - Écrire ou modifier un fichier.
 - Lancer une commande shell liée au développement (build, test, install, etc.).
 - Produire du code ou du pseudo-code.
+- Accéder en lecture ou en écriture aux fichiers du skill (`SKILL.md`, `references/`, `scripts/`) **sans avoir chargé le skill via `Skill({skill: "roadmap-tracking:roadmap-tracking"})`**. La lecture directe de ces fichiers est elle-même le vecteur du bypass : elle court-circuite le workflow avant même que celui-ci puisse s'imposer.
 
 ### Checklist pré-action
 
@@ -638,6 +639,7 @@ une **intention**, pas une **autorisation de sauter les checkpoints**.
 > | Prompt visiblement structuré comme une spec (structure soignée, sections titrées, tableaux, comportement attendu explicite) — qu'il provienne de l'agent lui-même, d'un agent tiers ou de l'utilisateur | Ressemble à une spec finalisée prête à implémenter — risque de bypass supérieur à une analyse utilisateur, car la qualité de cadrage est professionnelle par nature | La qualité de rédaction d'un prompt n'a aucune incidence sur le workflow. Un prompt bien cadré est une meilleure **entrée de cadrage**, pas une autorisation de sauter des phases. Dérouler le workflow normalement. |
 > | Changement « petit » ou « évident » | Justifie mentalement le bypass | La taille du changement n'exempte d'aucune phase. |
 > | Demande portant sur le skill lui-même ou ses fichiers de référence | Hors scope apparent | Le skill s'applique à son propre code autant qu'à tout autre projet. |
+> | Demande impliquant `SKILL.md`, `references/` ou `scripts/` + lecture directe sans invocation préalable | L'agent lit les fichiers du skill comme une tâche de maintenance ordinaire — le skill n'a jamais été chargé via `Skill({skill: "roadmap-tracking:roadmap-tracking"})` | Invoquer le skill en premier. Tout accès en lecture ou en écriture aux fichiers du skill est interdit avant cette invocation. La lecture directe **est** le bypass. |
 > | `bypass` donné explicitement par l'utilisateur (gate modèle) | Valide uniquement pour la **gate modèle** | ≠ autorisation de sauter les checkpoints du workflow. |
 >
 > Dans tous ces cas : **créer le plan d'abord, implémenter ensuite, jamais les deux ensemble.**
@@ -817,6 +819,13 @@ Ne jamais tenter de `Write`/`gh`/`git` tant que le mode plan est actif.
 > 🔨 MODE ACT (PLAN) — écriture LIMITÉE au plan, à l'issue et au roadmap.
 
 **UNIQUEMENT et dans cet ordre** — deux branches selon le mode `issues` détecté :
+
+> **Détection préalable de `issues.mode` (obligatoire avant de choisir la branche).**
+> Exécuter la procédure de détection définie dans `references/environment.md § Skill Configuration Schema` :
+> `.git/` présent **et** remote GitHub **et** `gh auth status` réussit → mode `github` ;
+> sinon → mode `local`. **Ne jamais choisir `local` par défaut sans avoir vérifié.**
+> Si `.skill-config.yml` contient `issues.mode: github` ou `issues.mode: local`, utiliser
+> cette valeur directement sans relancer la détection.
 
 #### Mode `github`
 

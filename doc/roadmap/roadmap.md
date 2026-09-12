@@ -13,9 +13,6 @@ Backlog consolidé : plans nommés d'après leur issue GitHub (voir `doc/roadmap
 
 ## À faire
 
-- **[Issue: #10] `#10` — Invocation guard pour les fichiers du skill** (2026-09-12) 🟢 — Ajout règle garde d'entrée + entrée bypass tacite pour couvrir l'accès direct aux fichiers du skill sans invocation préalable.
-  [`10-roadmap-tracking-invocation-guard.md`](10-roadmap-tracking-invocation-guard.md)
-
 - **[Issue: #8] `#8` — Grilling adaptatif phases 2/4/6** (2026-09-12) 🟢 — Intégration du grilling (design tree, rounds pré-amorcés, frontier réduite) pour les plans complexes L/XL.
   [`8-roadmap-tracking-grilling.md`](8-roadmap-tracking-grilling.md)
 
@@ -24,6 +21,9 @@ Backlog consolidé : plans nommés d'après leur issue GitHub (voir `doc/roadmap
 ## Fait
 
 ### Plans livrés (2026-09-12)
+
+- **[Issue: #10] `#10` — Invocation guard pour les fichiers du skill** (2026-09-12) 🔵 — Règle « Interdit avant ce checkpoint » + entrée bypass tacite couvrant la lecture directe des fichiers du skill ; détection obligatoire de `issues.mode` en Phase 5.
+  [`10-roadmap-tracking-invocation-guard.md`](10-roadmap-tracking-invocation-guard.md)
 
 - **[Issue: #9] `#9` — One-shot implementation option + complexity in breakpoints** (2026-09-12) 🔵 — Ajout `📊 Complexity :` en Phase 5 et reprise ; option `⚡ one-shot` qui enchaîne toutes les étapes sans tests intermédiaires ; note Phase 7 step 0.
   [`9-roadmap-tracking-one-shot-complexity.md`](9-roadmap-tracking-one-shot-complexity.md)
