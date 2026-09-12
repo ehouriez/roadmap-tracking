@@ -13,7 +13,7 @@ description: >
 license: MIT
 metadata:
   author: Emmanuel Houriez
-  version: "2.5.3"
+  version: "2.5.5"
   domain: workflow
   triggers: >
     plan, cadrage, roadmap, issue GitHub, suivi de tâche, planification,
@@ -292,6 +292,55 @@ en attente de réponse.
    Si le bloc commit est absent, le STOP est invalide — revenir en arrière
    et l'ajouter avant de s'arrêter.
 ```
+
+## Correction proactive des incohérences de plan
+
+À chaque interaction impliquant un fichier plan (démarrage, reprise, fin
+d'étape, mise à jour de statut), **analyser silencieusement** les écarts
+présents dans le fichier plan courant **et** dans tout fichier plan lié par une
+relation de dépendance (dépend de / est requis par, bloque / est bloqué par,
+et toute autre relation inter-plans présente dans les front matters).
+
+### Périmètre des corrections
+
+Appliquer les corrections sur **toute information manquante, obsolète ou
+incohérente** détectable sans jugement de valeur — exemples non exhaustifs :
+
+- Champ `status` incohérent avec la progression réelle des étapes cochées.
+- Dépendance déclarée dans un sens mais absente dans le plan lié (relation non
+  réciproque).
+- `updated_at` non rafraîchi après une modification.
+- Étape cochée mais `status` toujours `active` (devrait être `in-progress` ou
+  `done`).
+- Référence à un fichier plan renommé ou déplacé.
+- Champ `complexity` ou `priority` présent mais incohérent avec le contenu du
+  plan.
+
+### Règle d'exécution
+
+```
+✅ Détecter → Corriger immédiatement → Notifier.
+❌ Ne JAMAIS demander « voulez-vous que je mette à jour… ? »
+```
+
+1. **Correction immédiate** : appliquer les modifications via les outils
+   `Edit`/`Write` sans demander de permission.
+2. **Notification post-action** : après chaque série de corrections, afficher
+   un tableau récapitulatif :
+
+   | Fichier modifié | Champ concerné | Avant | Après | Raison |
+   |---|---|---|---|---|
+   | `NNN-slug.md` | `status` | `active` | `in-progress` | Étape 2 cochée |
+   | `MMM-other.md` | `blocks` | absent | `[NNN]` | Relation réciproque manquante |
+
+3. **Pas de notification si aucun écart** : si le plan est déjà cohérent, ne
+   rien afficher — passer directement à la suite du workflow.
+
+> **Limite de périmètre.** Cette correction s'applique aux **métadonnées
+> structurelles** (front matter, relations inter-plans, progression d'étapes).
+> Elle n'inclut **jamais** de modification du contenu métier du plan (objectif,
+> description, étapes, procédures de test) — ces champs sont sous contrôle de
+> l'utilisateur et ne sont modifiés qu'à sa demande explicite.
 
 ## Signaux de mode
 
@@ -586,11 +635,18 @@ une **intention**, pas une **autorisation de sauter les checkpoints**.
 > | Forme de prompt | Risque | Traduction obligatoire |
 > |---|---|---|
 > | Analyse détaillée + fixes proposés fournis dans le prompt | Paraît « déjà planifié » → saut vers l'implémentation | L'analyse est une **entrée de cadrage**, pas un plan validé. Dérouler le workflow normalement (Phase 1 → Phase 5 → `⏸️` → Phase 7). |
+> | Prompt visiblement structuré comme une spec (structure soignée, sections titrées, tableaux, comportement attendu explicite) — qu'il provienne de l'agent lui-même, d'un agent tiers ou de l'utilisateur | Ressemble à une spec finalisée prête à implémenter — risque de bypass supérieur à une analyse utilisateur, car la qualité de cadrage est professionnelle par nature | La qualité de rédaction d'un prompt n'a aucune incidence sur le workflow. Un prompt bien cadré est une meilleure **entrée de cadrage**, pas une autorisation de sauter des phases. Dérouler le workflow normalement. |
 > | Changement « petit » ou « évident » | Justifie mentalement le bypass | La taille du changement n'exempte d'aucune phase. |
 > | Demande portant sur le skill lui-même ou ses fichiers de référence | Hors scope apparent | Le skill s'applique à son propre code autant qu'à tout autre projet. |
 > | `bypass` donné explicitement par l'utilisateur (gate modèle) | Valide uniquement pour la **gate modèle** | ≠ autorisation de sauter les checkpoints du workflow. |
 >
 > Dans tous ces cas : **créer le plan d'abord, implémenter ensuite, jamais les deux ensemble.**
+>
+> **Principe général — aucun facteur d'exemption.** Ni la source du prompt
+> (utilisateur, agent lui-même, agent tiers, copier-coller d'une spec externe), ni sa qualité
+> de structuration (sections titrées, tableaux, exemples, comportement attendu
+> déjà formulé) ne constituent un facteur d'exemption. Plus un prompt est
+> structuré, plus le risque de bypass tacite est élevé — pas l'inverse.
 
 ---
 
