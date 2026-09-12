@@ -747,12 +747,14 @@ Puis confirme et pose le point d'arrêt :
 - 📄 Fichier créé : `./doc/roadmap/{ISSUE-ou-ID}-nom-du-plan.md`
 - 🔗 Issue GitHub : #XX (créée / mise à jour / manuel) *(mode github)* — ou : ❌ Local (ID {n}) *(mode local)*
 - 📋 roadmap.md : mis à jour
+- 📊 Complexity : {taille} · {tier} → {modèle}
 
 ---
 ⏸️ POINT D'ARRÊT 2 — Le plan est créé. Que souhaites-tu faire ?
 1. 🚀 Commencer l'implémentation — je démarre l'étape 1
-2. 📝 Modifier le plan
-3. 🛑 Arrêter ici
+2. ⚡ Commencer l'implémentation — démarrer toutes les étapes en one-shot
+3. 📝 Modifier le plan
+4. 🛑 Arrêter ici
 ```
 
 **STOP.** Attendre la réponse.
@@ -877,6 +879,11 @@ le mode de tests :
    > s'exécutent après chaque étape automatiquement via la boucle
    > Exécuteur/Vérificateur. Passer directement à l'étape 1.
    > Voir `references/autonomous-tests.md`.
+
+   > **Mode one-shot** (option ⚡ choisie au POINT D'ARRÊT 2 ou au point d'arrêt
+   > de reprise) : cette étape 0 est **supprimée** — aucun test intermédiaire,
+   > enchaîner directement l'étape 1. Les étapes `🧪 Tests` et `✅ Validation`
+   > finales restent obligatoires.
 
    **Mode `manual`** (défaut) : quand l'opérateur demande l'implémentation
    d'une ou plusieurs étapes (« Démarre l'étape 3 », « Exécute les étapes 1 et
@@ -1188,15 +1195,16 @@ templates de tests ci-dessus.
 
 ```
 ### 📋 Résumé du plan #{ISSUE}
-**Statut** : 🟢 active | **Dernière session** : YYYY-MM-DD | **Progression** : 3/7
+**Statut** : 🟢 active | **complexité** : XS · standard → Sonnet | **Dernière session** : YYYY-MM-DD | **Progression** : 3/7
 **Étapes restantes** : 4. [ ] Migrer le schéma (L · reasoning → Opus)  5. [ ] … (M · standard → Sonnet)
 
 ---
 ⏸️ Que souhaites-tu faire ?
 1. 🚀 Continuer l'implémentation — reprendre à l'étape 4
-2. 🔍 Clarifier / recadrer
-3. 📝 Modifier le plan
-4. 📋 Voir le journal
+2. ⚡ Continuer l'implémentation — reprendre à l'étape 4, puis enchaîner toutes les étapes suivantes en one-shot
+3. 🔍 Clarifier / recadrer
+4. 📝 Modifier le plan
+5. 📋 Voir le journal
 ```
 
 > **Gate modèle sur reprise.** Si le modèle actif est détectable et son tier

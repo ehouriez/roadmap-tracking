@@ -1,7 +1,7 @@
 # Roadmap roadmap-tracking
 
 > Backlog actif. L'historique détaillé est archivé dans `_archives/`.
-> Dernière mise à jour : 2026-09-11.
+> Dernière mise à jour : 2026-09-12.
 
 ## Contexte
 
@@ -13,11 +13,17 @@ Backlog consolidé : plans nommés d'après leur issue GitHub (voir `doc/roadmap
 
 ## À faire
 
-_(vide)_
+- **[Issue: #8] `#8` — Grilling adaptatif phases 2/4/6** (2026-09-12) 🟢 — Intégration du grilling (design tree, rounds pré-amorcés, frontier réduite) pour les plans complexes L/XL.
+  [`8-roadmap-tracking-grilling.md`](8-roadmap-tracking-grilling.md)
 
 ---
 
 ## Fait
+
+### Plans livrés (2026-09-12)
+
+- **[Issue: #9] `#9` — One-shot implementation option + complexity in breakpoints** (2026-09-12) 🔵 — Ajout `📊 Complexity :` en Phase 5 et reprise ; option `⚡ one-shot` qui enchaîne toutes les étapes sans tests intermédiaires ; note Phase 7 step 0.
+  [`9-roadmap-tracking-one-shot-complexity.md`](9-roadmap-tracking-one-shot-complexity.md)
 
 ### Plans livrés (2026-09-11)
 
