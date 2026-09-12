@@ -13,7 +13,7 @@ description: >
 license: MIT
 metadata:
   author: Emmanuel Houriez
-  version: "2.5.1"
+  version: "2.5.2"
   domain: workflow
   triggers: >
     plan, cadrage, roadmap, issue GitHub, suivi de tâche, planification,
@@ -380,7 +380,7 @@ Juste après le bloc `⚠️`, afficher **une seule ligne de consigne**, puis
 ```
 ⏸️ Réponds `bypass` pour continuer avec le modèle actuel, ou change de modèle
    via la commande de ton IDE (voir references/environment.md § Generic Action
-   Mapping) puis relance.
+   Mapping) puis relance avec `continue`.
 ```
 
 - **Il s'agit d'un vrai point d'arrêt** : ne rien produire d'autre, ne pas
@@ -855,7 +855,7 @@ l'alignement du modèle sur la **séquence d'étapes demandée** (pas étape par
      = gaspillage).
    - Dans les deux cas de mismatch → **point d'arrêt de bypass `⏸️`** : attendre
      `bypass` (continuer sur le modèle actif) ou un switch manuel via la commande
-     IDE puis relance. Ne pas entamer l'étape 0 tant que l'utilisateur n'a pas
+     IDE puis relance avec `continue`. Ne pas entamer l'étape 0 tant que l'utilisateur n'a pas
      répondu.
 
 > Une seule gate pour toute la séquence : ne pas la rejouer à chaque étape. Si
