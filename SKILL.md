@@ -1195,7 +1195,7 @@ templates de tests ci-dessus.
 
 ```
 ### 📋 Résumé du plan #{ISSUE}
-**Statut** : 🟢 active | **complexité** : XS · standard → Sonnet | **Dernière session** : YYYY-MM-DD | **Progression** : 3/7
+**Statut** : 🟢 active | **complexité** : {taille} · {tier} → {modèle} | **Dernière session** : YYYY-MM-DD | **Progression** : 3/7
 **Étapes restantes** : 4. [ ] Migrer le schéma (L · reasoning → Opus)  5. [ ] … (M · standard → Sonnet)
 
 ---

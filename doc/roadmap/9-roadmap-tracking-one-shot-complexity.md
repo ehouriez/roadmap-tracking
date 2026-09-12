@@ -91,4 +91,5 @@ sed -n '876,896p' SKILL.md
 - ✅ Fait : étape 3 — Phase 7 step 0 note one-shot
 - ✅ Fait : 🧪 Tests — vérification des 3 blocs (PASS)
 - ✅ Fait : ✅ Validation — plan clôturé, issue #9 fermée
+- ✅ Fix post-clôture : placeholder `{taille} · {tier} → {modèle}` dans la ligne complexité du résumé (valeur hardcodée corrigée)
 - 🚧 Blocages : aucun
