@@ -54,7 +54,8 @@ le workflow avant même que celui-ci puisse s'imposer.
 
 | Décision | Choix retenu | Justification |
 |----------|-------------|---------------|
-| Où placer la règle dans la garde | « Interdit avant ce checkpoint » + tableau bypass tacite | Double couverture : règle prescriptive (interdit) + description du pattern (bypass) |
+| Où placer la règle d'invocation | « Interdit avant ce checkpoint » + tableau bypass tacite | Double couverture : règle prescriptive (interdit) + description du pattern (bypass) |
+| Où placer la détection `issues.mode` | Prérequis explicite en Phase 5, avant les deux branches | Le choix du mode doit être un résultat de détection, pas une valeur par défaut silencieuse |
 
 ## Tests
 
