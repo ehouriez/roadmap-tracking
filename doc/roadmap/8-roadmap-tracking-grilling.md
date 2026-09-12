@@ -9,6 +9,7 @@ description: >
   Intégrer la philosophie de grilling (design tree, rounds pré-amorcés, frontier
   réduite) dans les phases 2, 4 et 6 du skill roadmap-tracking pour les plans complexes.
 priority: medium
+enriched: 2026-09-12
 complexity: L
 scope:
   modules:
@@ -53,11 +54,11 @@ et l'autorisation d'implémentation (Phase 6).
 
 ## Étapes
 
-- [ ] Étape 1 — Analyser SKILL.md et cartographier les points d'insertion exacts pour Phase 2, Phase 4 et Phase 6 (XS · standard → Sonnet)
-- [ ] Étape 2 — Implémenter le grilling adaptatif en Phase 2 : branche complexité (Phase 1 gate réutilisée), rounds pré-amorcés 6 catégories + 1 round suivi, plans simples inchangés (M · reasoning → Opus)
-- [ ] Étape 3 — Implémenter le grilling avant gate en Phase 4 : bloc systématique 4 catégories + frontier réduite + recommandation pré-gate (S · reasoning → Opus)
-- [ ] Étape 4 — Implémenter le grilling avant gate en Phase 6 : bloc systématique 4 catégories + frontier réduite + recommandation pré-gate (S · reasoning → Opus)
-- [ ] Étape 5 — Documenter le schéma `grilling.*` dans `references/environment.md` (clés, valeurs par défaut, exemples de config) (S · standard → Sonnet)
+- [x] Étape 1 — Analyser SKILL.md et cartographier les points d'insertion exacts pour Phase 2, Phase 4 et Phase 6 (XS · standard → Sonnet)
+- [x] Étape 2 — Implémenter le grilling adaptatif en Phase 2 : branche complexité (Phase 1 gate réutilisée), rounds pré-amorcés 6 catégories + 1 round suivi, plans simples inchangés (M · reasoning → Opus)
+- [x] Étape 3 — Implémenter le grilling avant gate en Phase 4 : bloc systématique 4 catégories + frontier réduite + recommandation pré-gate (S · reasoning → Opus)
+- [x] Étape 4 — Implémenter le grilling avant gate en Phase 6 : bloc systématique 4 catégories + frontier réduite + recommandation pré-gate (S · reasoning → Opus)
+- [x] Étape 5 — Documenter le schéma `grilling.*` dans `references/environment.md` (clés, valeurs par défaut, exemples de config) (S · standard → Sonnet)
 - [ ] Étape 6 — Mettre à jour `roadmap.md` (entrée #8 "À faire") et bumper la version du plugin (XS · standard → Sonnet)
 - [ ] 🧪 Tests — Valider le comportement sur un plan simple (grilling absent) et un plan complexe (grilling actif en Phase 2, 4, 6)
 - [ ] ✅ Validation — Vérifier les résultats et clôturer
@@ -77,6 +78,7 @@ et l'autorisation d'implémentation (Phase 6).
 | Grilling Phase 4/6 | Systématique pour les plans complexes (non opt-outable par plan) | L'opt-out per-plan garantit le contournement systématique en contexte entreprise |
 | Config `.skill-config.yml` | `grilling.enabled` (global) + `grilling.categories.phaseN` (override par phase) | YAGNI modéré : use case principal = catégories custom ; per-phase disable = YAGNI |
 | État par défaut | `grilling.enabled: true` (opt-out) | Opt-in = jamais utilisé en entreprise (personne ne lit les changelogs) |
+| Structure d'implémentation | Section canonique unique « Grilling adaptatif » dans SKILL.md, référencée par Phase 2/4/6 | DRY : mécanique définie une fois, chaque phase n'apporte que ses catégories |
 
 ## Tests
 
@@ -114,4 +116,12 @@ claude --no-config
 ## Journal de session
 
 ### Session 2026-09-12
-- 📋 Prochain : Étape 1 — cartographie des points d'insertion dans SKILL.md
+- ✅ Fait : Étapes 1-5 livrées hors workflow roadmap-tracking (plugin désinstallé en cours de session, implémentation directe post-grilling).
+  - SKILL.md : section canonique « Grilling adaptatif » (déclencheur L/XL, toggle `grilling.enabled`, frontier réduite, format des rounds, règle « faits vs décisions »).
+  - SKILL.md Phase 2 : branche complexité — grilling (6 catégories) remplace `AskUserQuestion` pour les plans complexes ; simples inchangés.
+  - SKILL.md Phase 4 : grilling (4 catégories) + recommandation explicite avant la gate binaire.
+  - SKILL.md Phase 6 : grilling (4 catégories) + recommandation explicite avant la gate binaire.
+  - references/environment.md : clés `grilling.*` dans le schéma + sous-section `## Grilling`.
+- 🔧 Écart : structure DRY retenue (section canonique unique référencée par les 3 phases) plutôt qu'une logique dupliquée par phase.
+- 🚧 Blocages : issue GitHub #8 jamais créée (référencée dans le front matter mais absente du repo distant) — à créer ou à neutraliser.
+- 📋 Prochain : Étape 6 (mise à jour `roadmap.md` + bump version plugin), puis 🧪 Tests et ✅ Validation.
