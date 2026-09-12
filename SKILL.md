@@ -13,7 +13,7 @@ description: >
 license: MIT
 metadata:
   author: Emmanuel Houriez
-  version: "2.5.2"
+  version: "2.5.3"
   domain: workflow
   triggers: >
     plan, cadrage, roadmap, issue GitHub, suivi de tâche, planification,
@@ -275,6 +275,12 @@ en attente de réponse.
    pour les tests finaux 🧪 Tests. Afficher les résultats uniquement dans le
    chat (verdict Vérificateur inclus) ne suffit PAS : le fichier plan est la
    source de vérité traçable, et l'étape ✅ Validation s'appuie dessus.
+
+   Ordre d'exécution OBLIGATOIRE : l'outil Edit/Write sur le fichier plan est
+   appelé EN PREMIER ; le chat ne contient ensuite qu'une référence
+   (`→ voir section ## Tests de NNN-slug.md`). Reproduire la procédure
+   intégralement dans le chat — même dans la même réponse que l'écriture dans
+   le plan — est INTERDIT. Le chat pointe vers le plan, jamais l'inverse.
 ```
 
 ## ⛔ Règle absolue — pas de ⏸️ sans 📦
@@ -1012,20 +1018,17 @@ l'étape 0 de la Phase 7. À la fin de l'implémentation d'une étape sélection
    - Inclut les commandes de vérification des résultats attendus.
    - Précise les **résultats attendus** pour chaque vérification.
 
-3. **Afficher la procédure complète ET le commit proposé dans une même
-   réponse**, selon ce template obligatoire — les deux blocs sont
-   **indissociables** :
+3. **Écrire d'abord la procédure dans la section `## Tests` du fichier plan**
+   (appel outil Edit/Write — OBLIGATOIRE avant tout affichage dans le chat),
+   puis dans le chat afficher **uniquement une référence et le commit proposé**
+   — les deux blocs sont **indissociables** :
 
    ```
    ### 🧪 Tests intermédiaires — Étape X/N
 
-   **Procédure :**
+   **Procédure :** → voir section `## Tests` de `NNN-slug.md` (écrite à l'instant).
 
-   ```bash
-   <commandes de test>
-   ```
-
-   **Résultats attendus :** <ce que l'opérateur doit observer>
+   **Résultats attendus :** <résumé bref — détail dans la section `## Tests` du plan>
 
    ---
 
@@ -1092,20 +1095,17 @@ N-2) sont terminées. Tu dois :
    - Précise les **résultats attendus** pour chaque vérification (ce que
      l'opérateur doit observer si tout fonctionne).
 
-3. **Afficher la procédure complète ET le commit proposé dans une même
-   réponse**, selon ce template obligatoire — les deux blocs sont
-   **indissociables** :
+3. **Écrire d'abord la procédure dans la section `## Tests` du fichier plan**
+   (appel outil Edit/Write — OBLIGATOIRE avant tout affichage dans le chat),
+   puis dans le chat afficher **uniquement une référence et le commit proposé**
+   — les deux blocs sont **indissociables** :
 
    ```
    ### 🧪 Tests finaux
 
-   **Procédure :**
+   **Procédure :** → voir section `## Tests` de `NNN-slug.md` (écrite à l'instant).
 
-   ```bash
-   <commandes de test>
-   ```
-
-   **Résultats attendus :** <ce que l'opérateur doit observer>
+   **Résultats attendus :** <résumé bref — détail dans la section `## Tests` du plan>
 
    ---
 
