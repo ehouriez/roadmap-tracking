@@ -580,6 +580,18 @@ une **intention**, pas une **autorisation de sauter les checkpoints**.
 > n'autorise à sauter un point d'arrêt `⏸️`, la résolution de `tests.mode`
 > ou l'étape 0 de la Phase 7.**
 
+> **Bypass tacite — cas à risque élevé.** Certaines formes de prompt invitent
+> à implémenter directement sans déclencher de signal d'alerte apparent :
+>
+> | Forme de prompt | Risque | Traduction obligatoire |
+> |---|---|---|
+> | Analyse détaillée + fixes proposés fournis dans le prompt | Paraît « déjà planifié » → saut vers l'implémentation | L'analyse est une **entrée de cadrage**, pas un plan validé. Dérouler le workflow normalement (Phase 1 → Phase 5 → `⏸️` → Phase 7). |
+> | Changement « petit » ou « évident » | Justifie mentalement le bypass | La taille du changement n'exempte d'aucune phase. |
+> | Demande portant sur le skill lui-même ou ses fichiers de référence | Hors scope apparent | Le skill s'applique à son propre code autant qu'à tout autre projet. |
+> | `bypass` donné explicitement par l'utilisateur (gate modèle) | Valide uniquement pour la **gate modèle** | ≠ autorisation de sauter les checkpoints du workflow. |
+>
+> Dans tous ces cas : **créer le plan d'abord, implémenter ensuite, jamais les deux ensemble.**
+
 ---
 
 # Workflow : création d'un nouveau plan
