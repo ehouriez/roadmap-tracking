@@ -103,12 +103,26 @@ Si l'utilisateur ne référence pas un plan existant dans son premier prompt :
    séparées par des filets (`───`), ni en puces : le gabarit ci-dessous est
    contraignant.
 
+✅ **SEUL format autorisé** :
+
 ```
 ### 📋 Plans existants
 
 | # | Fichier | Statut | Résumé | Issue GitHub |
 |---|---------|--------|--------|--------------|
 | 1 | `27-nom.md` | 🟢 Active | Description (front matter ou ligne "Description") | `#27` ou ❌ Non rattachée |
+```
+
+❌ **Formats INTERDITS** — ne jamais produire ceci :
+
+```
+#: 1
+Fichier: 27-nom.md
+Statut: 🟢 Active
+Résumé: Description
+────────────────────────────────────────
+#: 2
+Fichier: 28-autre.md
 ```
 
 > **Mode `local`** : la colonne « Issue GitHub » affiche `❌ Local` pour tous les
@@ -211,6 +225,22 @@ Poser un choix à **3 options** via `AskUserQuestion` :
    tableau. Les exemples de tableau du skill sont des GABARITS CONTRAIGNANTS,
    pas des suggestions.
 ```
+
+❌ Exemple exact du format INTERDIT — ne jamais produire ceci :
+
+```
+#: 1
+Fichier: 27-nom.md
+Statut: 🟢 Active
+Résumé: Description du plan
+Priorité: HAUTE
+────────────────────────────────────────
+#: 2
+Fichier: 28-autre.md
+Statut: 🔴 Bloqué
+```
+
+✅ Seul format valide : `| # | Fichier | Statut | Résumé | Issue GitHub |` (tableau markdown).
 
 ## ⛔ Règle absolue — séparation création / implémentation
 
