@@ -64,17 +64,23 @@ Charge-les **à la demande**, seulement quand la phase l'exige :
 Ce workflow s'applique au **travail de développement, configuration ou
 architecture** sur le projet courant.
 
-Il **ne s'applique PAS** pour :
-- Les questions de culture générale / explications techniques sans impact projet.
-- Les urgences explicites (`URGENT`, `FIX IMMÉDIAT`, `PROD DOWN`).
-- Les demandes one-shot sans impact codebase (ex. générer une commande curl).
+> **En cas de doute, applique le workflow.**
 
-En cas de doute, applique le workflow.
+Il **ne s'applique PAS** pour :
+- Les questions de culture générale / explications techniques ne touchant **aucun fichier du projet** (aucun read, write, create, delete).
+- Les urgences explicites (`URGENT`, `FIX IMMÉDIAT`, `PROD DOWN`) — le fix immédiat est autorisé, mais une étape post-fix de traçabilité est obligatoire (voir ci-dessous).
+
+> **Urgences — traçabilité post-fix obligatoire** : dès la correction appliquée,
+> créer ou mettre à jour le fichier plan correspondant pour consigner ce qui a
+> été fait, pourquoi, et quel impact. L'urgence exempte de la planification
+> amont, pas de la traçabilité aval.
 
 > **`doc/roadmap/` absent** : si le skill est invoqué sur un projet sans
 > répertoire `doc/roadmap/`, il ne refuse pas — il propose de le créer (voir
-> « Règle de démarrage » ci-dessous). Si l'utilisateur refuse, le workflow
-> roadmap-tracking ne s'applique pas à cette session.
+> « Règle de démarrage » ci-dessous). Si l'utilisateur refuse, le workflow ne
+> s'applique pas pour cette demande ; si une demande ultérieure dans la même
+> session implique une modification de fichier du projet, le skill re-propose
+> la création une seule fois (voir « Règle de démarrage »).
 
 ## Règle de démarrage
 
@@ -87,8 +93,13 @@ Si le répertoire `./doc/roadmap/` n'existe **pas** dans le projet courant :
 
 - **Oui** → `mkdir -p ./doc/roadmap` + initialiser `roadmap.md` → dérouler la
   règle de démarrage standard ci-dessous.
-- **Non** → le workflow roadmap-tracking ne s'applique pas à ce projet pour
-  cette session. Traiter le prompt normalement.
+- **Non** → Traiter le prompt normalement sans le workflow. Si, plus tard
+  dans la **même session**, une demande implique une modification de fichier
+  du projet, le skill re-propose la création de `doc/roadmap/` **une seule
+  fois**. Si l'utilisateur refuse à nouveau, consigner l'avertissement suivant
+  et continuer sans le workflow :
+  > ⚠️ `doc/roadmap/` absent et création refusée — ce travail ne sera pas
+  > suivi par roadmap-tracking.
 
 ---
 

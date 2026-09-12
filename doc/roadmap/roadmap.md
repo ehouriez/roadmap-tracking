@@ -22,6 +22,9 @@ Backlog consolidé : plans nommés d'après leur issue GitHub (voir `doc/roadmap
 
 ### Plans livrés (2026-09-12)
 
+- **[Issue: #11] `#11` — Harden applicability rules and startup rule** (2026-09-12) 🔵 — Critère objectif fichier-touché, traçabilité post-fix urgences, suppression one-shot, principe directeur avant exclusions, re-proposition doc/roadmap/ adaptative.
+  [`11-applicabilite-regle-demarrage-hardening.md`](11-applicabilite-regle-demarrage-hardening.md)
+
 - **[Issue: #10] `#10` — Invocation guard pour les fichiers du skill** (2026-09-12) 🔵 — Règle « Interdit avant ce checkpoint » + entrée bypass tacite couvrant la lecture directe des fichiers du skill ; détection obligatoire de `issues.mode` en Phase 5.
   [`10-roadmap-tracking-invocation-guard.md`](10-roadmap-tracking-invocation-guard.md)
 
