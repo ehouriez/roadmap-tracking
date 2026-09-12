@@ -403,6 +403,77 @@ matrice, modèle résolu au moment de la création depuis le mapping de
 `references/environment.md`. Les étapes `🧪 Tests` et `✅ Validation` ne portent
 **jamais** de tag (obligatoires et systématiques, non sizées).
 
+## Grilling adaptatif (section canonique)
+
+Le **grilling** est un interrogatoire ciblé qui stress-teste la réflexion de
+l'utilisateur avant une décision structurante. Il est **réutilisé** par les
+Phases 2, 4 et 6, chacune avec ses propres **catégories d'amorçage** (définies
+dans la phase). Cette section définit son déclencheur, sa mécanique et son
+format — les phases n'en répètent que les catégories.
+
+### Déclencheur : complexité globale
+
+Le grilling s'active **uniquement pour les plans complexes**, c.-à-d. de
+complexité globale **`L` ou `XL`** (tier `reasoning`, voir « Évaluation de
+complexité »). Pour les plans `XS`/`S`/`M`, le comportement des phases est
+**inchangé** (`AskUserQuestion` standard en Phase 2, gate binaire directe en
+Phases 4 et 6). Aucune nouvelle évaluation : on réutilise la complexité déjà
+établie en Phase 1.
+
+### Toggle de configuration
+
+Lire `grilling.enabled` dans `./doc/roadmap/.skill-config.yml` :
+
+| Valeur | Effet |
+|---|---|
+| absente / `true` | Grilling actif sur les plans complexes (**défaut opt-out**) |
+| `false` | Grilling désactivé — comportement des phases inchangé, quelle que soit la complexité |
+
+### Mécanique : frontier réduite
+
+Le grilling se déroule en **rounds**, mappé comme un arbre de décision : chaque
+décision tranchée ouvre les questions qui en dépendaient. Contrairement à un
+grilling exhaustif, la profondeur est **bornée (« frontier réduite »)** :
+
+1. **Round d'amorçage** : poser en un seul round toutes les **catégories
+   pré-amorcées de la phase** dont les prérequis sont déjà connus. Chaque
+   question est numérotée et accompagnée de ta **réponse recommandée**.
+2. **Round de suivi (max 1)** : uniquement si des réponses du round d'amorçage
+   ouvrent des zones d'ombre évidentes. Poser ces questions de suivi, puis
+   **stop**.
+3. **Fin** : le grilling s'arrête dès que les catégories sont couvertes + le
+   round de suivi éventuel est traité. Ne pas dériver vers la conception
+   d'architecture profonde — le grilling **cadre**, il ne conçoit pas.
+
+Les catégories peuvent être surchargées par phase via
+`grilling.categories.phase2 | phase4 | phase6` dans `.skill-config.yml` (voir
+`references/environment.md § Grilling`). À défaut, utiliser les catégories par
+défaut définies dans la phase.
+
+### Format d'un round
+
+```
+❓ **Q1** — **<titre>** : <corps, éventuellement à choix multiples>
+
+➡️ <ta réponse recommandée>
+
+---
+
+❓ **Q2** — **<titre>** : <corps>
+
+➡️ <ta réponse recommandée>
+```
+
+**STOP** après chaque round, attendre les réponses de l'utilisateur avant le
+suivant.
+
+### Trouver les faits soi-même
+
+Les **faits** (contenu de fichiers, état du dépôt, configuration) sont à
+récupérer par tes propres outils, jamais demandés à l'utilisateur. Seules les
+**décisions** lui sont posées. Une question dont la réponse dépend d'un fait non
+encore établi attend que le fait soit récupéré.
+
 ## ⛔ Garde d'entrée — checkpoint universel (OBLIGATOIRE)
 
 Ce checkpoint s'exécute **à chaque invocation du skill**, quel que soit le
@@ -515,14 +586,21 @@ Mémoriser le modèle évalué (voir « Re-jeu de la gate sur changement de mod�
 
 > 🔍 MODE CADRAGE — aucune écriture, aucune commande.
 
-Lève les ambiguïtés via un **formulaire interactif** en utilisant l'outil
-`AskUserQuestion` (choix cliquables, pas de saisie « 1a, 2c »). Voir
-`references/forms.md` pour la matière des questions, les catégories et les
-règles de batching (max 4 questions et 4 options par appel, `multiSelect` pour
-les réponses multiples, option « Autre » native).
+Lève les ambiguïtés selon la complexité globale (voir « Grilling adaptatif ») :
+
+- **Plan `XS`/`S`/`M`, ou `grilling.enabled: false`** → **formulaire interactif**
+  via l'outil `AskUserQuestion` (choix cliquables, pas de saisie « 1a, 2c »).
+  Voir `references/forms.md` pour la matière des questions, les catégories et les
+  règles de batching (max 4 questions et 4 options par appel, `multiSelect` pour
+  les réponses multiples, option « Autre » native).
+- **Plan `L`/`XL` avec grilling actif** → **grilling** (voir « Grilling
+  adaptatif ») **à la place** de `AskUserQuestion`. Catégories d'amorçage par
+  défaut : **périmètre** (inclus / hors scope), **critères de succès**,
+  **dépendances** (bloquantes / bloquées), **parties prenantes** (décideurs /
+  impactés), **alternatives écartées**, **risques identifiés**.
 
 Termine ta compréhension par un court résumé (2-3 phrases) **avant** le premier
-appel `AskUserQuestion`.
+appel `AskUserQuestion` ou le premier round de grilling.
 
 ### Assistance design (UX/UI)
 
@@ -592,6 +670,20 @@ Présenter le plan (chaque étape d'implémentation portant son tag
 **STOP.** Attendre validation.
 
 ## Phase 4 — Validation de la proposition
+
+### Grilling avant la gate (plans complexes)
+
+Pour un plan `L`/`XL` avec grilling actif (voir « Grilling adaptatif »), mener
+un grilling **avant** d'afficher la gate ci-dessous. Catégories d'amorçage par
+défaut : **complétude des exigences couvertes**, **faisabilité des étapes**,
+**risques non adressés dans le plan**, **cohérence du séquencement des étapes**.
+
+Le grilling **ne remplace pas** la gate : il la prépare. À l'issue, produire une
+**recommandation explicite** avant d'afficher la table (ex. : « 2 blocages
+identifiés — recommande de retourner en Phase 2 avant de valider », ou « aucun
+blocage — la proposition tient »). L'utilisateur garde le dernier mot via la gate.
+
+Plan `XS`/`S`/`M`, ou `grilling.enabled: false` → afficher directement la gate.
 
 | Réponse | Action |
 |---|---|
@@ -666,6 +758,20 @@ Puis confirme et pose le point d'arrêt :
 **STOP.** Attendre la réponse.
 
 ## Phase 6 — Validation avant implémentation
+
+### Grilling avant la gate (plans complexes)
+
+Pour un plan `L`/`XL` avec grilling actif (voir « Grilling adaptatif »), mener
+un grilling **avant** d'afficher la gate ci-dessous. Catégories d'amorçage par
+défaut : **risques d'implémentation**, **couverture des tests prévus**, **plan
+de rollback**, **impacts sur les features existantes**.
+
+Comme en Phase 4, le grilling **prépare** la gate sans la remplacer : conclure
+par une **recommandation explicite** (ex. : « 1 blocage identifié — recommande
+de revoir le plan avant d'implémenter ») avant d'afficher la table. L'utilisateur
+garde le dernier mot.
+
+Plan `XS`/`S`/`M`, ou `grilling.enabled: false` → afficher directement la gate.
 
 | Réponse | Action |
 |---|---|

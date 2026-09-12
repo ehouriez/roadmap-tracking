@@ -124,6 +124,12 @@ tests:
   mode: manual            # manual | autonomous | null (unset → proposed at Phase 7, then persisted)
   max_iterations: 3       # autonomous mode only
   verifier: auto          # auto | subagent | inline
+grilling:
+  enabled: true           # true (default, opt-out) | false — grilling on L/XL plans
+  categories:             # optional per-phase override of default prompting categories
+    phase2: []            # scoping — default: scope, success criteria, dependencies, stakeholders, alternatives, risks
+    phase4: []            # plan validation — default: requirement coverage, step feasibility, unaddressed risks, sequencing
+    phase6: []            # implementation gate — default: implementation risks, test coverage, rollback, existing-feature impact
 ```
 
 When `tests.mode` is **unset** (key or file absent, or `null`), SKILL.md Phase 7
@@ -138,6 +144,25 @@ Every field has a detection-based default; never blocking.
 Issues mode `auto` detection:
 - `.git/` present + remote GitHub URL + `gh auth status` succeeds → `github`.
 - Otherwise → `local`.
+
+---
+
+## Grilling
+
+Controls the adaptive grilling defined in SKILL.md § « Grilling adaptatif ».
+
+| Key | Default | Effect |
+|---|---|---|
+| `grilling.enabled` | `true` | Opt-out toggle. `true` = grilling runs on `L`/`XL` plans in Phases 2, 4, 6. `false` = phases keep their pre-grilling behavior regardless of complexity. |
+| `grilling.categories.phase2` | (built-in) | Overrides the default Phase 2 prompting categories. Empty list / absent → use SKILL defaults. |
+| `grilling.categories.phase4` | (built-in) | Overrides the default Phase 4 prompting categories. |
+| `grilling.categories.phase6` | (built-in) | Overrides the default Phase 6 prompting categories. |
+
+Each `categories.phaseN` value is a list of free-text category labels. When
+provided and non-empty, it **replaces** the built-in list for that phase; the
+grilling mechanics (trigger on `L`/`XL`, reduced frontier, round format) are
+unchanged. Per-phase enable/disable is intentionally **not** supported — a
+single global `enabled` flag keeps the surface minimal.
 
 ---
 
