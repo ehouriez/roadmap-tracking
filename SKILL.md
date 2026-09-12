@@ -13,7 +13,7 @@ description: >
 license: MIT
 metadata:
   author: Emmanuel Houriez
-  version: "2.5.7"
+  version: "2.6.0"
   domain: workflow
   triggers: >
     plan, cadrage, roadmap, issue GitHub, suivi de tâche, planification,
@@ -1120,16 +1120,7 @@ l'étape 0 de la Phase 7. À la fin de l'implémentation d'une étape sélection
 
    ---
 
-   ### 📦 Commit proposé — Étape X/N
-
-   **Fichiers modifiés :**
-   - `<fichier>` — <résumé d'une ligne>
-   - …
-
-   **Message de commit :**
-   ```
-   <type>(<scope>): <description> (#<issue>, step X)
-   ```
+   📦 Commit (→ voir section « Commit d'implémentation pré-tests (référence de format) », step X).
 
    ---
 
@@ -1197,16 +1188,7 @@ N-2) sont terminées. Tu dois :
 
    ---
 
-   ### 📦 Commit proposé — Pré-tests finaux
-
-   **Fichiers modifiés :**
-   - `<fichier>` — <résumé d'une ligne>
-   - …
-
-   **Message de commit :**
-   ```
-   <type>(<scope>): <description> (#<issue>)
-   ```
+   📦 Commit (→ voir section « Commit d'implémentation pré-tests (référence de format) »).
 
    ---
 

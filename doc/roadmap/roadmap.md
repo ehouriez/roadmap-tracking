@@ -22,6 +22,9 @@ Backlog consolidé : plans nommés d'après leur issue GitHub (voir `doc/roadmap
 
 ### Plans livrés (2026-09-12)
 
+- **[Plan: 12] `#12` — SKILL.md Compression P1** (2026-09-12) 🔵 — gabarits commit fusionnés en section canonique + 2 renvois ; version 2.5.7 → 2.6.0. (-29 lignes, ~2 %).
+  [`12-skill-compression-p1.md`](12-skill-compression-p1.md)
+
 - **[Issue: #11] `#11` — Harden applicability rules and startup rule** (2026-09-12) 🔵 — Critère objectif fichier-touché, traçabilité post-fix urgences, suppression one-shot, principe directeur avant exclusions, re-proposition doc/roadmap/ adaptative.
   [`11-applicabilite-regle-demarrage-hardening.md`](11-applicabilite-regle-demarrage-hardening.md)
 
