@@ -3,7 +3,7 @@ plan:
   id: '8'
   name: 8-roadmap-tracking-grilling.md
   link: https://github.com/ehouriez/roadmap-tracking/blob/main/doc/roadmap/8-roadmap-tracking-grilling.md
-status: active
+status: done
 date: 2026-09-12
 description: >
   Intégrer la philosophie de grilling (design tree, rounds pré-amorcés, frontier
