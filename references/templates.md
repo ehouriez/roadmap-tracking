@@ -55,6 +55,7 @@ lien), et un emoji cohérent :
 | `description` | ✅ | Phrase succincte (1-2 lignes) |
 | `priority` | ✅ | `low`, `medium`, `high`, `critical` |
 | `complexity` | ✅ | `XS`, `S`, `M`, `L`, `XL` |
+| `intent` | ❌ | `null` \| `prototype` \| `production` — géré par le skill (Axe B). Non obligatoire, rétrocompat totale. Remis à `null` automatiquement à la clôture du plan. Non affiché dans le listing. |
 | `scope.modules` | ❌ | Dossiers/fichiers principaux impactés |
 | `scope.patterns` | ❌ | Glob patterns concernés |
 | `issue.id` | ✅ | Numéro d'issue GitHub ou `null` *(mode `local` → toujours `null`)* |
@@ -77,6 +78,7 @@ description: >
   Transformer la plateforme vers un SaaS orienté catalogue de services.
 priority: high
 complexity: L
+intent: null              # null | prototype | production — géré par le skill, non obligatoire
 scope:
   modules:
     - src/connectors/
@@ -104,6 +106,7 @@ description: >
   Ajouter la fonctionnalité X.
 priority: medium
 complexity: M
+intent: null              # null | prototype | production — géré par le skill, non obligatoire
 issue:
   id: null
   url: null

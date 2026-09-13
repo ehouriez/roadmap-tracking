@@ -4,12 +4,13 @@ plan:
   name: 13-analyse-axes-amélioration.md
   link: doc/roadmap/13-analyse-axes-amélioration.md
   source: local
-status: active
+status: done
 date: 2026-09-13
 description: >
   Analyse et proposition d'amélioration du skill roadmap-tracking.
 priority: high
 complexity: M
+intent: null
 scope:
   modules:
     - SKILL.md
@@ -534,3 +535,20 @@ Source : [learn.chatgpt.com/docs/hooks](https://learn.chatgpt.com/docs/hooks).
 
 Le README documente `/hooks` comme étape one-time obligatoire — cette note confirme
 que c'est la position correcte, basée sur la documentation officielle Codex.
+
+---
+
+## Journal de session
+
+| Date | Action | Détails |
+|---|---|---|
+| 2026-09-13 | Analyse et cadrage | Validation de l'architecture : `intent` dans le front matter du plan (Option A), persistance Axe A/E dans `.skill-config.yml`, spécifications des 5 axes d'amélioration. |
+| 2026-09-13 | Étape 1 : `references/environment.md` | Ajout des paramètres `roadmap-tracking.collaborative`, `mode`, `last-calibration`, `help.welcomed` et documentation de la sémantique et de la matrice de décision. |
+| 2026-09-13 | Étape 2 : `references/templates.md` | Ajout du champ `intent` optionnel (`null` \| `prototype` \| `production`) dans la table des attributs et dans les exemples de front matter (GitHub & Local). |
+| 2026-09-13 | Étapes 3 à 6 : `SKILL.md` | • **Axe E** : Ajout de l'exception d'aide dans `Applicabilité` et création de la section `Système d'aide` (aide à la demande et note de bienvenue mono-occurrence).<br>• **Axe A** : Ajout du bloc A.0 (initialisation config collaborative) dans la Règle de démarrage standard, matrice de décision auto-calibrage dans Phase 1, templates de désengagement automatique, triggers verbaux de changement de mode.<br>• **Axe B** : Question préalable sur l'intention (prototypage vs production) en première position en Phase 2, template de désengagement prototypage, triggers verbaux, et réinitialisation automatique `intent: null` lors de la clôture de plan (Phase 7).<br>• **Axe D** : Affichage préalable d'estimation de surcoût token pour le cas limite S collaboratif (mode lightweight) + table empirique de calibrage. |
+| 2026-09-13 | Étape 7 : `hooks/hooks.json` | Ajout de l'exception d'aide (`aide`, `help`, etc.) dans l'instruction textuelle de début de session `SessionStart` (Claude Code). |
+| 2026-09-13 | Étape 8 : `hooks/codex-hooks.json` | Ajout de l'exception d'aide dans le payload JSON `hookSpecificOutput` de `sessionStart` (Codex). |
+| 2026-09-13 | Étape 9 : `.codex-plugin/plugin.json` | Création du manifest plugin Codex pointant vers `./hooks/codex-hooks.json` pour auto-découverte native. |
+| 2026-09-13 | Étape 10 : `README.md` | Documentation de l'auto-découverte du hook Codex via `.codex-plugin/plugin.json`, clarification de l'étape de validation `/hooks` obligatoire, et mise à jour de l'exemple de configuration. |
+| 2026-09-13 | Étape 11 : Clôture du plan | Mise à jour du statut (`status: done`, `intent: null`) et journal de session rédigé. |
+

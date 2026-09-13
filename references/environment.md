@@ -130,6 +130,16 @@ grilling:
     phase2: []            # scoping — default: scope, success criteria, dependencies, stakeholders, alternatives, risks
     phase4: []            # plan validation — default: requirement coverage, step feasibility, unaddressed risks, sequencing
     phase6: []            # implementation gate — default: implementation risks, test coverage, rollback, existing-feature impact
+roadmap-tracking:
+  collaborative: false    # Axe A — false = solo project (default) | true = multi-collaborator project
+  mode: auto              # Axe A — auto | lightweight | full | off
+                          #   auto      → apply decision matrix (complexity × collaborative)
+                          #   lightweight → plan + commits, no intermediate ⏸️ checkpoints
+                          #   full      → complete 7-phase workflow regardless of complexity
+                          #   off       → skill disengaged, no workflow
+  last-calibration: null  # Axe A — ISO date of last collaborative/mode calibration (YYYY-MM-DD)
+  help:
+    welcomed: false       # Axe E — true = welcome note already displayed (shown once per project)
 ```
 
 When `tests.mode` is **unset** (key or file absent, or `null`), SKILL.md Phase 7
@@ -163,6 +173,35 @@ provided and non-empty, it **replaces** the built-in list for that phase; the
 grilling mechanics (trigger on `L`/`XL`, reduced frontier, round format) are
 unchanged. Per-phase enable/disable is intentionally **not** supported — a
 single global `enabled` flag keeps the surface minimal.
+
+---
+
+## Roadmap-Tracking Config (Axes A & E)
+
+Controls auto-calibration and help system defined in SKILL.md.
+
+| Key | Default | Effect |
+|---|---|---|
+| `roadmap-tracking.collaborative` | `false` | `false` = solo project; `true` = multi-collaborator. Affects the auto-calibration decision matrix (Axe A). |
+| `roadmap-tracking.mode` | `auto` | `auto` = apply decision matrix; `lightweight` = plan + commits, no intermediate ⏸️; `full` = complete 7-phase workflow; `off` = skill disengaged. Overrides the matrix when set explicitly. |
+| `roadmap-tracking.last-calibration` | `null` | ISO date (`YYYY-MM-DD`) of the last time the user answered the collaborative/mode calibration question. Written automatically. |
+| `roadmap-tracking.help.welcomed` | `false` | `false` = welcome note not yet shown; `true` = already shown (written once, never re-shown). |
+
+**Initialization (Axe A.0)**: If `.skill-config.yml` is absent **or** `roadmap-tracking.collaborative`
+is absent: ask the user once via `AskUserQuestion`, persist the answer, and record
+`last-calibration: <today>`. If present: read without re-asking.
+
+**Decision matrix** (applies when `mode: auto`):
+
+| Complexity | `collaborative` | Effective mode |
+|---|---|---|
+| `XS` | any | Disengagement (write plan, show template, STOP) |
+| `S` | `false` | Disengagement (write plan, show template, STOP) |
+| `S` | `true` | `lightweight` (plan + commits, no intermediate ⏸️) |
+| `M` | any | `lightweight` |
+| `L`, `XL` | any | `full` (complete 7-phase workflow) |
+
+If `mode` is explicitly set to `full`, `lightweight`, or `off`: ignore the matrix, apply directly.
 
 ---
 

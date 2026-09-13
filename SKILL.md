@@ -13,7 +13,7 @@ description: >
 license: MIT
 metadata:
   author: Emmanuel Houriez
-  version: "2.6.0"
+  version: "2.7.0"
   domain: workflow
   triggers: >
     plan, cadrage, roadmap, issue GitHub, suivi de tâche, planification,
@@ -69,6 +69,11 @@ architecture** sur le projet courant.
 Il **ne s'applique PAS** pour :
 - Les questions de culture générale / explications techniques ne touchant **aucun fichier du projet** (aucun read, write, create, delete).
 - Les urgences explicites (`URGENT`, `FIX IMMÉDIAT`, `PROD DOWN`) — le fix immédiat est autorisé, mais une étape post-fix de traçabilité est obligatoire (voir ci-dessous).
+- **Demandes d'aide sur le skill lui-même** : `aide`, `aide workflow`, `aide config`, `aide planification`,
+  `aide plans`, `aide tests`, `aide git`, `aide intégrations`, `aide roadmap`, `help`
+  → Afficher l'aide demandée et **STOP**.
+  Aucune règle de démarrage. Aucun listing de plans. Aucune vérification de `doc/roadmap/`.
+  Fonctionne même si le projet n'a jamais eu le skill.
 
 > **Urgences — traçabilité post-fix obligatoire** : dès la correction appliquée,
 > créer ou mettre à jour le fichier plan correspondant pour consigner ce qui a
@@ -81,6 +86,62 @@ Il **ne s'applique PAS** pour :
 > s'applique pas pour cette demande ; si une demande ultérieure dans la même
 > session implique une modification de fichier du projet, le skill re-propose
 > la création une seule fois (voir « Règle de démarrage »).
+
+## Système d'aide (Axe E)
+
+### Aide à la demande
+
+L'aide est **générée à la volée** depuis le contenu du SKILL.md et des references.
+Elle est toujours synchrone avec le skill, sans maintenance séparée.
+
+Déclencheur : phrases reconnues **sans déclencher le workflow** (exception à la
+règle de démarrage, comme les questions de culture générale) :
+
+| L'utilisateur dit | Contenu affiché |
+|---|---|
+| `aide` | Aide complète : toutes les catégories ci-dessous |
+| `aide workflow` | Phases 1→7, reprise, urgences, signaux de mode, anti-court-circuit |
+| `aide config` | `.skill-config.yml` complet, tous les champs, modes, modèles |
+| `aide planification` | Grille de sizing, gate modèle, grilling, désengagement A, surcout D |
+| `aide plans` | Front matter, template, listing, incohérences, clôture, mode dégradé |
+| `aide tests` | Tests intermédiaires, étape 🧪, étape ✅, mode autonomous, règle ⛔ |
+| `aide git` | Commits 📦, migration, issues, `.migration-declined` |
+| `aide intégrations` | Skill `impeccable`, mapping IDE, actions génériques |
+| `aide roadmap` | Alias de `aide` — aide complète |
+| `help` | Alias de `aide` — aide complète |
+
+Chaque aide par catégorie se termine par :
+
+```
+💡 Pour l'aide complète : « aide »
+   Pour une autre catégorie : « aide [workflow|config|planification|plans|tests|git|intégrations] »
+```
+
+### Note de bienvenue (première exécution uniquement)
+
+Déclencheur : `.skill-config.yml` absent **ou** `roadmap-tracking.help.welcomed` absent/`false`.
+
+Après la question de calibrage collaboratif (bloc A.0 ci-dessous), afficher :
+
+```
+💡 /roadmap-tracking — Aide disponible à tout moment
+
+Pour obtenir de l'aide sur le skill, dis :
+  « aide »               → Aide complète (toutes les features)
+  « aide workflow »      → Phases, reprise, urgences, checkpoints
+  « aide config »        → .skill-config.yml, modes, modèles
+  « aide planification » → Sizing, grilling, désengagement, surcout
+  « aide plans »         → Front matter, format, incohérences, clôture
+  « aide tests »         → Tests intermédiaires, finaux, mode autonomous
+  « aide git »           → Commits, migration de plans, issues GitHub
+  « aide intégrations »  → Skill impeccable (UX/UI), IDE
+
+Cette note n'apparaîtra qu'une seule fois.
+```
+
+Puis écrire `roadmap-tracking.help.welcomed: true` dans `.skill-config.yml`.
+
+---
 
 ## Règle de démarrage
 
@@ -104,6 +165,25 @@ Si le répertoire `./doc/roadmap/` n'existe **pas** dans le projet courant :
 ---
 
 ### Démarrage standard (quand `doc/roadmap/` est présent)
+
+#### Bloc A.0 — Initialisation de la configuration (Axe A)
+
+**Avant de lister les plans**, lire `./doc/roadmap/.skill-config.yml` :
+
+- Si le fichier est **absent** ou si la clé `roadmap-tracking.collaborative` est **absente** :
+  Poser via `AskUserQuestion` :
+  > « Ce projet est-il travaillé par plusieurs collaborateurs (branches simultanées,
+  > PR en parallèle, équipe) ? »
+  > - **Non, projet solo** → écrire `collaborative: false` dans `.skill-config.yml`
+  > - **Oui, multi-collaborateurs** → écrire `collaborative: true`
+  >
+  > Puis écrire `mode: auto` et `last-calibration: <date ISO du jour>`.
+
+- Si le fichier et la clé sont **présents** : lire la valeur sans redemander.
+
+Après le bloc A.0, si `roadmap-tracking.help.welcomed` est absent/`false` :
+**afficher la note de bienvenue** (voir « Système d'aide — Note de bienvenue » ci-dessus)
+puis écrire `help.welcomed: true` dans `.skill-config.yml`.
 
 Si l'utilisateur ne référence pas un plan existant dans son premier prompt :
 
@@ -678,6 +758,70 @@ selon la grille de sizing (voir « Évaluation de complexité et recommandation 
 modèle »). Cette évaluation alimente la gate modèle (Phase 1.5 ci-dessous),
 les tags d'étape (Phase 3) et le champ `complexity` du front matter (Phase 5).
 
+#### Matrice de décision auto-calibrage (Axe A)
+
+Après l'analyse de complexité, lire `roadmap-tracking.mode` dans `.skill-config.yml` :
+
+- **`mode: full` | `mode: lightweight` | `mode: off`** (valeur explicite) : ignorer la matrice, appliquer directement.
+- **`mode: auto`** (ou absent) : appliquer la matrice selon `collaborative` :
+
+| Complexité | `collaborative` | Action |
+|---|---|---|
+| `XS` | *any* | **Désengagement automatique** → écrire plan, afficher template de désengagement, STOP |
+| `S` | `false` | **Désengagement automatique** → écrire plan, afficher template de désengagement, STOP |
+| `S` | `true` | **Mode `lightweight`** (plan + commits, sans ⏸️ intermédiaires) + afficher estimation surcout |
+| `M` | *any* | **Mode `lightweight`** (plan + commits, sans ⏸️ intermédiaires) |
+| `L`, `XL` | *any* | **Mode `full`** (workflow complet 7 phases) |
+
+**Template de désengagement automatique (XS / S solo)** :
+
+```
+ℹ️ Skill /roadmap-tracking — Désengagement automatique
+
+Complexité estimée : [XS|S] [· mode solo]
+Le surcout du workflow structuré (checkpoints, commits intermédiaires,
+phases de validation) n'est pas justifié pour cette complexité.
+
+✅ Plan rédigé dans : doc/roadmap/[nom-du-plan].md
+📋 Implémente-le directement avec un prompt explicite.
+
+💡 Pour forcer le workflow complet sur les prochaines tâches :
+   Dis-moi « mode workflow complet »
+   → Je mettrai à jour doc/roadmap/.skill-config.yml (mode: full).
+```
+
+**Estimation du surcout (cas `S` + `collaborative: true` — mode `lightweight`) (Axe D)** :
+
+```
+📊 Estimation du surcoût skill pour ce plan (complexité [S|M], mode collaboratif) :
+   - Tokens supplémentaires estimés  : ~[1 000 000 (+35 %) | 1 700 000 (+30 %)]  [mode lightweight]
+   - Coût supplémentaire estimé      : ~[$1,70 | $2,80] (ref. Sonnet)
+   - Durée supplémentaire estimée    : ~[2 | 4] min
+
+   Le workflow allégé (sans checkpoints ⏸️) sera appliqué.
+   Pour le workflow complet, dis « mode workflow complet ».
+```
+
+Table de calibrage des estimations par complexité et mode (calibrées sur métriques réelles Sonnet S & M, non calculées dynamiquement) :
+
+| Complexité | Mode | Tokens Δ | Coût Δ (ref. Sonnet) | Durée Δ |
+|---|---|---|---|---|
+| `S` | lightweight | ~1 000 000 | ~$1,70 | ~2 min |
+| `M` | lightweight | ~1 700 000 | ~$2,80 | ~4 min |
+| `L` | full | ~2 800 000 | ~$4,80 | ~7 min |
+| `XL` | full | ~4 500 000 | ~$7,50 | ~11 min |
+
+**Triggers verbaux — changement de mode en cours de session** :
+
+| L'utilisateur dit | Action |
+|---|---|
+| « mode workflow complet » / « force le workflow » | Écrit `mode: full` dans `.skill-config.yml` + confirme |
+| « mode lightweight » / « mode allégé » | Écrit `mode: lightweight` + confirme |
+| « désactive le skill » / « mode off » | Écrit `mode: off` + confirme |
+| « remets le mode auto » | Écrit `mode: auto` + confirme |
+| « projet collaboratif » / « multi-collaborateurs » | Écrit `collaborative: true` + confirme |
+| « projet solo » | Écrit `collaborative: false` + confirme |
+
 **Ne rien proposer.** Passer à la Phase 1.5.
 
 ## Phase 1.5 — Gate modèle (avant le cadrage)
@@ -702,6 +846,48 @@ Mémoriser le modèle évalué (voir « Re-jeu de la gate sur changement de mod�
 ## Phase 2 — Cadrage interactif
 
 > 🔍 MODE CADRAGE — aucune écriture, aucune commande.
+
+#### Question préalable : intention de la tâche (Axe B)
+
+Avant les questions de cadrage habituelles, si le plan courant n'a pas encore de champ
+`intent` dans son front matter (ou si c'est un nouveau plan, `intent` absent) :
+Poser via `AskUserQuestion` **en première position** :
+> « Cette tâche relève-t-elle d'une expérimentation / prototypage rapide ? »
+> - **Oui → prototypage** : écrire `intent: prototype` dans le front matter du plan
+>   → afficher le template de désengagement prototypage ci-dessous → **STOP**.
+>   Ne pas rédiger de plan complet.
+> - **Non → production** : écrire `intent: production` → continuer normalement.
+
+Si `intent` est déjà fixé dans le front matter : ne pas reposer la question.
+
+| `intent` au démarrage | Comportement |
+|---|---|
+| `null` (nouveau plan) | Poser la question en Phase 2 |
+| `prototype` | Afficher le désengagement directement → STOP |
+| `production` | Continuer normalement |
+
+**Template de désengagement prototypage** :
+
+```
+ℹ️ Skill /roadmap-tracking — Mode prototypage détecté
+
+Le workflow structuré (plan, phases, checkpoints) ralentirait ton itération
+sans apporter de valeur sur une expérimentation.
+
+💡 Utilise un prompt explicite directement.
+   Exemple : « Implémente [X] et montre-moi le résultat. »
+
+Si tu changes d'avis et veux tracer ce travail :
+   Dis-moi « finalement je veux tracer ça »
+   → Je reprendrai le workflow normalement (intent: production).
+```
+
+**Nouvelles formulations verbales reconnues** :
+
+| L'utilisateur dit | Action |
+|---|---|
+| « finalement je veux tracer ça » | Écrit `intent: production` dans le front matter → reprend le workflow |
+| « remets en mode normal » | Écrit `intent: null` → repose la question à la prochaine session |
 
 Lève les ambiguïtés selon la complexité globale (voir « Grilling adaptatif ») :
 
@@ -1067,6 +1253,8 @@ Je commence. Tu peux m'interrompre à tout moment.
 >
 > 1. **Fichier de plan** : passer le front matter à `status: done`, cocher la
 >    dernière étape et consigner la validation dans le journal de session.
+>    **Remettre `intent: null`** si le champ `intent` est présent dans le front
+>    matter (Axe B — reset automatique à la clôture).
 > 2. **`roadmap.md`** : déplacer l'entrée de la section « À faire » vers
 >    **« Fait »** (statut `done` 🔵).
 > 3. **Issue GitHub rattachée** *(mode `github` uniquement)* : la **fermer**
@@ -1086,6 +1274,7 @@ Je commence. Tu peux m'interrompre à tout moment.
 > fichier est un historique figé qui n'est plus utilisé. L'archivage physique
 > dans `_archives/` (statut `archived` ⚪) est une opération distincte et rare
 > (voir `references/roadmap-file.md`), pas la clôture normale d'un plan.
+
 
 ## Tests unitaires intermédiaires (optionnels, par étape)
 

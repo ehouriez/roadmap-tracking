@@ -101,8 +101,7 @@ two:
 | Claude Code | `hooks/hooks.json` | `SessionStart` |
 | Codex | `hooks/codex-hooks.json` | `sessionStart` |
 
-Codex: the hook must be validated via `/hooks` before it takes effect
-(`allow_managed_hooks_only`). This is a one-time manual step.
+**Codex integration**: Codex automatically discovers `hooks/codex-hooks.json` via `.codex-plugin/plugin.json` upon plugin installation. However, following Codex's security model, plugin-bundled hooks must still be validated once via the `/hooks` command before they become active (`allow_managed_hooks_only`). This is an intentional one-time user review step.
 
 ## Configuration (optional)
 
@@ -120,6 +119,9 @@ tests:
   mode: manual            # manual | autonomous
   max_iterations: 3
   verifier: auto          # auto | subagent | inline
+roadmap-tracking:
+  collaborative: false    # false = solo (default) | true = multi-collaborator
+  mode: auto              # auto | lightweight | full | off
 ```
 
 Absent config + Claude Code + `gh` present = v1.3.x behavior (full retrocompat).
