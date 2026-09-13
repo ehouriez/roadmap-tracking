@@ -12,6 +12,7 @@ plan:
   issue:
     id: null
     url: null
+  comment: "Session de test avec succès: `claude --resume 35146e7b-b5bc-4b83-9b68-a1f5554e7398`"
 ---
 
 # 15 — Robustesse du skill face aux modes système : garde mécanique (hooks)
