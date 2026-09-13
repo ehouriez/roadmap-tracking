@@ -13,7 +13,7 @@ description: >
 license: MIT
 metadata:
   author: Emmanuel Houriez
-  version: "2.7.0"
+  version: "2.7.1"
   domain: workflow
   triggers: >
     plan, cadrage, roadmap, issue GitHub, suivi de tâche, planification,
@@ -767,8 +767,8 @@ Après l'analyse de complexité, lire `roadmap-tracking.mode` dans `.skill-confi
 
 | Complexité | `collaborative` | Action |
 |---|---|---|
-| `XS` | *any* | **Désengagement automatique** → écrire plan, afficher template de désengagement, STOP |
-| `S` | `false` | **Désengagement automatique** → écrire plan, afficher template de désengagement, STOP |
+| `XS` | *any* | **Désengagement automatique** → écrire plan, afficher template de désengagement, **TERMINER LA RÉPONSE** (voir garde ci-dessous) |
+| `S` | `false` | **Désengagement automatique** → écrire plan, afficher template de désengagement, **TERMINER LA RÉPONSE** (voir garde ci-dessous) |
 | `S` | `true` | **Mode `lightweight`** (plan + commits, sans ⏸️ intermédiaires) + afficher estimation surcout |
 | `M` | *any* | **Mode `lightweight`** (plan + commits, sans ⏸️ intermédiaires) |
 | `L`, `XL` | *any* | **Mode `full`** (workflow complet 7 phases) |
@@ -788,6 +788,41 @@ phases de validation) n'est pas justifié pour cette complexité.
 💡 Pour forcer le workflow complet sur les prochaines tâches :
    Dis-moi « mode workflow complet »
    → Je mettrai à jour doc/roadmap/.skill-config.yml (mode: full).
+
+⛔ GARDE DE DÉSENGAGEMENT — RÉPONSE TERMINÉE ICI
+   Aucune phase du workflow (Phase 2 à Phase 7) ne sera démarrée.
+   Aucun outil (Write, Edit, Bash, Read de code source) ne sera appelé.
+   Attendre le prochain prompt utilisateur.
+```
+
+---
+
+## ⛔ Règle absolue — Garde dure de désengagement automatique (Axe A)
+
+```
+⛔ GARDE DURE — DÉSENGAGEMENT AUTOMATIQUE
+
+SI la matrice Axe A résout en « Désengagement automatique »
+   (Complexité XS, OU Complexité S + collaborative: false)
+ALORS :
+  1. Écrire le fichier plan (UNIQUEMENT l'outil Write sur doc/roadmap/*.md).
+  2. Afficher le template de désengagement ci-dessus.
+  3. TERMINER LA RÉPONSE IMMÉDIATEMENT.
+
+IL EST FORMELLEMENT INTERDIT DE :
+  - Entamer ou mentionner la Phase 1.5, 2, 3, 4, 5, 6 ou 7.
+  - Appeler un outil autre que Write (plan uniquement) : pas de Bash,
+    pas d'Edit sur du code source, pas de Read de code applicatif.
+  - Implémenter, analyser, cadrer, ou proposer quoi que ce soit
+    au-delà du plan sommaire déjà écrit.
+  - Interpréter la demande utilisateur initiale comme une autorisation
+    implicite de continuer le workflow.
+
+SEULE SORTIE DE GARDE : l'utilisateur dit explicitement
+  « mode workflow complet » (→ écrire mode: full dans .skill-config.yml
+   et redémarrer le workflow normalement) ou « continue ».
+Toute autre formulation (« go », « oui », « implémente ») est traitée
+comme un nouveau prompt entrant, pas comme un bypass de cette garde.
 ```
 
 **Estimation du surcout (cas `S` + `collaborative: true` — mode `lightweight`) (Axe D)** :
@@ -822,7 +857,7 @@ Table de calibrage des estimations par complexité et mode (calibrées sur métr
 | « projet collaboratif » / « multi-collaborateurs » | Écrit `collaborative: true` + confirme |
 | « projet solo » | Écrit `collaborative: false` + confirme |
 
-**Ne rien proposer.** Passer à la Phase 1.5.
+**Ne rien proposer.** Si la garde de désengagement s'est déclenchée, la réponse est **déjà terminée** — ne pas passer à la Phase 1.5. Sinon, passer à la Phase 1.5.
 
 ## Phase 1.5 — Gate modèle (avant le cadrage)
 
