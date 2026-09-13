@@ -387,6 +387,51 @@ Cela garantit qu'une demande d'aide en conversation fraîche — **même sur un 
 sans `doc/roadmap/` ou complètement hors contexte de développement** — n'active
 pas le workflow et n'affiche aucune question de démarrage.
 
+#### [MODIFY] [hooks/codex-hooks.json](file:///c:/Users/pou_x/Documents/Antigravity/Projects/roadmap-tracking/hooks/codex-hooks.json)
+
+**Même exception que `hooks.json`**, mais adaptée au **format JSON Codex**
+(`hookSpecificOutput` structuré) à la place du `printf` texte brut de Claude Code.
+
+---
+
+### Intégration native Codex
+
+**Objectif** : réduire la friction à l'installation Codex. Actuellement, l'utilisateur
+doit pointer manuellement vers `codex-hooks.json`. Avec un manifest `.codex-plugin/plugin.json`,
+Codex découvre le hook automatiquement quand le plugin est installé.
+
+> [!NOTE]
+> **La commande `/hooks` reste incompressible** — c'est une contrainte de sécurité
+> Codex explicitement documentée (source : [learn.chatgpt.com/docs/hooks](https://learn.chatgpt.com/docs/hooks)) :
+> *"Installing or enabling a plugin doesn't automatically trust its hooks; Codex
+> skips plugin-bundled hooks until you review and trust the current hook definition."*
+> La seule échappée (`--dangerously-bypass-hook-trust`) est un contournement
+> non recommandé et à usage unique. Le README sera mis à jour pour être explicite.
+
+#### [NEW] [.codex-plugin/plugin.json](file:///c:/Users/pou_x/Documents/Antigravity/Projects/roadmap-tracking/.codex-plugin/plugin.json)
+
+```json
+{
+  "name": "roadmap-tracking",
+  "hooks": "./hooks/codex-hooks.json"
+}
+```
+
+Déclenche l'auto-découverte de `codex-hooks.json` par Codex lors de l'installation
+du plugin. Sans ce fichier, Codex cherche `hooks/hooks.json` par défaut — qui est
+le hook Claude Code (format texte brut incompatible).
+
+> **Convention Codex** (doc ligne 381-396) :
+> *"By default, Codex looks for `hooks/hooks.json` inside the plugin root.
+> A plugin manifest can override that default with a `hooks` entry in
+> `.codex-plugin/plugin.json`."*
+
+#### [MODIFY] [README.md](file:///c:/Users/pou_x/Documents/Antigravity/Projects/roadmap-tracking/README.md)
+
+Section `## Hooks` — mise à jour :
+- Ajouter la mention que Codex découvre maintenant le hook automatiquement via `.codex-plugin/plugin.json`.
+- Conserver et clarifier la note sur `/hooks` (obligatoire, one-time, par design de sécurité Codex).
+
 ---
 
 ## Récapitulatif des fichiers modifiés
@@ -396,21 +441,29 @@ pas le workflow et n'affiche aucune question de démarrage.
 | [`SKILL.md`](file:///c:/Users/pou_x/Documents/Antigravity/Projects/roadmap-tracking/SKILL.md) | A, B, D, E | Principal — règles, phases, templates, triggers |
 | [`references/environment.md`](file:///c:/Users/pou_x/Documents/Antigravity/Projects/roadmap-tracking/references/environment.md) | A, E | Schema config (nouveaux champs) |
 | [`references/templates.md`](file:///c:/Users/pou_x/Documents/Antigravity/Projects/roadmap-tracking/references/templates.md) | B | Champ `intent` dans le front matter |
+| [`hooks/hooks.json`](file:///c:/Users/pou_x/Documents/Antigravity/Projects/roadmap-tracking/hooks/hooks.json) | E | Exception aide — format texte brut (Claude Code) |
+| [`hooks/codex-hooks.json`](file:///c:/Users/pou_x/Documents/Antigravity/Projects/roadmap-tracking/hooks/codex-hooks.json) | E | Exception aide — format JSON `hookSpecificOutput` (Codex) |
+| [`README.md`](file:///c:/Users/pou_x/Documents/Antigravity/Projects/roadmap-tracking/README.md) | Codex | Mise à jour install Codex + clarification `/hooks` obligatoire |
+| **[NEW]** [`.codex-plugin/plugin.json`](file:///c:/Users/pou_x/Documents/Antigravity/Projects/roadmap-tracking/.codex-plugin/plugin.json) | Codex | Manifest Codex — auto-découverte de `codex-hooks.json` |
 
 **Aucun autre fichier modifié.** (`forms.md`, `roadmap-file.md`, `github-issues.md`,
-`migration.md`, `autonomous-tests.md`, `scripts/` → inchangés.)
+`migration.md`, `autonomous-tests.md`, `scripts/`, `.claude-plugin/` → inchangés.)
 
 ---
 
 ## Ordre d'implémentation recommandé
 
 ```
-1. environment.md  → schéma config mis à jour (A + E)
-2. templates.md    → champ intent (B)
-3. SKILL.md        → Axe A (calibrage + matrice + templates + triggers)
-4. SKILL.md        → Axe B (intent + Phase 2 + reset clôture + triggers)
-5. SKILL.md        → Axe D (estimation surcoût, inséré dans Phase 1)
-6. SKILL.md        → Axe E (système d'aide : note de bienvenue + section aide)
+1. environment.md           → schéma config mis à jour (A + E)
+2. templates.md             → champ intent (B)
+3. SKILL.md                 → Axe A (calibrage + matrice + templates + triggers)
+4. SKILL.md                 → Axe B (intent + Phase 2 + reset clôture + triggers)
+5. SKILL.md                 → Axe D (estimation surcoût, inséré dans Phase 1)
+6. SKILL.md                 → Axe E (Applicabilité exception + système d'aide complet)
+7. hooks/hooks.json         → Axe E (exception aide — format Claude Code)
+8. hooks/codex-hooks.json   → Axe E (exception aide — format Codex JSON)
+9. .codex-plugin/plugin.json → [NEW] manifest Codex (auto-découverte codex-hooks.json)
+10. README.md               → mise à jour section Hooks (install Codex + note /hooks)
 ```
 
 ---
@@ -432,8 +485,25 @@ pas le workflow et n'affiche aucune question de démarrage.
 | Phrase verbale « mode workflow complet » | `mode: full` écrit + confirmation |
 | Phrase « aide tests » | Aide tests affichée SANS déclencher le workflow |
 | Phrase « aide » | Aide complète affichée SANS déclencher le workflow |
+| Même phrases dans Codex | Même comportement via `codex-hooks.json` |
 
 ### Aucun test automatisé requis
 
 Les modifications sont des instructions en langage naturel dans des fichiers Markdown.
 La vérification est comportementale (prompts de test dans Claude Code/Codex).
+
+---
+
+## Note de développement — `/hooks` Codex
+
+La commande `/hooks` est **non contournable de façon propre** dans Codex.
+Source : [learn.chatgpt.com/docs/hooks](https://learn.chatgpt.com/docs/hooks).
+
+| Mécanisme | Supprime `/hooks` ? | Recommandé |
+|---|---|---|
+| Plugin installé + `.codex-plugin/plugin.json` | ❌ Non | ✅ Oui |
+| `--dangerously-bypass-hook-trust` | ✅ Oui | ❌ Non (one-off, risqué) |
+| Managed hook via `requirements.toml` enterprise | ✅ Oui | Hors scope (usage enterprise) |
+
+Le README documente `/hooks` comme étape one-time obligatoire — cette note confirme
+que c'est la position correcte, basée sur la documentation officielle Codex.
