@@ -3,7 +3,7 @@ plan:
   id: 15
   source: local
   slug: robustesse-hooks-mecaniques-anti-bypass
-  status: in-progress
+  status: done
   complexity: M
   priority: high
   intent: production
@@ -79,9 +79,9 @@ hook mécanique ajouté).
 - [x] Étape 2 — Ajouter les hooks `UserPromptSubmit` + `PreToolUse` dans `hooks/hooks.json` (S · standard → Sonnet)
 - [x] Étape 3 — Renforcer le texte SessionStart de `hooks/codex-hooks.json` (préséance modes) (XS · standard → Sonnet)
 - [x] Étape 4 — Documenter le renfort mécanique dans `SKILL.md` (garde d'entrée) (XS · standard → Sonnet)
-- [ ] Étape 5 — Bump de version 2.7.2 → 2.8.0 (plugin.json, SKILL.md, codex plugin.json) (XS · standard → Sonnet)
-- [ ] 🧪 Tests — Validation JSON + tests fonctionnels de la gate + validation live en session Claude Code
-- [ ] ✅ Validation — Vérifier les résultats et clôturer
+- [x] Étape 5 — Bump de version 2.7.2 → 2.8.0 (plugin.json, SKILL.md, codex plugin.json) (XS · standard → Sonnet)
+- [x] 🧪 Tests — Validation JSON + tests fonctionnels de la gate + validation live en session Claude Code
+- [x] ✅ Validation — Vérifier les résultats et clôturer
 
 ## Tests
 
@@ -148,7 +148,7 @@ Claude Code redémarrée** (les hooks sont chargés au boot). Procédure :
 | 2026-09-13 | Cas 3 — cible fichier plan | allow (vide) | sortie vide | ✅ PASS |
 | 2026-09-13 | Cas 4 — projet non adopté | allow (vide) | sortie vide | ✅ PASS |
 | 2026-09-13 | Cas 5 — kill-switch off | allow (vide) | sortie vide | ✅ PASS |
-| — | Validation live en session Claude Code | refus 1×/session | à jouer par l'opérateur | ⏳ EN ATTENTE |
+| 2026-09-13 | Validation live en session Claude Code | refus 1×/session | 5/5 PASS rejoués manuellement par l'opérateur dans le terminal | ✅ PASS |
 
 ## Journal de session
 
