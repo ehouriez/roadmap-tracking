@@ -96,10 +96,12 @@ two:
 
 ## Hooks
 
-| IDE | File | Event |
-|---|---|---|
-| Claude Code | `hooks/hooks.json` | `SessionStart` |
-| Codex | `hooks/codex-hooks.json` | `sessionStart` |
+| IDE | File | Event | Language |
+|---|---|---|---|
+| Claude Code | `hooks/hooks.json` | `SessionStart` | French |
+| Codex | `hooks/codex-hooks.json` | `sessionStart` | English |
+
+**Language rationale**: `hooks.json` is written in French because the skill itself is in French and Claude Code (multilingual) handles it natively. `codex-hooks.json` is in English because it targets the Codex API, where English yields more reliable instruction-following from underlying models.
 
 **Codex integration**: Codex automatically discovers `hooks/codex-hooks.json` via `.codex-plugin/plugin.json` upon plugin installation. However, following Codex's security model, plugin-bundled hooks must still be validated once via the `/hooks` command before they become active (`allow_managed_hooks_only`). This is an intentional one-time user review step.
 

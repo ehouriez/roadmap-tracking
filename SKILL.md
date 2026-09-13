@@ -13,7 +13,7 @@ description: >
 license: MIT
 metadata:
   author: Emmanuel Houriez
-  version: "2.7.1"
+  version: "2.7.2"
   domain: workflow
   triggers: >
     plan, cadrage, roadmap, issue GitHub, suivi de tâche, planification,
