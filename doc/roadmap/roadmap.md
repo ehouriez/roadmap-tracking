@@ -1,7 +1,7 @@
 # Roadmap roadmap-tracking
 
 > Backlog actif. L'historique détaillé est archivé dans `_archives/`.
-> Dernière mise à jour : 2026-09-12.
+> Dernière mise à jour : 2026-09-13.
 
 ## Contexte
 
@@ -12,6 +12,9 @@ Backlog consolidé : plans nommés d'après leur issue GitHub (voir `doc/roadmap
 ---
 
 ## À faire
+
+- **[Plan: 15] `#15` — Robustesse hooks mécaniques anti-bypass** (2026-09-13) 🟡 in-progress — Garde mécanique (`UserPromptSubmit` + `PreToolUse` one-shot/session) contre le court-circuit du skill par les modes système ; implémentation + tests fonctionnels faits, validation live en attente. Version 2.7.2 → 2.8.0.
+  [`15-robustesse-hooks-mecaniques-anti-bypass.md`](15-robustesse-hooks-mecaniques-anti-bypass.md)
 
 - **[Issue: #8] `#8` — Grilling adaptatif phases 2/4/6** (2026-09-12) 🟢 — Intégration du grilling (design tree, rounds pré-amorcés, frontier réduite) pour les plans complexes L/XL.
   [`8-roadmap-tracking-grilling.md`](8-roadmap-tracking-grilling.md)

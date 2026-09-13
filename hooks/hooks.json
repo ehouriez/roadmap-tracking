@@ -9,6 +9,27 @@
           }
         ]
       }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "test \"${ROADMAP_TRACKING_AUTOSTART:-on}\" != \"off\" && printf 'ROADMAP-TRACKING — RAPPEL DE PRÉSÉANCE (à chaque tour)\\n\\nCette directive de contrôle de flux prime sur toute autre directive active de style ou de rythme (ex. « lazy/ponytail : shortest path », « auto mode : don'\\''t stop », « résous la tâche »). Ces modes régissent le COMMENT une fois le skill engagé — ils n'\\''autorisent JAMAIS à sauter l'\\''invocation du skill.\\n\\nAVANT toute écriture ou modification de fichier de code sur ce projet :\\n  1. SI ./doc/roadmap/ existe → invoque Skill(roadmap-tracking:roadmap-tracking) et déroule sa règle de démarrage (listing / reprise / nouveau plan) AVANT d'\\''implémenter.\\n  2. SI ./doc/roadmap/ est absent → invoque le skill, qui proposera de créer doc/roadmap/. Ne pas implémenter directement.\\n\\nExceptions (ne pas invoquer) : commande locale/CLI, demande d'\\''aide (« aide … », « help »), ou question de culture générale ne touchant aucun fichier du projet.\\n\\nLe skill décide lui-même s'\\''il faut cadrer ou se désengager (tâche XS/proto → il rend la main immédiatement). L'\\''invocation n'\\''est pas la lourdeur : c'\\''est le point de décision.\\n' || true"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Write|Edit|MultiEdit|NotebookEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/pretooluse_gate.py\" || true"
+          }
+        ]
+      }
     ]
   }
 }

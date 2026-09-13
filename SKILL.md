@@ -13,7 +13,7 @@ description: >
 license: MIT
 metadata:
   author: Emmanuel Houriez
-  version: "2.7.2"
+  version: "2.8.0"
   domain: workflow
   triggers: >
     plan, cadrage, roadmap, issue GitHub, suivi de tâche, planification,
@@ -655,6 +655,20 @@ encore établi attend que le fait soit récupéré.
 Ce checkpoint s'exécute **à chaque invocation du skill**, quel que soit le
 contexte (nouveau plan, reprise, prompt d'action directe). Il est **non
 sautable** et constitue la **toute première action** du skill.
+
+> **Renfort mécanique (Claude Code).** Ce checkpoint n'est plus seulement
+> textuel. Deux hooks le soutiennent (voir `hooks/hooks.json`) :
+> - `UserPromptSubmit` réinjecte, à chaque tour, la préséance de cette garde sur
+>   les directives de style/rythme concurrentes (« shortest path », « don't
+>   stop », « résous la tâche ») — celles-ci régissent le *comment* après
+>   engagement du skill, jamais le *si* de son invocation.
+> - `PreToolUse` (`Write|Edit|MultiEdit|NotebookEdit`) refuse **une seule fois
+>   par session** le premier appel d'outil mutant sur un projet ayant adopté le
+>   skill (`doc/roadmap/` présent), injectant la directive **au moment exact où
+>   l'implémentation démarre**, puis s'auto-désarme. Ce n'est pas un mur : si le
+>   skill a déjà été consulté (y compris pour se désengager), il suffit de
+>   réémettre l'appel. Les écritures dans `doc/roadmap/` ne sont jamais
+>   interceptées. Kill-switch : `ROADMAP_TRACKING_AUTOSTART=off`.
 
 ### Interdit avant ce checkpoint
 
