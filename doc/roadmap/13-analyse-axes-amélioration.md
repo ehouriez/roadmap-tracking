@@ -1,3 +1,30 @@
+---
+plan:
+  id: 13
+  name: 13-analyse-axes-amélioration.md
+  link: doc/roadmap/13-analyse-axes-amélioration.md
+  source: local
+status: active
+date: 2026-09-13
+description: >
+  Analyse et proposition d'amélioration du skill roadmap-tracking.
+priority: high
+complexity: M
+scope:
+  modules:
+    - SKILL.md
+    - README.md
+    - .skill-config.yml
+    - references/environment.md
+    - references/templates.md
+    - hooks/hooks.json
+    - hooks/codex-hooks.json
+    - .codex-plugin/plugin.json  # NEW
+issue:
+  id: null
+  url: null
+---
+
 # Plan d'implémentation — Axes d'amélioration du skill roadmap-tracking
 
 ## Contexte et décisions confirmées
