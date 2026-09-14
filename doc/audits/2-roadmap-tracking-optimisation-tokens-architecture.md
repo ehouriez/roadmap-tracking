@@ -434,6 +434,32 @@ l'un des critères suivants :
 | `12-skill-compression-p1.md` (roadmap) | Plan P1 exécuté et rollbacké — post-mortem en §1 de ce document |
 | `1-roadmap-tracking-agnostic-autonomy-plugin-AUDIT.md` | Audit d'implémentation des axes — confirme la conformité v2.8.0 |
 
+### C bis. Écart d'implémentation P1 — module `templates.md` supprimé
+
+> **Date** : 2026-09-14 · **Décision** : post-implémentation
+
+L'instruction initiale de P1 prévoyait 5 modules. L'implémentation réelle
+aboutit à **4 modules** : `modules/templates.md` a été créé puis supprimé.
+
+| Aspect | Prévu | Réel |
+|---|---|---|
+| Nombre de modules | 5 | **4** |
+| `modules/templates.md` | Mémo consolidé templates de chat (~800 tokens) | **Supprimé** |
+| Contenu templates de chat | Dupliqué dans un fichier dédié | Inline dans les modules de phase respectifs |
+
+**Justification** : le module était orphelin (0 référence active hors sa
+propre entrée de routing). Il dupliquait du contenu déjà présent inline dans
+`execute.md`, `wrapup.md` et `init-scan.md`, créant une dette de maintenance
+sans gain tokens (chargé uniquement à la demande explicite = jamais en
+pratique). Conforme à la leçon C3/C4 du post-mortem P1 : ne pas ajouter de
+surface sans usage prouvé.
+
+**Impact sur les projections** : nul. Les templates de chat ne sont pas
+chargés à chaque tour — ils restent inline dans les modules qui les utilisent.
+Les calculs de gain de la §6 restent valides.
+
+---
+
 ### C. Diagramme de chargement des modules (session S)
 
 ```

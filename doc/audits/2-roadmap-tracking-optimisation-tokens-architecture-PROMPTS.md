@@ -56,6 +56,18 @@ En particulier :
 
 ---
 
+> **⚠️ Note d'exécution P1 — Écart d'implémentation (2026-09-14)**
+>
+> L'architecture finale compte **4 modules** au lieu de 5 : `modules/templates.md`
+> a été supprimé après création. Les templates de chat (⏸️, 📦, 🚀, désengagements)
+> vivent inline dans les modules de phase respectifs (`execute.md`, `init-scan.md`,
+> `wrapup.md`) — aucun contenu perdu. L'entrée de routing dans SKILL.md a été
+> retirée. Voir §C bis de l'audit pour la justification complète.
+>
+> **Impact sur P2 et P3** : voir adaptations ci-dessous.
+
+---
+
 ## 🥈 Prompt pour P2 — Compression sémantique du noyau (L3)
 
 > Modèle recommandé dans le menu : Claude Sonnet 4.6 (Thinking)
@@ -72,7 +84,10 @@ Tu es un Expert Senior en Prompt Engineering et Densification Textuelle. Tu inte
 </role>
 
 <contexte>
-Le chantier P1 (scission de `SKILL.md` en un noyau + 5 modules dans `modules/`) a été complété avec succès. Le fichier `SKILL.md` actuel ne contient désormais que le noyau central d'orchestration.
+Le chantier P1 (scission de `SKILL.md` en un noyau + 4 modules dans `modules/`) a été complété avec succès.
+Architecture réelle : `modules/init-scan.md`, `modules/plan.md`, `modules/execute.md`, `modules/wrapup.md`.
+Note : le module `modules/templates.md` prévu initialement a été supprimé (orphelin, contenu inline dans les modules de phase). Voir §C bis de l'audit.
+Le fichier `SKILL.md` actuel ne contient désormais que le noyau central d'orchestration (~274 lignes).
 </contexte>
 
 <mission>
@@ -121,7 +136,8 @@ Tu es un Architecte IA Senior spécialisé dans l'optimisation des flux conversa
 </role>
 
 <contexte>
-L'architecture modulaire de `roadmap-tracking` est en place (`SKILL.md` et dossier `modules/`). L'audit architectural a identifié que 15,1 % des tokens consommés proviennent de tours d'API superflus sur les plans de complexité simple (S et M).
+L'architecture modulaire de `roadmap-tracking` est en place : `SKILL.md` (noyau) + `modules/` contenant 4 fichiers (`init-scan.md`, `plan.md`, `execute.md`, `wrapup.md`). Le module `modules/templates.md` initialement prévu a été supprimé — contenu inline dans les modules de phase.
+L'audit architectural a identifié que 15,1 % des tokens consommés proviennent de tours d'API superflus sur les plans de complexité simple (S et M).
 </contexte>
 
 <mission>

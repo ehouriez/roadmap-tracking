@@ -25,7 +25,7 @@ Leçon du rollback P1 (§1 de l'audit) : **ne jamais supprimer de garde-fous sé
 | **`modules/plan.md`** | Phase 2 cadrage + Axe B (L895–972), Éval complexité + grille sizing + gate modèle (L446–580), Grilling adaptatif (L582–651), Phase 3 proposition (L974–1022), Phase 4 validation + grilling (L1024–1061) | ~4 100 |
 | **`modules/execute.md`** | Phase 5 Act limité (L1063–1119), Phase 6 validation pré-implémentation (L1121–1143), Phase 7 implémentation (L1145–1326), Tests intermédiaires (L1328–1383), Étape 🧪 Tests (L1385–1444), Étape ✅ Validation (L1446–1473), Commit référence format (L1474–1502) | ~4 300 |
 | **`modules/wrapup.md`** | Reprise plan existant (L1504–1590), Clôture plan (extraite de L1299–1326, référencée en Phase 7), Gate modèle sur reprise | ~1 100 |
-| **`modules/templates.md`** | Templates de chat (⏸️ points d'arrêt, 📦 commits, 🚀 implémentation, listing plans ✅/❌, désengagement, surcout Axe D), conventions de format, tables de calibrage | ~800 |
+| ~~`modules/templates.md`~~ | ~~Templates de chat (⏸️, 📦, 🚀, désengagement, surcout Axe D)~~ | **Supprimé** — voir écart ci-dessous |
 
 ---
 
@@ -81,9 +81,21 @@ Contenu extrait des sections L1063–1502.
 
 Contenu extrait des sections L1504–1590 + bloc clôture (L1299–1326).
 
-#### [NEW] [templates.md](file:///c:/Users/pou_x/Documents/Antigravity/Projects/roadmap-tracking/modules/templates.md)
+#### ~~[NEW] modules/templates.md~~ — **ÉCART D'IMPLÉMENTATION (supprimé)**
 
-Templates de chat extraits de plusieurs sections, consolidés.
+> **Décision post-implémentation** : `modules/templates.md` a été créé puis
+> supprimé. Seule la ligne de routing dans SKILL.md a été retirée.
+>
+> **Raison** : le module était orphelin (1 seule référence — sa propre entrée
+> de routing) et dupliquait intégralement du contenu déjà présent inline dans
+> les modules de phase (`execute.md`, `wrapup.md`, `init-scan.md`). Le garder
+> aurait introduit de la maintenance (deux endroits à synchroniser) sans gain
+> fonctionnel ni gain tokens. Conforme au principe YAGNI et à la leçon du
+> rollback P1 : ne pas ajouter de surface sans usage prouvé.
+>
+> **Impact** : l'architecture finale compte **4 modules** au lieu de 5. Aucun
+> contenu perdu — les templates de chat vivent inline dans leurs modules de
+> phase respectifs.
 
 ---
 
