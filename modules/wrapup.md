@@ -48,6 +48,16 @@
 3. 🔍 Clarifier / recadrer
 4. 📝 Modifier le plan
 5. 📋 Voir le journal
+
+---
+
+💾 Tout le contexte du plan courant est sauvegardé dans {INTRO_FICHIERS} :
+- `{PLAN_COURANT}` (plan courant)
+{PLANS_LIES}
+ℹ️ Tu peux exécuter `/clear`, puis coller le message ci-dessous dans la nouvelle
+   conversation pour repartir sur une session neuve — rien ne sera perdu.
+
+> Reprends le plan `{PLAN_COURANT}`.
 ```
 
 > **Gate modèle sur reprise.** Si le modèle actif est détectable et son tier

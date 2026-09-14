@@ -61,7 +61,19 @@ Puis confirme et pose le point d'arrêt :
 2. ⚡ Commencer l'implémentation — démarrer toutes les étapes en one-shot
 3. 📝 Modifier le plan
 4. 🛑 Arrêter ici
+
+---
+
+💾 Tout le contexte du plan courant est sauvegardé dans {INTRO_FICHIERS} :
+- `{PLAN_COURANT}` (plan courant)
+{PLANS_LIES}
+ℹ️ Tu peux exécuter `/clear`, puis coller le message ci-dessous dans la nouvelle
+   conversation pour repartir sur une session neuve — rien ne sera perdu.
+
+> Reprends le plan `{PLAN_COURANT}`.
 ```
+
+> **Variables du bloc ci-dessus :** `{PLAN_COURANT}` = valeur de `plan.name` du front matter. `{INTRO_FICHIERS}` = `le fichier plan` si aucun plan lié, `les fichiers plans` sinon. `{PLANS_LIES}` = une ligne `- \`#YYY-slug.md\`` par plan référencé dans les champs `blocks` / `blockedBy` / `depends_on` du front matter (ligne absente si aucun lien).
 
 > **Fast-path (plans XS/S/M)** : choisir 1 ou 2 démarre directement la **Phase 7** —
 > Phase 6 supprimée. Le POINT D'ARRÊT 2 sert de double validation création + implémentation.
@@ -102,6 +114,22 @@ Plan `XS`/`S`/`M`, ou `grilling.enabled: false` → afficher directement la gate
 | « 3 » / « stop » | Fin de session |
 
 > ⚠️ Seule une réponse explicite à ce point d'arrêt autorise l'implémentation.
+
+Afficher également (après le tableau) :
+
+```
+---
+
+💾 Tout le contexte du plan courant est sauvegardé dans {INTRO_FICHIERS} :
+- `{PLAN_COURANT}` (plan courant)
+{PLANS_LIES}
+ℹ️ Tu peux exécuter `/clear`, puis coller le message ci-dessous dans la nouvelle
+   conversation pour repartir sur une session neuve — rien ne sera perdu.
+
+> Reprends le plan `{PLAN_COURANT}` — j'ai validé la proposition, on passe à l'implémentation.
+```
+
+> (Variables : voir note § Phase 5 POINT D'ARRÊT 2.)
 
 ## Phase 7 — Implémentation
 
@@ -327,6 +355,16 @@ l'étape 0 de la Phase 7. À la fin de l'implémentation d'une étape sélection
    ⏸️ Commit, push si nécessaire, puis exécute la procédure de tests
    dans l'environnement cible et transmets-moi les résultats complets.
    J'attends tes retours avant de passer à l'étape suivante.
+
+   ---
+
+   💾 Tout le contexte du plan courant est sauvegardé dans {INTRO_FICHIERS} :
+   - `{PLAN_COURANT}` (plan courant)
+   {PLANS_LIES}
+   ℹ️ Tu peux exécuter `/clear`, puis coller le message ci-dessous dans la nouvelle
+      conversation pour repartir sur une session neuve — rien ne sera perdu.
+
+   > Reprends le plan `{PLAN_COURANT}` — voici les résultats des tests intermédiaires de l'étape {X} :
    ```
 
 4. **STOP.** Ne pas passer à l'étape suivante tant que les résultats ne sont pas
@@ -395,6 +433,16 @@ N-2) sont terminées. Tu dois :
 ⏸️ Commit, push si nécessaire, puis exécute la procédure de tests
    dans l'environnement cible et transmets-moi les résultats complets.
    J'attends tes retours avant de passer à l'étape de validation.
+
+   ---
+
+   💾 Tout le contexte du plan courant est sauvegardé dans {INTRO_FICHIERS} :
+   - `{PLAN_COURANT}` (plan courant)
+   {PLANS_LIES}
+   ℹ️ Tu peux exécuter `/clear`, puis coller le message ci-dessous dans la nouvelle
+      conversation pour repartir sur une session neuve — rien ne sera perdu.
+
+   > Reprends le plan `{PLAN_COURANT}` — voici les résultats des tests finaux :
    ```
 
    > Si **aucun fichier n'a été modifié** depuis le dernier commit (ex. : tests

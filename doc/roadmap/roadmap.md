@@ -18,6 +18,11 @@ Backlog consolidé : plans nommés d'après leur issue GitHub (voir `doc/roadmap
 
 ## Fait
 
+- **[Issue: #12] `#12` — Add /clear block at Phase 5+ gates** (2026-09-14) 🔵 — Bloc informatif `/clear` injecté à 5 gates (Phase 5 POINT D'ARRÊT 2, Phase 6, tests intermédiaires, 🧪 Tests finaux, reprise wrapup). 10/10 tests PASS. Économie estimée 20K–250K tokens selon la phase et la complexité du plan.
+  [`12-session-clear-gate-suggestion.md`](12-session-clear-gate-suggestion.md)
+
+### Plans livrés (2026-09-14)
+
 - **[Plan: 20] `#20` — Fix XS/S-solo disengagement → fast-track Phase 7** (2026-09-14) 🔵 — Désengagement automatique supprimé. Remplacé par fast-track Phase 7 : plan écrit → implémentation directe sans phases 2-6, sans ⏸️, sans tests.mode question, commit unique en fin. 5/5 étapes, 6/6 tests PASS.
   [`20-fix-xs-s-solo-disengagement-fast-track.md`](20-fix-xs-s-solo-disengagement-fast-track.md)
 

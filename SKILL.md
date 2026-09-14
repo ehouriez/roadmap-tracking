@@ -7,14 +7,15 @@ description: >
 license: MIT
 metadata:
   author: Emmanuel Houriez
-  version: "3.4.0"
-  domain: workflow
+  version: "3.5.0"
+  domain: productivity
+  keywords: >
+    roadmap, planification, suivi de tâche, traçage de demande, plan, issue
   triggers: >
-    plan, cadrage, roadmap, issue GitHub, suivi de tâche, planification,
-    traçage de demande, démarre, implémente, commence, exécute, lance,
-    étape, étapes, continue, reprends, enchaîne, déploie, code, développe,
-    implémentation, #[0-9]+, go, fais tout, fais le
-  role: process
+    plan, cadrage, roadmap, issue gitHub, issue GitHub, backlog, sprint, ticket, #[0-9]+,
+    suivi de tâche, suivi de tache, planification, traçage de demande, tracage de demande, trace,
+    priorisation, avancement, progression, phase, étape, etape, étapes, etapes,
+    démarre, demarre, implémente, implemente, reprends, continue, enchaîne, enchaine, repart, déploie, deploie
   scope: planning-and-implementation
   output-format: markdown
 ---
