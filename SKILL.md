@@ -1,19 +1,13 @@
 ---
 name: roadmap-tracking
 description: >
-  Use to frame, plan, track and trace any development, configuration or
-  architecture request through plan files (./doc/roadmap/{issue}-slug.md,
-  named after the linked GitHub issue), a consolidated roadmap.md and linked
-  GitHub issues. Drives a strict
-  7-phase workflow — silent analysis, interactive scoping, plan proposal,
-  validation, plan/issue/roadmap creation, validation, then step-by-step
-  implementation — with hard stop points between planning and coding.
-  Invoke at the start of any dev/config/architecture session, on reference
-  to an existing plan or issue, or on demand.
+  Frame, plan, track and trace dev/config/architecture requests via plan files
+  (./doc/roadmap/{issue}-slug.md), roadmap.md and GitHub issues. Strict 7-phase
+  workflow with hard stop points between planning and coding.
 license: MIT
 metadata:
   author: Emmanuel Houriez
-  version: "3.0.0"
+  version: "3.1.0"
   domain: workflow
   triggers: >
     plan, cadrage, roadmap, issue GitHub, suivi de tâche, planification,
@@ -27,23 +21,11 @@ metadata:
 
 # Roadmap Tracking
 
-Cadre, suit et trace les demandes de développement, configuration ou
-architecture via des **fichiers plan**, un **roadmap.md** consolidé et des
-**issues GitHub** liées.
-
-> Toutes les interactions sont en **français**. Tout le contenu écrit dans le
-> code est en **anglais** (variables, commentaires, docstrings, messages). Les
-> commits suivent la convention **Conventional Commits** (`feat:`, `fix:`,
-> `docs:`, `refactor:`, `chore:`…), un commit = un changement logique.
+> Interactions : **français**. Code (variables, commentaires, messages) : **anglais**. Commits : **Conventional Commits** (`feat:`, `fix:`, `docs:`, `refactor:`, `chore:`) — 1 commit = 1 changement logique.
 
 ## Prerequisites
 
-This skill is self-contained: all required rules and environment mappings are
-embedded in `references/environment.md`. No external files needed.
-
-Every shell command presented for manual execution **must** follow the
-**Operator Commands Formatting** rules defined in
-`references/environment.md § Operator Commands Formatting`.
+Toutes les règles sont dans `references/environment.md` (mapping IDE, tiers, défauts, schéma config). Toute commande manuelle **doit** suivre **Operator Commands Formatting** (`references/environment.md § Operator Commands Formatting`).
 
 ## Fichiers de référence
 
@@ -61,37 +43,18 @@ Charge-les **à la demande**, seulement quand la phase l'exige :
 
 ## Applicabilité
 
-Ce workflow s'applique au **travail de développement, configuration ou
-architecture** sur le projet courant.
-
 > **En cas de doute, applique le workflow.**
 
-Il **ne s'applique PAS** pour :
-- Les questions de culture générale / explications techniques ne touchant **aucun fichier du projet** (aucun read, write, create, delete).
-- Les urgences explicites (`URGENT`, `FIX IMMÉDIAT`, `PROD DOWN`) — le fix immédiat est autorisé, mais une étape post-fix de traçabilité est obligatoire (voir ci-dessous).
-- **Demandes d'aide sur le skill lui-même** : `aide`, `aide workflow`, `aide config`, `aide planification`,
-  `aide plans`, `aide tests`, `aide git`, `aide intégrations`, `aide roadmap`, `help`
-  → Afficher l'aide demandée et **STOP**.
-  Aucune règle de démarrage. Aucun listing de plans. Aucune vérification de `doc/roadmap/`.
-  Fonctionne même si le projet n'a jamais eu le skill.
+**Ne s'applique PAS :**
+- Questions de culture générale / explications techniques sans modification de fichier.
+- Urgences (`URGENT`, `FIX IMMÉDIAT`, `PROD DOWN`) — fix immédiat autorisé ; traçabilité post-fix **obligatoire** (créer/MAJ le fichier plan : ce qui a été fait, pourquoi, quel impact). L'urgence exempte la planification amont, pas la traçabilité aval.
+- **Aide sur le skill** : `aide`, `aide workflow`, `aide config`, `aide planification`, `aide plans`, `aide tests`, `aide git`, `aide intégrations`, `aide roadmap`, `help` → afficher l'aide et **STOP**. Aucune règle de démarrage. Aucun listing ni vérification de `doc/roadmap/`. Fonctionne même si le projet n'a jamais eu le skill.
 
-> **Urgences — traçabilité post-fix obligatoire** : dès la correction appliquée,
-> créer ou mettre à jour le fichier plan correspondant pour consigner ce qui a
-> été fait, pourquoi, et quel impact. L'urgence exempte de la planification
-> amont, pas de la traçabilité aval.
-
-> **`doc/roadmap/` absent** : si le skill est invoqué sur un projet sans
-> répertoire `doc/roadmap/`, il ne refuse pas — il propose de le créer (voir
-> « Règle de démarrage » dans `modules/init-scan.md`). Si l'utilisateur refuse, le workflow ne
-> s'applique pas pour cette demande ; si une demande ultérieure dans la même
-> session implique une modification de fichier du projet, le skill re-propose
-> la création une seule fois (voir « Règle de démarrage » dans `modules/init-scan.md`).
+> **`doc/roadmap/` absent** : proposer de le créer (voir `modules/init-scan.md`). Si refus : workflow suspendu pour cette demande ; re-proposer une seule fois si une demande ultérieure implique une modification de fichier.
 
 ## Modules de workflow (chargement conditionnel)
 
-Le corps du workflow est découpé en modules chargés **au moment pertinent** via
-l'outil de lecture de fichier. Ne charge **jamais** plus d'un module à la fois
-sauf en Phase 1 (init-scan + plan).
+Modules chargés **au moment pertinent** via l'outil de lecture. Ne charger **jamais** plus d'un module simultanément sauf Phase 1 (init-scan + plan).
 
 | Module | Fichier | Quand le charger |
 |---|---|---|
@@ -116,8 +79,7 @@ sauf en Phase 1 (init-scan + plan).
 
 ## Résumé compact des phases
 
-Le workflow complet compte **7 phases strictement séquentielles**, chaque point
-d'arrêt `⏸️` étant bloquant. Détail dans les modules.
+**7 phases strictement séquentielles.** Chaque `⏸️` est bloquant. Détail dans les modules.
 
 | Phase | Rôle (1 ligne) | Module |
 |---|---|---|
@@ -140,12 +102,10 @@ d'arrêt `⏸️` étant bloquant. Détail dans les modules.
    DOIT être rendu sous forme de tableau markdown (`| … | … |`).
 
 ⛔ Interdit : format `clé: valeur` sur plusieurs lignes, listes séparées par
-   des filets (`───`, `═══`), puces non structurées en remplacement d'un
-   tableau. Les exemples de tableau du skill sont des GABARITS CONTRAIGNANTS,
-   pas des suggestions.
+   des filets (`───`, `═══`), puces non structurées en remplacement d'un tableau.
 ```
 
-❌ Exemple exact du format INTERDIT — ne jamais produire ceci :
+❌ Format INTERDIT — ne jamais produire ceci :
 
 ```
 #: 1
@@ -163,18 +123,13 @@ Statut: 🔴 Bloqué
 
 ## ⛔ Règle absolue — séparation création / implémentation
 
-La **création d'un plan** et l'**implémentation de son contenu** sont TOUJOURS
-deux étapes distinctes séparées par une validation utilisateur explicite.
-
 Ne JAMAIS :
 - Créer un plan ET commencer à implémenter dans le même passage.
 - Créer une issue ET écrire du code applicatif dans le même passage.
-- Interpréter « oui » / « go » / « valide » sur la proposition de plan comme une
-  autorisation d'implémenter.
+- Interpréter « oui » / « go » / « valide » sur la proposition de plan comme une autorisation d'implémenter.
 - Lancer création du plan, de l'issue ET implémentation « en parallèle ».
 
-Chaque phase se termine par une **question explicite** et un **ARRÊT COMPLET**
-en attente de réponse.
+Chaque phase se termine par une **question explicite** et un **ARRÊT COMPLET** en attente de réponse.
 
 ## ⛔ Règle absolue — tests obligatoires avant clôture
 
@@ -192,48 +147,37 @@ en attente de réponse.
    TOUJOURS créés ou mis à jour dans la section `## Tests` du fichier plan
    (voir references/templates.md). Vaut pour les tests intermédiaires comme
    pour les tests finaux 🧪 Tests. Afficher les résultats uniquement dans le
-   chat (verdict Vérificateur inclus) ne suffit PAS : le fichier plan est la
-   source de vérité traçable, et l'étape ✅ Validation s'appuie dessus.
+   chat ne suffit PAS : le fichier plan est la source de vérité traçable,
+   et l'étape ✅ Validation s'appuie dessus.
 
    Ordre d'exécution OBLIGATOIRE : l'outil Edit/Write sur le fichier plan est
    appelé EN PREMIER ; le chat ne contient ensuite qu'une référence
    (`→ voir section ## Tests de NNN-slug.md`). Reproduire la procédure
-   intégralement dans le chat — même dans la même réponse que l'écriture dans
-   le plan — est INTERDIT. Le chat pointe vers le plan, jamais l'inverse.
+   intégralement dans le chat est INTERDIT. Le chat pointe vers le plan, jamais l'inverse.
 ```
 
 ## ⛔ Règle absolue — pas de ⏸️ sans 📦
 
 ```
-⛔ Un point d'arrêt `⏸️` après une procédure de tests (intermédiaires ou
-   finaux) ne peut JAMAIS apparaître sans être précédé d'un bloc
-   `📦 Commit proposé` (ou d'un `📦 Aucun commit nécessaire` explicite).
-   Si le bloc commit est absent, le STOP est invalide — revenir en arrière
-   et l'ajouter avant de s'arrêter.
+⛔ Un point d'arrêt `⏸️` après une procédure de tests ne peut JAMAIS apparaître
+   sans un bloc `📦 Commit proposé` (ou `📦 Aucun commit nécessaire`).
+   Si absent, le STOP est invalide — l'ajouter avant de s'arrêter.
 ```
 
 ## Correction proactive des incohérences de plan
 
-À chaque interaction impliquant un fichier plan (démarrage, reprise, fin
-d'étape, mise à jour de statut), **analyser silencieusement** les écarts
-présents dans le fichier plan courant **et** dans tout fichier plan lié par une
-relation de dépendance (dépend de / est requis par, bloque / est bloqué par,
-et toute autre relation inter-plans présente dans les front matters).
+À chaque interaction impliquant un fichier plan, **analyser silencieusement** les écarts dans le plan courant et dans tout plan lié (relations front matter : dépend de, bloque, est bloqué par).
 
 ### Périmètre des corrections
 
-Appliquer les corrections sur **toute information manquante, obsolète ou
-incohérente** détectable sans jugement de valeur — exemples non exhaustifs :
+Corriger toute **information manquante, obsolète ou incohérente** détectable sans jugement de valeur — exemples non exhaustifs :
 
-- Champ `status` incohérent avec la progression réelle des étapes cochées.
-- Dépendance déclarée dans un sens mais absente dans le plan lié (relation non
-  réciproque).
-- `updated_at` non rafraîchi après une modification.
-- Étape cochée mais `status` toujours `active` (devrait être `in-progress` ou
-  `done`).
+- `status` incohérent avec la progression réelle des étapes cochées.
+- Dépendance déclarée dans un sens mais absente dans le plan lié (relation non réciproque).
+- `updated_at` non rafraîchi après modification.
+- Étape cochée mais `status` toujours `active`.
 - Référence à un fichier plan renommé ou déplacé.
-- Champ `complexity` ou `priority` présent mais incohérent avec le contenu du
-  plan.
+- Champ `complexity` ou `priority` incohérent avec le contenu du plan.
 
 ### Règle d'exécution
 
@@ -242,24 +186,17 @@ incohérente** détectable sans jugement de valeur — exemples non exhaustifs :
 ❌ Ne JAMAIS demander « voulez-vous que je mette à jour… ? »
 ```
 
-1. **Correction immédiate** : appliquer les modifications via les outils
-   `Edit`/`Write` sans demander de permission.
-2. **Notification post-action** : après chaque série de corrections, afficher
-   un tableau récapitulatif :
+1. **Correction immédiate** : appliquer via `Edit`/`Write` sans demander de permission.
+2. **Notification post-action** : tableau récapitulatif après chaque série de corrections :
 
    | Fichier modifié | Champ concerné | Avant | Après | Raison |
    |---|---|---|---|---|
    | `NNN-slug.md` | `status` | `active` | `in-progress` | Étape 2 cochée |
    | `MMM-other.md` | `blocks` | absent | `[NNN]` | Relation réciproque manquante |
 
-3. **Pas de notification si aucun écart** : si le plan est déjà cohérent, ne
-   rien afficher — passer directement à la suite du workflow.
+3. **Pas de notification** si le plan est déjà cohérent — passer directement à la suite.
 
-> **Limite de périmètre.** Cette correction s'applique aux **métadonnées
-> structurelles** (front matter, relations inter-plans, progression d'étapes).
-> Elle n'inclut **jamais** de modification du contenu métier du plan (objectif,
-> description, étapes, procédures de test) — ces champs sont sous contrôle de
-> l'utilisateur et ne sont modifiés qu'à sa demande explicite.
+> **Limite de périmètre.** Correction sur les **métadonnées structurelles uniquement** (front matter, relations inter-plans, progression d'étapes). Le contenu métier (objectif, étapes, procédures de test) est sous contrôle exclusif de l'utilisateur.
 
 ## Signaux de mode
 
@@ -270,4 +207,3 @@ Indique **toujours** le mode courant dans tes réponses :
 - `🔨 MODE ACT (PLAN)` — je crée le plan, l'issue et roadmap.md. Pas de code.
 - `🔨 MODE ACT (IMPLÉMENTATION)` — j'implémente l'étape N du plan.
 - `⏸️ POINT D'ARRÊT` — en attente de validation.
-
