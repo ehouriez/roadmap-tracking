@@ -452,13 +452,14 @@ Table de calibrage des estimations par complexité et mode (calibrées sur métr
 
 > 🧠 MODE PLAN — aucune écriture, aucune commande.
 
-Sur la base de la **complexité globale pressentie** en Phase 1, exécuter la gate
+Sur la base de la **complexité globale pressentie** en Phase 1, évaluer la gate
 selon la section canonique « Gate de recommandation de modèle » (dans
-`modules/plan.md`). Rationnel : le
-cadrage (Phase 2) est la partie interactive la plus exigeante en jugement ;
-choisir le bon modèle **avant** de la mener aligne l'effort là où il compte.
+`modules/plan.md`). Rationnel : le cadrage (Phase 2) est la partie interactive
+la plus exigeante en jugement ; choisir le bon modèle **avant** de la mener
+aligne l'effort là où il compte.
 
-- **Cas 1 — modèle adapté** → bloc `ℹ️`, puis passer à la Phase 2.
+- **Cas 1 — modèle adapté** → **continuer silencieusement** vers la Phase 2.
+  *(Fast-path : aucun affichage, aucun arrêt — tour non consommé.)*
 - **Cas 2 — modèle non adapté** → bloc `⚠️`, **puis point d'arrêt de bypass
   `⏸️`** : s'arrêter et attendre la réponse (`bypass` pour continuer sur le
   modèle actif, ou switch manuel via `/model` puis relance). Ne pas entamer le

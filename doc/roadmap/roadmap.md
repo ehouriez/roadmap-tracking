@@ -19,6 +19,9 @@ Backlog consolidé : plans nommés d'après leur issue GitHub (voir `doc/roadmap
 
 ### Plans livrés (2026-09-14)
 
+- **[Plan: 18] `#18` — Levier L2 : Élimination des tours superflus / Fast-path** (2026-09-14) 🔵 — Gate modèle Cas 1 silencieuse, Phase 1.5 sans arrêt (Cas 1), Phase 6 fusionnée dans Phase 5 pour plans XS/S/M. −2 tours plans simples, ~29 200 tokens économisés. Version 3.1.0 → 3.2.0. 8/8 tests PASS.
+  [`18-roadmap-tracking-optimisation-tokens-elimination-tours-superflus-fast-path.md`](18-roadmap-tracking-optimisation-tokens-elimination-tours-superflus-fast-path.md)
+
 - **[Plan: 17] `#17` — Compression sémantique noyau SKILL.md (L3)** (2026-09-14) 🔵 — Densification sémantique du noyau post-scission P1 : 274 → 209 lignes (−23,7 %), ~820 tokens/tour économisés. Version 3.0.0 → 3.1.0. 7/7 tests PASS.
   [`17-roadmap-tracking-optimisation-tokens-architecture-compression-sementique.md`](17-roadmap-tracking-optimisation-tokens-architecture-compression-sementique.md)
 

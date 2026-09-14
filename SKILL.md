@@ -7,7 +7,7 @@ description: >
 license: MIT
 metadata:
   author: Emmanuel Houriez
-  version: "3.1.0"
+  version: "3.2.0"
   domain: workflow
   triggers: >
     plan, cadrage, roadmap, issue GitHub, suivi de tâche, planification,
@@ -84,13 +84,18 @@ Modules chargés **au moment pertinent** via l'outil de lecture. Ne charger **ja
 | Phase | Rôle (1 ligne) | Module |
 |---|---|---|
 | 1 | Analyse silencieuse + complexité + auto-calibrage (Axe A) | `init-scan.md` |
-| 1.5 | Gate de recommandation de modèle | `init-scan.md` |
+| 1.5 | Gate modèle — ⚠️ mismatch uniquement (Cas 1 silencieux, aucun arrêt) | `init-scan.md` |
 | 2 | Cadrage interactif / grilling + intention (Axe B) | `plan.md` |
 | 3 | Proposition du plan (rien n'est écrit) | `plan.md` |
 | 4 | Validation de la proposition (⏸️) | `plan.md` |
 | 5 | Act limité — création plan/issue/roadmap (⏸️) | `execute.md` |
-| 6 | Validation avant implémentation (⏸️) | `execute.md` |
+| 6 | Validation avant implémentation — **L/XL uniquement** (⏸️) | `execute.md` |
 | 7 | Implémentation étape par étape + 🧪 Tests + ✅ Validation | `execute.md` |
+
+> **Fast-path (plans XS/S/M)** : Phase 1.5 silencieuse si le modèle est adapté
+> (Cas 1) — aucun arrêt. Phase 6 supprimée si l'utilisateur choisit « Commencer
+> l'implémentation » au POINT D'ARRÊT 2 de la Phase 5. **−2 tours sur les plans
+> simples.** Les plans L/XL conservent l'intégralité des arrêts.
 
 **Reprise** d'un plan existant et **clôture** : voir `modules/wrapup.md`.
 

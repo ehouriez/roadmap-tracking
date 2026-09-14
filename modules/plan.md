@@ -133,20 +133,14 @@ sur les défauts Anthropic.
 
 ### Gate de recommandation de modèle
 
-Si le modèle actif est détectable, afficher **toujours** la gate — en
+Si le modèle actif est détectable, évaluer silencieusement le tier — en
 **Phase 1.5** (avant le cadrage), re-jouée en Phase 3 seulement si le cadrage a
 changé la classe de complexité, ou lors d'une reprise si les étapes restantes
-l'exigent — dans l'un des deux cas suivants selon que le modèle actif correspond
-ou non à la complexité globale (matrice).
+l'exigent.
 
-**Cas 1 — tier adapté** (bloc `ℹ️`) → afficher, puis **continuer
-normalement**, aucune action requise :
-
-```
-ℹ️ Complexité détectée : L → tier requis : reasoning
-   Modèle actif : opus → tier : reasoning
-   → Le modèle actuel convient pour ce niveau de complexité.
-```
+**Cas 1 — tier adapté** → **continuer silencieusement** vers la phase suivante.
+Aucun affichage, aucun arrêt. *(Fast-path : le bloc `ℹ️` n'apporte pas de valeur
+décisionnelle — seul le mismatch justifie une interruption.)*
 
 **Cas 2 — tier non adapté** (bloc `⚠️`) → afficher, puis **point d'arrêt de
 bypass** (voir ci-dessous) :
@@ -202,7 +196,7 @@ Règle, **sans état externe** :
    - **Identique** → appliquer les règles de re-jeu propres à la phase
      (Phase 1.5 : jouée une fois ; Phase 3 : seulement si le cadrage a changé
      la classe de complexité ; entrée Phase 7 : jouée une fois par séquence).
-   - **Différent** → **toujours rejouer la gate immédiatement** (Cas 1 `ℹ️` /
+   - **Différent** → **toujours rejouer la gate immédiatement** (Cas 1 silencieux /
      Cas 2 `⚠️` + point d'arrêt de bypass), quel que soit l'état de re-jeu de la
      phase. Le changement de modèle prime sur les conditions de re-jeu
      habituelles. Mettre ensuite à jour le dernier modèle évalué.

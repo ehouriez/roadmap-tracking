@@ -63,9 +63,23 @@ Puis confirme et pose le point d'arrêt :
 4. 🛑 Arrêter ici
 ```
 
+> **Fast-path (plans XS/S/M)** : choisir 1 ou 2 démarre directement la **Phase 7** —
+> Phase 6 supprimée. Le POINT D'ARRÊT 2 sert de double validation création + implémentation.
+>
+> **Plans L/XL** : choisir 1 ou 2 déclenche d'abord la **Phase 6** (grilling risques
+> d'implémentation + gate binaire) avant de passer à la Phase 7.
+
 **STOP.** Attendre la réponse.
 
-## Phase 6 — Validation avant implémentation
+## Phase 6 — Validation avant implémentation *(plans L/XL uniquement)*
+
+> **Fast-path (plans XS/S/M)** : si l'utilisateur a choisi « Commencer
+> l'implémentation » (option 1 ou 2) au POINT D'ARRÊT 2 de la Phase 5, la
+> Phase 6 est **supprimée** — passer directement à la Phase 7. La confirmation
+> Phase 5 sert de validation création + implémentation.
+>
+> Phase 6 s'applique uniquement aux plans **L/XL**, ou lorsque l'utilisateur
+> a choisi « Modifier le plan » puis relancé l'implémentation.
 
 ### Grilling avant la gate (plans complexes)
 
@@ -121,8 +135,8 @@ l'alignement du modèle sur la **séquence d'étapes demandée** (pas étape par
 3. Appliquer la gate selon la section canonique « Gate de recommandation de
    modèle » (avec « Détection du modèle actif » et « Re-jeu de la gate » —
    toutes dans `modules/plan.md`), **symétrie stricte** (mismatch dans les deux sens) :
-   - **Adapté** (tier actif = tier requis par la séquence) → bloc `ℹ️`, continuer
-     vers l'étape 0.
+   - **Adapté** (tier actif = tier requis par la séquence) → **continuer
+     silencieusement** vers l'étape 0. *(Fast-path : aucun affichage pour Cas 1.)*
    - **Sous-dimensionné** (au moins une étape exige `reasoning` alors que le tier
      actif est `standard` ou `light`) → bloc `⚠️` nommant les étapes concernées,
      recommander un modèle `reasoning` (voir `references/environment.md §
@@ -185,6 +199,7 @@ le mode de tests :
    > **Mode `autonomous`** : cette étape 0 est **supprimée** — tous les tests
    > s'exécutent après chaque étape automatiquement via la boucle
    > Exécuteur/Vérificateur. Passer directement à l'étape 1.
+   > *(Fast-path : aucune question de sélection, aucun tour supplémentaire.)*
    > Voir `references/autonomous-tests.md`.
 
    > **Mode one-shot** (option ⚡ choisie au POINT D'ARRÊT 2 ou au point d'arrêt

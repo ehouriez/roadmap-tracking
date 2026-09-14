@@ -55,7 +55,7 @@ sur une session de 18 tours (objectif audit L3 : ~11 240 tokens).
 
 - `modules/*.md` — non touchés
 - `references/*.md` — non touchés
-- Levier L2 (élimination des tours inutiles) — plan ultérieur
+- Levier L2 (élimination des tours inutiles) — livré dans le **plan #18**
 - Toute suppression de règle logique, condition, balise ou contrainte
 
 ## Étapes
