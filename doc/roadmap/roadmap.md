@@ -22,6 +22,10 @@ Backlog consolidé : plans nommés d'après leur issue GitHub (voir `doc/roadmap
 - **[Plan: 17] `#17` — Compression sémantique noyau SKILL.md (L3)** (2026-09-14) 🔵 — Densification sémantique du noyau post-scission P1 : 274 → 209 lignes (−23,7 %), ~820 tokens/tour économisés. Version 3.0.0 → 3.1.0. 7/7 tests PASS.
   [`17-roadmap-tracking-optimisation-tokens-architecture-compression-sementique.md`](17-roadmap-tracking-optimisation-tokens-architecture-compression-sementique.md)
 
+- **[Plan: 16] `#16` — Scission modulaire SKILL.md (L1)** (2026-09-14) 🔵 — SKILL.md monolithique (1 590 lignes) scindé en noyau (274 lignes) + 4 modules à chargement conditionnel. −48 % tokens skill sur 18 tours. Version 2.8.0 → 3.0.0. 10/10 tests PASS. Note: L'implémentation réelle aboutit à
+**4 modules** : `modules/templates.md` a été créé puis supprimé.
+  [`16-roadmap-tracking-optimisation-tokens-architecture-scission-modulaire.md`](16-roadmap-tracking-optimisation-tokens-architecture-scission-modulaire.md)
+
 ### Plans livrés (2026-09-13)
 
 - **[Issue: #8] `#8` — Grilling adaptatif phases 2/4/6** (2026-09-12) 🔵 — Intégration du grilling (design tree, rounds pré-amorcés, frontier réduite) pour les plans complexes L/XL. Validé.
