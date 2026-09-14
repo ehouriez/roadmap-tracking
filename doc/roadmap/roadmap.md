@@ -18,6 +18,9 @@ Backlog consolidé : plans nommés d'après leur issue GitHub (voir `doc/roadmap
 
 ## Fait
 
+- **[Plan: 20] `#20` — Fix XS/S-solo disengagement → fast-track Phase 7** (2026-09-14) 🔵 — Désengagement automatique supprimé. Remplacé par fast-track Phase 7 : plan écrit → implémentation directe sans phases 2-6, sans ⏸️, sans tests.mode question, commit unique en fin. 5/5 étapes, 6/6 tests PASS.
+  [`20-fix-xs-s-solo-disengagement-fast-track.md`](20-fix-xs-s-solo-disengagement-fast-track.md)
+
 - **[Plan: 19] `#19` — Lock Model Gate Template** (2026-09-14) 🔵 — Verrouillage déterministe des templates upgrade/downgrade de la gate modèle (`⛔ VERBATIM` + `⛔ TOKEN = ALIAS`), support multi-fournisseur Anthropic + OpenAI/Codex (`sol`/`luna`/`terra`). 6/6 tests PASS.
   [`19-lock-model-gate-template.md`](19-lock-model-gate-template.md)
 

@@ -118,8 +118,31 @@ approprié (reprise ou création) avant de continuer.
   été créé et confirmé (création).
 - [ ] Un point d'arrêt `⏸️` a été posé ET l'utilisateur y a répondu
   explicitement en autorisant l'implémentation.
+  *(Exception fast-track : ⏸️ supprimé — voir § « Mode fast-track » ci-dessous.)*
 - [ ] L'étape 0 ci-dessous va être exécutée MAINTENANT (ou a déjà été exécutée
   dans cette session pour ce même ensemble d'étapes).
+  *(Exception fast-track : étape 0 supprimée — voir § « Mode fast-track » ci-dessous.)*
+
+### Mode fast-track (XS/S-solo)
+
+Si la matrice Axe A a résolu en « Fast-track Phase 7 » (complexité XS, ou S +
+`collaborative: false`, en `mode: auto`) :
+
+```
+FAST-TRACK — RÈGLES D'ENTRÉE PHASE 7
+
+- SKIP : ⏸️ pré-implémentation (checklist ci-dessus : exception appliquée).
+- SKIP : § « Proposition du mode de tests » (ne pas lire ni poser la question).
+- SKIP : étape 0 (sélection des tests intermédiaires).
+- SKIP : tous les ⏸️ intermédiaires de Phase 7.
+- Gate modèle : appliquer normalement (§ ci-dessous).
+- Commit unique (📦) proposé en fin d'implémentation.
+- ✅ Validation one-shot en fin (pas de boucle).
+```
+
+Passer directement à la gate modèle, puis à l'étape 1.
+
+---
 
 ### Gate modèle d'entrée (groupée, une seule fois par séquence)
 

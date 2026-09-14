@@ -7,7 +7,7 @@ description: >
 license: MIT
 metadata:
   author: Emmanuel Houriez
-  version: "3.3.0"
+  version: "3.4.0"
   domain: workflow
   triggers: >
     plan, cadrage, roadmap, issue GitHub, suivi de tâche, planification,
@@ -96,6 +96,10 @@ Modules chargés **au moment pertinent** via l'outil de lecture. Ne charger **ja
 > (Cas 1) — aucun arrêt. Phase 6 supprimée si l'utilisateur choisit « Commencer
 > l'implémentation » au POINT D'ARRÊT 2 de la Phase 5. **−2 tours sur les plans
 > simples.** Les plans L/XL conservent l'intégralité des arrêts.
+>
+> **Fast-track (XS + solo, S + solo en `mode: auto`)** : phases 2-6 supprimées,
+> ⏸️ supprimés, tests.mode non demandé, étape 0 supprimée. Plan écrit → Phase 7
+> directe → commit unique → ✅ one-shot.
 
 **Reprise** d'un plan existant et **clôture** : voir `modules/wrapup.md`.
 

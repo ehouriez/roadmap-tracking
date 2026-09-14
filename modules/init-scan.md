@@ -356,62 +356,49 @@ Après l'analyse de complexité, lire `roadmap-tracking.mode` dans `.skill-confi
 
 | Complexité | `collaborative` | Action |
 |---|---|---|
-| `XS` | *any* | **Désengagement automatique** → écrire plan, afficher template de désengagement, **TERMINER LA RÉPONSE** (voir garde ci-dessous) |
-| `S` | `false` | **Désengagement automatique** → écrire plan, afficher template de désengagement, **TERMINER LA RÉPONSE** (voir garde ci-dessous) |
+| `XS` | *any* | **Fast-track Phase 7** → écrire plan, afficher template fast-track, démarrer implémentation directe (voir « Règle fast-track » ci-dessous) |
+| `S` | `false` | **Fast-track Phase 7** → écrire plan, afficher template fast-track, démarrer implémentation directe (voir « Règle fast-track » ci-dessous) |
 | `S` | `true` | **Mode `lightweight`** (plan + commits, sans ⏸️ intermédiaires) + afficher estimation surcout |
 | `M` | *any* | **Mode `lightweight`** (plan + commits, sans ⏸️ intermédiaires) |
 | `L`, `XL` | *any* | **Mode `full`** (workflow complet 7 phases) |
 
-**Template de désengagement automatique (XS / S solo)** :
+**Template fast-track (XS / S solo)** :
 
 ```
-ℹ️ Skill /roadmap-tracking — Désengagement automatique
+ℹ️ Skill /roadmap-tracking — Fast-track Phase 7
 
 Complexité estimée : [XS|S] [· mode solo]
-Le surcout du workflow structuré (checkpoints, commits intermédiaires,
-phases de validation) n'est pas justifié pour cette complexité.
+Plan minimal — implémentation directe, sans phases 2-6 ni checkpoints intermédiaires.
 
 ✅ Plan rédigé dans : doc/roadmap/[nom-du-plan].md
-📋 Implémente-le directement avec un prompt explicite.
+🚀 Démarrage de l'implémentation...
 
-💡 Pour forcer le workflow complet sur les prochaines tâches :
+💡 Pour le workflow complet sur les prochaines tâches :
    Dis-moi « mode workflow complet »
    → Je mettrai à jour doc/roadmap/.skill-config.yml (mode: full).
-
-⛔ GARDE DE DÉSENGAGEMENT — RÉPONSE TERMINÉE ICI
-   Aucune phase du workflow (Phase 2 à Phase 7) ne sera démarrée.
-   Aucun outil (Write, Edit, Bash, Read de code source) ne sera appelé.
-   Attendre le prochain prompt utilisateur.
 ```
 
 ---
 
-## ⛔ Règle absolue — Garde dure de désengagement automatique (Axe A)
+## Règle — Fast-track XS/S-solo (Axe A)
 
 ```
-⛔ GARDE DURE — DÉSENGAGEMENT AUTOMATIQUE
+FAST-TRACK XS/S-SOLO
 
-SI la matrice Axe A résout en « Désengagement automatique »
+SI la matrice Axe A résout en « Fast-track Phase 7 »
    (Complexité XS, OU Complexité S + collaborative: false)
 ALORS :
-  1. Écrire le fichier plan (UNIQUEMENT l'outil Write sur doc/roadmap/*.md).
-  2. Afficher le template de désengagement ci-dessus.
-  3. TERMINER LA RÉPONSE IMMÉDIATEMENT.
-
-IL EST FORMELLEMENT INTERDIT DE :
-  - Entamer ou mentionner la Phase 1.5, 2, 3, 4, 5, 6 ou 7.
-  - Appeler un outil autre que Write (plan uniquement) : pas de Bash,
-    pas d'Edit sur du code source, pas de Read de code applicatif.
-  - Implémenter, analyser, cadrer, ou proposer quoi que ce soit
-    au-delà du plan sommaire déjà écrit.
-  - Interpréter la demande utilisateur initiale comme une autorisation
-    implicite de continuer le workflow.
-
-SEULE SORTIE DE GARDE : l'utilisateur dit explicitement
-  « mode workflow complet » (→ écrire mode: full dans .skill-config.yml
-   et redémarrer le workflow normalement) ou « continue ».
-Toute autre formulation (« go », « oui », « implémente ») est traitée
-comme un nouveau prompt entrant, pas comme un bypass de cette garde.
+  1. Écrire le fichier plan (outil Write sur doc/roadmap/*.md).
+  2. Afficher le template fast-track ci-dessus.
+  3. Passer à la Phase 1.5 (gate modèle), puis démarrer la Phase 7
+     avec les règles fast-track suivantes :
+     - SKIP : Phases 2, 3, 4 (cadrage, proposition, validation).
+     - SKIP : Phase 6 (validation pré-implémentation).
+     - SKIP : question « Proposition du mode de tests » (§ Phase 7).
+     - SKIP : étape 0 de la Phase 7 (quel que soit tests.mode).
+     - SKIP : tous les ⏸️ intermédiaires de Phase 7.
+     - Commit unique (📦) proposé en fin d'implémentation.
+     - ✅ Validation one-shot en fin (pas de boucle).
 ```
 
 **Estimation du surcout (cas `S` + `collaborative: true` — mode `lightweight`) (Axe D)** :
@@ -446,7 +433,7 @@ Table de calibrage des estimations par complexité et mode (calibrées sur métr
 | « projet collaboratif » / « multi-collaborateurs » | Écrit `collaborative: true` + confirme |
 | « projet solo » | Écrit `collaborative: false` + confirme |
 
-**Ne rien proposer.** Si la garde de désengagement s'est déclenchée, la réponse est **déjà terminée** — ne pas passer à la Phase 1.5. Sinon, passer à la Phase 1.5.
+Passer à la Phase 1.5.
 
 ## Phase 1.5 — Gate modèle (avant le cadrage)
 
