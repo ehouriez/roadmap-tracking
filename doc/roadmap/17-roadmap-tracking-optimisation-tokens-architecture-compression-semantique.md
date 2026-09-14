@@ -1,8 +1,8 @@
 ---
 plan:
   id: '17'
-  name: 17-roadmap-tracking-optimisation-tokens-architecture-compression-sementique.md
-  link: doc/roadmap/17-roadmap-tracking-optimisation-tokens-architecture-compression-sementique.md
+  name: 17-roadmap-tracking-optimisation-tokens-architecture-compression-semantique.md
+  link: doc/roadmap/17-roadmap-tracking-optimisation-tokens-architecture-compression-semantique.md
   source: local
 status: done
 date: 2026-09-14
