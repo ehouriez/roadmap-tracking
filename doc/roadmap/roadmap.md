@@ -17,6 +17,11 @@ Backlog consolidé : plans nommés d'après leur issue GitHub (voir `doc/roadmap
 
 ## Fait
 
+### Plans livrés (2026-09-14)
+
+- **[Plan: 17] `#17` — Compression sémantique noyau SKILL.md (L3)** (2026-09-14) 🔵 — Densification sémantique du noyau post-scission P1 : 274 → 209 lignes (−23,7 %), ~820 tokens/tour économisés. Version 3.0.0 → 3.1.0. 7/7 tests PASS.
+  [`17-roadmap-tracking-optimisation-tokens-architecture-compression-sementique.md`](17-roadmap-tracking-optimisation-tokens-architecture-compression-sementique.md)
+
 ### Plans livrés (2026-09-13)
 
 - **[Issue: #8] `#8` — Grilling adaptatif phases 2/4/6** (2026-09-12) 🔵 — Intégration du grilling (design tree, rounds pré-amorcés, frontier réduite) pour les plans complexes L/XL. Validé.
