@@ -113,8 +113,8 @@ All behavior has sensible defaults. Customize via `./doc/roadmap/.skill-config.y
 ide: auto                 # auto | claude-code | codex
 models:
   map:
-    - { name: gpt-5,      tier: reasoning }
-    - { name: gpt-5-mini, tier: standard }
+    - { name: sol,    tier: reasoning }   # OpenAI / Codex
+    - { name: luna,   tier: standard }    # OpenAI / Codex
 issues:
   mode: auto              # auto | github | local
 tests:

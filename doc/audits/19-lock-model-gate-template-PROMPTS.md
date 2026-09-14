@@ -77,7 +77,7 @@ Modèle requis : **{target_model}**
 
 Choix disponibles :
 - Tape `/model {target_model}` puis `continue` pour basculer sur le modèle recommandé
-- Tape `bypass` pour forcer l'exécution sur **{current_model}**
+- Tape `bypass` pour forcer l'exécution sur **{current_model}** (possible dégradation de l'efficacité)
 ```
 
 **Template obligatoire pour un Downgrade :**
@@ -88,7 +88,7 @@ Modèle actif : **{current_model}**
 Modèle requis : **{target_model}**
 
 Choix disponibles :
-- Tape `/model {target_model}` puis `continue` pour optimiser vos coûts/performances
+- Tape `/model {target_model}` puis `continue` pour optimiser vos coûts/performances (recommandé)
 - Tape `bypass` pour rester sur **{current_model}**
 ```
 

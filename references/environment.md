@@ -19,23 +19,30 @@ When `auto`, derive from system prompt at invocation time.
 
 ---
 
-## Tier Taxonomy & Anthropic Defaults
+## Model Tier & Environment Mapping
 
 The skill reasons in **tiers**, never in versioned model names.
 
-| Tier | Role | Anthropic default | Override key |
-|---|---|---|---|
-| `standard` | General work — scoping, plan writing, step implementation | Sonnet (current) | `models.map` |
-| `reasoning` | Complex analysis, architecture, multi-file planning | Opus | `models.map` |
-| `light` | Out of scope for planning (never recommended by the matrix) | Haiku | — |
+| Tier | Role | Anthropic default | OpenAI default | Override key |
+|---|---|---|---|---|
+| `standard` | General work — scoping, plan writing, step implementation | **sonnet** (current) | **luna** (current) | `models.map` |
+| `reasoning` | Complex analysis, architecture, multi-file planning | **opus** | **sol** | `models.map` |
+| `light` | Out of scope for planning (never recommended by the matrix) | **haiku** | **terra** | `models.map` |
 
-Custom model mapping example (`.skill-config.yml`):
+Custom model mapping examples (`.skill-config.yml`):
 
 ```yaml
+# Anthropic / Claude Code context
 models:
   map:
-    - { name: gpt-5,      tier: reasoning }
-    - { name: gpt-5-mini, tier: standard }
+    - { name: opus,   tier: reasoning }
+    - { name: sonnet, tier: standard }
+
+# OpenAI / Codex context
+models:
+  map:
+    - { name: sol,    tier: reasoning }
+    - { name: luna,   tier: standard }
 ```
 
 ---
@@ -58,11 +65,17 @@ To determine the active model's tier at invocation:
 
 | Action | Claude Code | Codex | Fallback |
 |---|---|---|---|
-| **Change model** | `/model <name>` | `/model <name>` | "Switch to a `<tier>` model and restart." |
+| **Change model** | `/model <alias>` | `/model <alias>` | "Switch to a `<tier>` model and restart." |
 | **Ask a question** | `AskUserQuestion` tool | `AskUserQuestion` tool (if available) | Output numbered choices as text |
 | **Enter plan mode** | `EnterPlanMode` tool | `/plan` (toggle) | State: "entering planning mode" |
 | **Exit plan mode** | `ExitPlanMode` tool | `/plan` (toggle) | Inform user: planning phase complete |
 | **Detect active model** | System prompt "You are powered by…" | `/model` output or context | Ask the user |
+
+> ⛔ **`/model` alias rule** — The `<alias>` passed to `/model` MUST be a generic tier alias
+> (`opus`, `sonnet`, `haiku` for Anthropic; `sol`, `luna`, `terra` for OpenAI/Codex).
+> **Never** include a version number (`3.5`, `4.6`, `5`, `o1`, etc.) in a suggested `/model`
+> command. The displayed model name in gate messages is always the tier alias, never the
+> version string from the runtime system prompt.
 
 ---
 
@@ -115,9 +128,9 @@ Absent file + Claude Code + `gh` present = v1.3.x behavior (full retrocompat).
 ide: auto                 # auto | claude-code | codex
 models:
   active: null            # null = detect (Claude Code) or ask
-  map:                    # extends Anthropic defaults
-    - { name: gpt-5,      tier: reasoning }
-    - { name: gpt-5-mini, tier: standard }
+  map:                    # extends Anthropic defaults — use generic aliases, never versioned names
+    - { name: sol,    tier: reasoning }   # OpenAI / Codex example
+    - { name: luna,   tier: standard }    # OpenAI / Codex example
 issues:
   mode: auto              # auto | github | local
 tests:

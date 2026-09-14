@@ -13,9 +13,13 @@ Backlog consolidé : plans nommés d'après leur issue GitHub (voir `doc/roadmap
 
 ## À faire
 
+
 ---
 
 ## Fait
+
+- **[Plan: 19] `#19` — Lock Model Gate Template** (2026-09-14) 🔵 — Verrouillage déterministe des templates upgrade/downgrade de la gate modèle (`⛔ VERBATIM` + `⛔ TOKEN = ALIAS`), support multi-fournisseur Anthropic + OpenAI/Codex (`sol`/`luna`/`terra`). 6/6 tests PASS.
+  [`19-lock-model-gate-template.md`](19-lock-model-gate-template.md)
 
 ### Plans livrés (2026-09-14)
 

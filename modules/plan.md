@@ -110,7 +110,7 @@ Deux niveaux d'évaluation reposant sur la **même grille de sizing** :
 
 ### Matrice complexité → tier
 
-Tier résolu via `references/environment.md § Tier Taxonomy & Anthropic Defaults`.
+Tier résolu via `references/environment.md § Model Tier & Environment Mapping`.
 
 | Complexité | Tier | Défaut Anthropic |
 |---|---|---|
@@ -142,34 +142,52 @@ l'exigent.
 Aucun affichage, aucun arrêt. *(Fast-path : le bloc `ℹ️` n'apporte pas de valeur
 décisionnelle — seul le mismatch justifie une interruption.)*
 
-**Cas 2 — tier non adapté** (bloc `⚠️`) → afficher, puis **point d'arrêt de
-bypass** (voir ci-dessous) :
+**Cas 2 — tier non adapté** → afficher le template correspondant (upgrade ou
+downgrade), puis **point d'arrêt de bypass** (`⏸️`).
+
+> ⛔ **VERBATIM** — Les deux templates ci-dessous doivent être reproduits
+> **mot pour mot**, sans paraphrase ni reformulation. Seules les variables
+> `{current_model}` et `{target_model}` sont substituées.
+>
+> ⛔ **TOKEN = ALIAS** — `{current_model}` et `{target_model}` sont **toujours**
+> les alias de tier génériques (`sonnet`, `opus`, `haiku` pour Anthropic ;
+> `luna`, `sol`, `terra` pour OpenAI/Codex), jamais la version runtime extraite
+> du system prompt (ex. `Sonnet 4.6`, `claude-opus-5`). Voir
+> `references/environment.md § Model Tier & Environment Mapping` pour la liste
+> des alias et `§ /model alias rule` pour la règle de commande.
+
+**Upgrade** (modèle actif sous-qualifié pour la complexité demandée) :
 
 ```
-⚠️ Complexité détectée : L → tier requis : reasoning
-   Modèle actif : sonnet → tier : standard
-   → Recommande un modèle de tier reasoning (ex. `/model opus`).
-      Voir references/environment.md § Generic Action Mapping pour la commande
-      exacte selon ton IDE.
+⏸️ Transition recommandée vers un modèle supérieur
+
+Modèle actif : **{current_model}**
+Modèle requis : **{target_model}**
+
+Choix disponibles :
+- Tape `/model {target_model}` puis `continue` pour basculer sur le modèle recommandé
+- Tape `bypass` pour forcer l'exécution sur **{current_model}** (possible dégradation de l'efficacité)
 ```
 
-- **Cas inverse inclus** : modèle reasoning pour une demande `XS`/`S`/`M` →
-  recommander un modèle `standard` (surqualifié = gaspillage).
-- Le tier **`light`** (Haiku) est toujours en mismatch (cf. matrice) → toujours Cas 2.
+**Downgrade** (modèle actif surqualifié — gaspillage de coût) :
+
+```
+⏸️ Retour recommandé vers un modèle standard
+
+Modèle actif : **{current_model}**
+Modèle requis : **{target_model}**
+
+Choix disponibles :
+- Tape `/model {target_model}` puis `continue` pour optimiser vos coûts/performances (recommandé)
+- Tape `bypass` pour rester sur **{current_model}**
+```
+
+- Le tier **`light`** (Haiku / terra) est toujours en mismatch (cf. matrice) → toujours Cas 2 upgrade.
 
 #### Point d'arrêt de bypass (uniquement en Cas 2)
 
-Juste après le bloc `⚠️`, afficher **une seule ligne de consigne**, puis
-**s'arrêter et attendre** la réponse de l'utilisateur (`⏸️`) :
-
-```
-⏸️ Réponds `bypass` pour continuer avec le modèle actuel, ou change de modèle
-   via la commande de ton IDE (voir references/environment.md § Generic Action
-   Mapping) puis relance avec `continue`.
-```
-
-- **Il s'agit d'un vrai point d'arrêt** : ne rien produire d'autre, ne pas
-  enchaîner sur le plan tant que l'utilisateur n'a pas répondu.
+- **Il s'agit d'un vrai point d'arrêt** : ne rien produire d'autre après le
+  template, ne pas enchaîner sur le plan tant que l'utilisateur n'a pas répondu.
 - Réponse **`bypass`** (ou équivalent explicite : « continue », « go ») →
   reprendre le workflow immédiatement sur le modèle actif. Le choix est assumé.
 - Choix de **changer de modèle** → l'utilisateur utilise la commande de son
