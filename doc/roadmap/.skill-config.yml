@@ -1,2 +1,6 @@
 tests:
   mode: autonomous
+roadmap-tracking:
+  collaborative: false
+  mode: auto
+  last-calibration: 2026-09-14
