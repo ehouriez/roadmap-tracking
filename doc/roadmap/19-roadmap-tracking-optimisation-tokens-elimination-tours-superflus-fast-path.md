@@ -1,8 +1,8 @@
 ---
 plan:
-  id: '18'
-  name: 18-roadmap-tracking-optimisation-tokens-elimination-tours-superflus-fast-path.md
-  link: doc/roadmap/18-roadmap-tracking-optimisation-tokens-elimination-tours-superflus-fast-path.md
+  id: '19'
+  name: 19-roadmap-tracking-optimisation-tokens-elimination-tours-superflus-fast-path.md
+  link: doc/roadmap/19-roadmap-tracking-optimisation-tokens-elimination-tours-superflus-fast-path.md
   source: local
 status: done
 date: 2026-09-14
@@ -20,14 +20,14 @@ scope:
     - modules/plan.md
     - modules/execute.md
 issue:
-  id: null
-  url: null
+  id: 19
+  url: https://github.com/ehouriez/roadmap-tracking/issues/19
 depends_on:
   - '16'
   - '17'
 ---
 
-# Plan #18 — Levier L2 : Élimination des tours superflus / Fast-path
+# Plan #19 — Levier L2 : Élimination des tours superflus / Fast-path
 
 ## Objectif
 

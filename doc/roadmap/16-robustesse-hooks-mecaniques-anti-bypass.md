@@ -1,6 +1,6 @@
 ---
 plan:
-  id: 15
+  id: 16
   source: local
   slug: robustesse-hooks-mecaniques-anti-bypass
   status: done
@@ -10,12 +10,12 @@ plan:
   created_at: "2026-09-13"
   updated_at: "2026-09-13"
   issue:
-    id: null
-    url: null
+    id: 16
+    url: https://github.com/ehouriez/roadmap-tracking/issues/16
   comment: "Session de test avec succès: `claude --resume 35146e7b-b5bc-4b83-9b68-a1f5554e7398`"
 ---
 
-# 15 — Robustesse du skill face aux modes système : garde mécanique (hooks)
+# 16 — Robustesse du skill face aux modes système : garde mécanique (hooks)
 
 ## Objectif
 

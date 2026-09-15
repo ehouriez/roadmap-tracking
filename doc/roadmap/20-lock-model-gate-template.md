@@ -1,8 +1,8 @@
 ---
 plan:
-  id: '19'
-  name: 19-lock-model-gate-template.md
-  link: doc/roadmap/19-lock-model-gate-template.md
+  id: '20'
+  name: 20-lock-model-gate-template.md
+  link: doc/roadmap/20-lock-model-gate-template.md
   source: local
 status: done
 date: 2026-09-14
@@ -14,11 +14,11 @@ priority: high
 complexity: M
 intent: production
 issue:
-  id: null
-  url: null
+  id: 20
+  url: https://github.com/ehouriez/roadmap-tracking/issues/20
 ---
 
-# [🔒] Plan #19 - Lock Model Gate Template
+# [🔒] Plan #20 - Lock Model Gate Template
 
 ## Objectif
 

@@ -1,8 +1,8 @@
 ---
 plan:
-  id: '21'
-  name: 21-roadmap-tracking-Integration-recommandations-audit-#129.md
-  link: doc/roadmap/21-roadmap-tracking-Integration-recommandations-audit-#129.md
+  id: '22'
+  name: 22-roadmap-tracking-Integration-recommandations-audit-#129.md
+  link: doc/roadmap/22-roadmap-tracking-Integration-recommandations-audit-#129.md
   source: local
 status: done
 date: 2026-09-14
@@ -18,11 +18,11 @@ scope:
     - modules/wrapup.md
     - references/templates.md
 issue:
-  id: null
-  url: null
+  id: 22
+  url: https://github.com/ehouriez/roadmap-tracking/issues/22
 ---
 
-# Plan #21 — Intégration des recommandations d'audit #129 au skill roadmap-tracking
+# Plan #22 — Intégration des recommandations d'audit #129 au skill roadmap-tracking
 
 ## Contexte
 

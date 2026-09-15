@@ -1,8 +1,8 @@
 ---
 plan:
-  id: '20'
-  name: 20-fix-xs-s-solo-disengagement-fast-track.md
-  link: doc/roadmap/20-fix-xs-s-solo-disengagement-fast-track.md
+  id: '21'
+  name: 21-fix-xs-s-solo-disengagement-fast-track.md
+  link: doc/roadmap/21-fix-xs-s-solo-disengagement-fast-track.md
   source: local
 status: done
 date: 2026-09-14
@@ -14,8 +14,8 @@ priority: high
 complexity: M
 intent: production
 issue:
-  id: null
-  url: null
+  id: 21
+  url: https://github.com/ehouriez/roadmap-tracking/issues/21
 ---
 
 ## Objective

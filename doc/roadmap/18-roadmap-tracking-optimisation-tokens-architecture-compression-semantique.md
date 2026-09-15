@@ -1,8 +1,8 @@
 ---
 plan:
-  id: '17'
-  name: 17-roadmap-tracking-optimisation-tokens-architecture-compression-semantique.md
-  link: doc/roadmap/17-roadmap-tracking-optimisation-tokens-architecture-compression-semantique.md
+  id: '18'
+  name: 18-roadmap-tracking-optimisation-tokens-architecture-compression-semantique.md
+  link: doc/roadmap/18-roadmap-tracking-optimisation-tokens-architecture-compression-semantique.md
   source: local
 status: done
 date: 2026-09-14
@@ -17,11 +17,11 @@ scope:
   modules:
     - SKILL.md
 issue:
-  id: null
-  url: null
+  id: 18
+  url: https://github.com/ehouriez/roadmap-tracking/issues/18
 ---
 
-# [⚡] Plan #17 - Compression sémantique du noyau SKILL.md (L3)
+# [⚡] Plan #18 - Compression sémantique du noyau SKILL.md (L3)
 
 ## Objectif
 

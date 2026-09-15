@@ -20,44 +20,50 @@ Backlog consolidé : plans nommés d'après leur issue GitHub (voir `doc/roadmap
 
 ### Plans livrés (2026-09-15)
 
-- **[Plan: 21] `#21` — Intégration recommandations audit #129** (2026-09-15) 🔵 — 4 axes d'amélioration intégrés : matrice type de tâche → modèle recommandé, règle d'escalade "2 strikes" (proxy comportemental anti-errance), section `## Diagnostic en cours` dans le template de plan, rationale proxy vs budget chiffré. 4 remédiations post-audit appliquées (procédure échec tests intermédiaires, Diagnostic hors template actif, colonne Usage, case-insensitive).
-  [`21-roadmap-tracking-Integration-recommandations-audit-#129.md`](21-roadmap-tracking-Integration-recommandations-audit-#129.md)
+- **[Issue: #22] `#22` — Intégration recommandations audit #129** (2026-09-15) 🔵 — 4 axes d'amélioration intégrés : matrice type de tâche → modèle recommandé, règle d'escalade "2 strikes" (proxy comportemental anti-errance), section `## Diagnostic en cours` dans le template de plan, rationale proxy vs budget chiffré. 4 remédiations post-audit appliquées (procédure échec tests intermédiaires, Diagnostic hors template actif, colonne Usage, case-insensitive).
+  [`22-roadmap-tracking-Integration-recommandations-audit-#129.md`](22-roadmap-tracking-Integration-recommandations-audit-#129.md)
 
 - **[Issue: #12] `#12` — Add /clear block at Phase 5+ gates** (2026-09-14) 🔵 — Bloc informatif `/clear` injecté à 5 gates (Phase 5 POINT D'ARRÊT 2, Phase 6, tests intermédiaires, 🧪 Tests finaux, reprise wrapup). 10/10 tests PASS. Économie estimée 20K–250K tokens selon la phase et la complexité du plan.
   [`12-session-clear-gate-suggestion.md`](12-session-clear-gate-suggestion.md)
 
 ### Plans livrés (2026-09-14)
 
-- **[Plan: 20] `#20` — Fix XS/S-solo disengagement → fast-track Phase 7** (2026-09-14) 🔵 — Désengagement automatique supprimé. Remplacé par fast-track Phase 7 : plan écrit → implémentation directe sans phases 2-6, sans ⏸️, sans tests.mode question, commit unique en fin. 5/5 étapes, 6/6 tests PASS.
-  [`20-fix-xs-s-solo-disengagement-fast-track.md`](20-fix-xs-s-solo-disengagement-fast-track.md)
+- **[Issue: #21] `#21` — Fix XS/S-solo disengagement → fast-track Phase 7** (2026-09-14) 🔵 — Désengagement automatique supprimé. Remplacé par fast-track Phase 7 : plan écrit → implémentation directe sans phases 2-6, sans ⏸️, sans tests.mode question, commit unique en fin. 5/5 étapes, 6/6 tests PASS.
+  [`21-fix-xs-s-solo-disengagement-fast-track.md`](21-fix-xs-s-solo-disengagement-fast-track.md)
 
-- **[Plan: 19] `#19` — Lock Model Gate Template** (2026-09-14) 🔵 — Verrouillage déterministe des templates upgrade/downgrade de la gate modèle (`⛔ VERBATIM` + `⛔ TOKEN = ALIAS`), support multi-fournisseur Anthropic + OpenAI/Codex (`sol`/`luna`/`terra`). 6/6 tests PASS.
-  [`19-lock-model-gate-template.md`](19-lock-model-gate-template.md)
+- **[Issue: #20] `#20` — Lock Model Gate Template** (2026-09-14) 🔵 — Verrouillage déterministe des templates upgrade/downgrade de la gate modèle (`⛔ VERBATIM` + `⛔ TOKEN = ALIAS`), support multi-fournisseur Anthropic + OpenAI/Codex (`sol`/`luna`/`terra`). 6/6 tests PASS.
+  [`20-lock-model-gate-template.md`](20-lock-model-gate-template.md)
 
 ### Plans livrés (2026-09-14)
 
-- **[Plan: 18] `#18` — Levier L2 : Élimination des tours superflus / Fast-path** (2026-09-14) 🔵 — Gate modèle Cas 1 silencieuse, Phase 1.5 sans arrêt (Cas 1), Phase 6 fusionnée dans Phase 5 pour plans XS/S/M. −2 tours plans simples, ~29 200 tokens économisés. Version 3.1.0 → 3.2.0. 8/8 tests PASS.
-  [`18-roadmap-tracking-optimisation-tokens-elimination-tours-superflus-fast-path.md`](18-roadmap-tracking-optimisation-tokens-elimination-tours-superflus-fast-path.md)
+- **[Issue: #19] `#19` — Levier L2 : Élimination des tours superflus / Fast-path** (2026-09-14) 🔵 — Gate modèle Cas 1 silencieuse, Phase 1.5 sans arrêt (Cas 1), Phase 6 fusionnée dans Phase 5 pour plans XS/S/M. −2 tours plans simples, ~29 200 tokens économisés. Version 3.1.0 → 3.2.0. 8/8 tests PASS.
+  [`19-roadmap-tracking-optimisation-tokens-elimination-tours-superflus-fast-path.md`](19-roadmap-tracking-optimisation-tokens-elimination-tours-superflus-fast-path.md)
 
-- **[Plan: 17] `#17` — Compression sémantique noyau SKILL.md (L3)** (2026-09-14) 🔵 — Densification sémantique du noyau post-scission P1 : 274 → 209 lignes (−23,7 %), ~820 tokens/tour économisés. Version 3.0.0 → 3.1.0. 7/7 tests PASS.
-  [`17-roadmap-tracking-optimisation-tokens-architecture-compression-semantique.md`](17-roadmap-tracking-optimisation-tokens-architecture-compression-semantique.md)
+- **[Issue: #18] `#18` — Compression sémantique noyau SKILL.md (L3)** (2026-09-14) 🔵 — Densification sémantique du noyau post-scission P1 : 274 → 209 lignes (−23,7 %), ~820 tokens/tour économisés. Version 3.0.0 → 3.1.0. 7/7 tests PASS.
+  [`18-roadmap-tracking-optimisation-tokens-architecture-compression-semantique.md`](18-roadmap-tracking-optimisation-tokens-architecture-compression-semantique.md)
 
-- **[Plan: 16] `#16` — Scission modulaire SKILL.md (L1)** (2026-09-14) 🔵 — SKILL.md monolithique (1 590 lignes) scindé en noyau (274 lignes) + 4 modules à chargement conditionnel. −48 % tokens skill sur 18 tours. Version 2.8.0 → 3.0.0. 10/10 tests PASS. Note: L'implémentation réelle aboutit à
+- **[Issue: #17] `#17` — Scission modulaire SKILL.md (L1)** (2026-09-14) 🔵 — SKILL.md monolithique (1 590 lignes) scindé en noyau (274 lignes) + 4 modules à chargement conditionnel. −48 % tokens skill sur 18 tours. Version 2.8.0 → 3.0.0. 10/10 tests PASS. Note: L'implémentation réelle aboutit à
 **4 modules** : `modules/templates.md` a été créé puis supprimé.
-  [`16-roadmap-tracking-optimisation-tokens-architecture-scission-modulaire.md`](16-roadmap-tracking-optimisation-tokens-architecture-scission-modulaire.md)
+  [`17-roadmap-tracking-optimisation-tokens-architecture-scission-modulaire.md`](17-roadmap-tracking-optimisation-tokens-architecture-scission-modulaire.md)
 
 ### Plans livrés (2026-09-13)
 
 - **[Issue: #8] `#8` — Grilling adaptatif phases 2/4/6** (2026-09-12) 🔵 — Intégration du grilling (design tree, rounds pré-amorcés, frontier réduite) pour les plans complexes L/XL. Validé.
   [`8-roadmap-tracking-grilling.md`](8-roadmap-tracking-grilling.md)
 
-- **[Plan: 15] `#15` — Robustesse hooks mécaniques anti-bypass** (2026-09-13) 🔵 — Garde mécanique (`UserPromptSubmit` + `PreToolUse` one-shot/session) contre le court-circuit du skill par les modes système. 8/8 tests PASS. Version 2.8.0.
-  [`15-robustesse-hooks-mecaniques-anti-bypass.md`](15-robustesse-hooks-mecaniques-anti-bypass.md)
+- **[Issue: #16] `#16` — Robustesse hooks mécaniques anti-bypass** (2026-09-13) 🔵 — Garde mécanique (`UserPromptSubmit` + `PreToolUse` one-shot/session) contre le court-circuit du skill par les modes système. 8/8 tests PASS. Version 2.8.0.
+  [`16-robustesse-hooks-mecaniques-anti-bypass.md`](16-robustesse-hooks-mecaniques-anti-bypass.md)
+
+- **[Issue: #15] `#15` — Bug : hook cold-start inactif + guardrail de désengagement bypassé** (2026-09-13) 🔵 — Correction hook `SessionStart` (suppression précondition `test -d ./doc/roadmap`) + guardrail de désengagement S-solo durci (règle `⛔ Garde dure`).
+  [`15-bug-hook-cold-start-et-guardrail-desengagement.md`](15-bug-hook-cold-start-et-guardrail-desengagement.md)
+
+- **[Issue: #14] `#14` — Analyse et proposition d'amélioration du skill roadmap-tracking** (2026-09-13) 🔵 — Analyse post-création du skill : 5 axes diagnostiqués (désengagement prototypage, modes système, optimisation tokens, architecture modulaire, aide) + décisions confirmées (Axe D, Axe E).
+  [`14-analyse-axes-amélioration.md`](14-analyse-axes-amélioration.md)
 
 ### Plans livrés (2026-09-12)
 
-- **[Plan: 12] `#12` — SKILL.md Compression P1** (2026-09-12) 🔵 — gabarits commit fusionnés en section canonique + 2 renvois ; version 2.5.7 → 2.6.0. (-29 lignes, ~2 %).
-  [`12-skill-compression-p1.md`](12-skill-compression-p1.md)
+- **[Issue: #13] `#13` — SKILL.md Compression P1** (2026-09-12) 🔵 — gabarits commit fusionnés en section canonique + 2 renvois ; version 2.5.7 → 2.6.0. (-29 lignes, ~2 %).
+  [`13-skill-compression-p1.md`](13-skill-compression-p1.md)
 
 - **[Issue: #11] `#11` — Harden applicability rules and startup rule** (2026-09-12) 🔵 — Critère objectif fichier-touché, traçabilité post-fix urgences, suppression one-shot, principe directeur avant exclusions, re-proposition doc/roadmap/ adaptative.
   [`11-applicabilite-regle-demarrage-hardening.md`](11-applicabilite-regle-demarrage-hardening.md)

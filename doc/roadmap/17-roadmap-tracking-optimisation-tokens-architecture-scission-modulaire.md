@@ -1,8 +1,8 @@
 ---
 plan:
-  id: '16'
-  name: 16-roadmap-tracking-optimisation-tokens-architecture-scission-modulaire.md
-  link: doc/roadmap/16-roadmap-tracking-optimisation-tokens-architecture-scission-modulaire.md
+  id: '17'
+  name: 17-roadmap-tracking-optimisation-tokens-architecture-scission-modulaire.md
+  link: doc/roadmap/17-roadmap-tracking-optimisation-tokens-architecture-scission-modulaire.md
   source: local
 status: done
 date: 2026-09-14
@@ -18,11 +18,11 @@ scope:
     - SKILL.md
     - modules/
 issue:
-  id: null
-  url: null
+  id: 17
+  url: https://github.com/ehouriez/roadmap-tracking/issues/17
 ---
 
-# [⚡] Plan #16 - Scission modulaire SKILL.md (L1)
+# [⚡] Plan #17 - Scission modulaire SKILL.md (L1)
 
 ## Objectif
 

@@ -1,8 +1,8 @@
 ---
 plan:
-  id: 13
-  name: 13-analyse-axes-amélioration.md
-  link: doc/roadmap/13-analyse-axes-amélioration.md
+  id: 14
+  name: 14-analyse-axes-amélioration.md
+  link: doc/roadmap/14-analyse-axes-amélioration.md
   source: local
 status: done
 date: 2026-09-13
@@ -22,8 +22,8 @@ scope:
     - hooks/codex-hooks.json
     - .codex-plugin/plugin.json  # NEW
 issue:
-  id: null
-  url: null
+  id: 14
+  url: https://github.com/ehouriez/roadmap-tracking/issues/14
 ---
 
 # Plan d'implémentation — Axes d'amélioration du skill roadmap-tracking

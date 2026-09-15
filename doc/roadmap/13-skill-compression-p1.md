@@ -1,8 +1,8 @@
 ---
 plan:
-  id: '12'
-  name: 12-skill-compression-p1.md
-  link: doc/roadmap/12-skill-compression-p1.md
+  id: '13'
+  name: 13-skill-compression-p1.md
+  link: doc/roadmap/13-skill-compression-p1.md
   source: local
 status: done
 date: 2026-09-12
@@ -16,11 +16,11 @@ scope:
   modules:
     - SKILL.md
 issue:
-  id: null
-  url: null
+  id: 13
+  url: https://github.com/ehouriez/roadmap-tracking/issues/13
 ---
 
-# [⚡] Plan #12 - SKILL.md Compression P1
+# [⚡] Plan #13 - SKILL.md Compression P1
 
 ## Objectif
 

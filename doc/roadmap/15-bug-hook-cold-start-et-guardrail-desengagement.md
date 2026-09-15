@@ -1,6 +1,6 @@
 ---
 plan:
-  id: 14
+  id: 15
   source: local
   slug: bug-hook-cold-start-et-guardrail-desengagement
   status: done
@@ -10,11 +10,11 @@ plan:
   created_at: "2026-09-13"
   updated_at: "2026-09-13"
   issue:
-    id: null
-    url: null
+    id: 15
+    url: https://github.com/ehouriez/roadmap-tracking/issues/15
 ---
 
-# 14 — Bug : hook cold-start inactif + guardrail de désengagement bypassé
+# 15 — Bug : hook cold-start inactif + guardrail de désengagement bypassé
 
 ## Objectif
 
