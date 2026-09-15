@@ -59,9 +59,9 @@ et l'autorisation d'implémentation (Phase 6).
 - [x] Étape 3 — Implémenter le grilling avant gate en Phase 4 : bloc systématique 4 catégories + frontier réduite + recommandation pré-gate (S · reasoning → Opus)
 - [x] Étape 4 — Implémenter le grilling avant gate en Phase 6 : bloc systématique 4 catégories + frontier réduite + recommandation pré-gate (S · reasoning → Opus)
 - [x] Étape 5 — Documenter le schéma `grilling.*` dans `references/environment.md` (clés, valeurs par défaut, exemples de config) (S · standard → Sonnet)
-- [ ] Étape 6 — Mettre à jour `roadmap.md` (entrée #8 "À faire") et bumper la version du plugin (XS · standard → Sonnet)
-- [ ] 🧪 Tests — Valider le comportement sur un plan simple (grilling absent) et un plan complexe (grilling actif en Phase 2, 4, 6)
-- [ ] ✅ Validation — Vérifier les résultats et clôturer
+- [X] Étape 6 — Mettre à jour `roadmap.md` (entrée #8 "À faire") et bumper la version du plugin (XS · standard → Sonnet)
+- [X] 🧪 Tests — Valider le comportement sur un plan simple (grilling absent) et un plan complexe (grilling actif en Phase 2, 4, 6)
+- [X] ✅ Validation — Vérifier les résultats et clôturer
 
 ## Décisions techniques
 
@@ -125,3 +125,9 @@ claude --no-config
 - 🔧 Écart : structure DRY retenue (section canonique unique référencée par les 3 phases) plutôt qu'une logique dupliquée par phase.
 - 🚧 Blocages : issue GitHub #8 jamais créée (référencée dans le front matter mais absente du repo distant) — à créer ou à neutraliser.
 - 📋 Prochain : Étape 6 (mise à jour `roadmap.md` + bump version plugin), puis 🧪 Tests et ✅ Validation.
+
+### Session 2026-09-15
+- ✅ Issue GitHub #8 créée.
+- ✅ Tests E2E (mode autonomous) : Tous les tests en PASS, aucune régression.
+- ✅ Validé et clôturé.
+- 
