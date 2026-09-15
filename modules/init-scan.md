@@ -356,50 +356,12 @@ Après l'analyse de complexité, lire `roadmap-tracking.mode` dans `.skill-confi
 
 | Complexité | `collaborative` | Action |
 |---|---|---|
-| `XS` | *any* | **Fast-track Phase 7** → écrire plan, afficher template fast-track, démarrer implémentation directe (voir « Règle fast-track » ci-dessous) |
-| `S` | `false` | **Fast-track Phase 7** → écrire plan, afficher template fast-track, démarrer implémentation directe (voir « Règle fast-track » ci-dessous) |
+| `XS` | *any* | **Mode `lightweight`** (plan + commits, sans ⏸️ intermédiaires) |
+| `S` | `false` | **Mode `lightweight`** (plan + commits, sans ⏸️ intermédiaires) |
 | `S` | `true` | **Mode `lightweight`** (plan + commits, sans ⏸️ intermédiaires) + afficher estimation surcout |
 | `M` | *any* | **Mode `lightweight`** (plan + commits, sans ⏸️ intermédiaires) |
 | `L`, `XL` | *any* | **Mode `full`** (workflow complet 7 phases) |
 
-**Template fast-track (XS / S solo)** :
-
-```
-ℹ️ Skill /roadmap-tracking — Fast-track Phase 7
-
-Complexité estimée : [XS|S] [· mode solo]
-Plan minimal — implémentation directe, sans phases 2-6 ni checkpoints intermédiaires.
-
-✅ Plan rédigé dans : doc/roadmap/[nom-du-plan].md
-🚀 Démarrage de l'implémentation...
-
-💡 Pour le workflow complet sur les prochaines tâches :
-   Dis-moi « mode workflow complet »
-   → Je mettrai à jour doc/roadmap/.skill-config.yml (mode: full).
-```
-
----
-
-## Règle — Fast-track XS/S-solo (Axe A)
-
-```
-FAST-TRACK XS/S-SOLO
-
-SI la matrice Axe A résout en « Fast-track Phase 7 »
-   (Complexité XS, OU Complexité S + collaborative: false)
-ALORS :
-  1. Écrire le fichier plan (outil Write sur doc/roadmap/*.md).
-  2. Afficher le template fast-track ci-dessus.
-  3. Passer à la Phase 1.5 (gate modèle), puis démarrer la Phase 7
-     avec les règles fast-track suivantes :
-     - SKIP : Phases 2, 3, 4 (cadrage, proposition, validation).
-     - SKIP : Phase 6 (validation pré-implémentation).
-     - SKIP : question « Proposition du mode de tests » (§ Phase 7).
-     - SKIP : étape 0 de la Phase 7 (quel que soit tests.mode).
-     - SKIP : tous les ⏸️ intermédiaires de Phase 7.
-     - Commit unique (📦) proposé en fin d'implémentation.
-     - ✅ Validation one-shot en fin (pas de boucle).
-```
 
 **Estimation du surcout (cas `S` + `collaborative: true` — mode `lightweight`) (Axe D)** :
 

@@ -20,6 +20,9 @@ Backlog consolidé : plans nommés d'après leur issue GitHub (voir `doc/roadmap
 
 ### Plans livrés (2026-09-15)
 
+- **[Issue: #23] `#23` — Phase 2 Grilling Obligatoire** (2026-09-15) 🔵 — Phase 2 obligatoire toutes complexités (XS→XL). Fast-track XS/S-solo supprimé (→ mode lightweight). Grilling universel en Phase 2, `AskUserQuestion` supprimé. Bypass `intent:prototype` retiré. `grilling.enabled` ignoré en Phase 2. 7/7 tests PASS.
+  [`23-phase2-grilling-obligatoire.md`](23-phase2-grilling-obligatoire.md)
+
 - **[Issue: #22] `#22` — Intégration recommandations audit #129** (2026-09-15) 🔵 — 4 axes d'amélioration intégrés : matrice type de tâche → modèle recommandé, règle d'escalade "2 strikes" (proxy comportemental anti-errance), section `## Diagnostic en cours` dans le template de plan, rationale proxy vs budget chiffré. 4 remédiations post-audit appliquées (procédure échec tests intermédiaires, Diagnostic hors template actif, colonne Usage, case-insensitive).
   [`22-roadmap-tracking-Integration-recommandations-audit-#129.md`](22-roadmap-tracking-Integration-recommandations-audit-#129.md)
 

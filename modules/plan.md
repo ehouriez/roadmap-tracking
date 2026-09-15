@@ -11,63 +11,13 @@
 
 > 🔍 MODE CADRAGE — aucune écriture, aucune commande.
 
-#### Question préalable : intention de la tâche (Axe B)
+Lève les ambiguïtés via **grilling** (voir « Grilling adaptatif ») — quel que soit
+le niveau de complexité (XS, S, M, L, XL). Catégories d'amorçage par défaut :
+**périmètre** (inclus / hors scope), **critères de succès**, **dépendances**
+(bloquantes / bloquées), **parties prenantes** (décideurs / impactés),
+**alternatives écartées**, **risques identifiés**.
 
-Avant les questions de cadrage habituelles, si le plan courant n'a pas encore de champ
-`intent` dans son front matter (ou si c'est un nouveau plan, `intent` absent) :
-Poser via `AskUserQuestion` **en première position** :
-> « Cette tâche relève-t-elle d'une expérimentation / prototypage rapide ? »
-> - **Oui → prototypage** : écrire `intent: prototype` dans le front matter du plan
->   → afficher le template de désengagement prototypage ci-dessous → **STOP**.
->   Ne pas rédiger de plan complet.
-> - **Non → production** : écrire `intent: production` → continuer normalement.
-
-Si `intent` est déjà fixé dans le front matter : ne pas reposer la question.
-
-| `intent` au démarrage | Comportement |
-|---|---|
-| `null` (nouveau plan) | Poser la question en Phase 2 |
-| `prototype` | Afficher le désengagement directement → STOP |
-| `production` | Continuer normalement |
-
-**Template de désengagement prototypage** :
-
-```
-ℹ️ Skill /roadmap-tracking — Mode prototypage détecté
-
-Le workflow structuré (plan, phases, checkpoints) ralentirait ton itération
-sans apporter de valeur sur une expérimentation.
-
-💡 Utilise un prompt explicite directement.
-   Exemple : « Implémente [X] et montre-moi le résultat. »
-
-Si tu changes d'avis et veux tracer ce travail :
-   Dis-moi « finalement je veux tracer ça »
-   → Je reprendrai le workflow normalement (intent: production).
-```
-
-**Nouvelles formulations verbales reconnues** :
-
-| L'utilisateur dit | Action |
-|---|---|
-| « finalement je veux tracer ça » | Écrit `intent: production` dans le front matter → reprend le workflow |
-| « remets en mode normal » | Écrit `intent: null` → repose la question à la prochaine session |
-
-Lève les ambiguïtés selon la complexité globale (voir « Grilling adaptatif ») :
-
-- **Plan `XS`/`S`/`M`, ou `grilling.enabled: false`** → **formulaire interactif**
-  via l'outil `AskUserQuestion` (choix cliquables, pas de saisie « 1a, 2c »).
-  Voir `references/forms.md` pour la matière des questions, les catégories et les
-  règles de batching (max 4 questions et 4 options par appel, `multiSelect` pour
-  les réponses multiples, option « Autre » native).
-- **Plan `L`/`XL` avec grilling actif** → **grilling** (voir « Grilling
-  adaptatif ») **à la place** de `AskUserQuestion`. Catégories d'amorçage par
-  défaut : **périmètre** (inclus / hors scope), **critères de succès**,
-  **dépendances** (bloquantes / bloquées), **parties prenantes** (décideurs /
-  impactés), **alternatives écartées**, **risques identifiés**.
-
-Termine ta compréhension par un court résumé (2-3 phrases) **avant** le premier
-appel `AskUserQuestion` ou le premier round de grilling.
+Termine ta compréhension par un court résumé (2-3 phrases) **avant** le premier round de grilling.
 
 ### Assistance design (UX/UI)
 
@@ -265,12 +215,10 @@ format — les phases n'en répètent que les catégories.
 
 ### Déclencheur : complexité globale
 
-Le grilling s'active **uniquement pour les plans complexes**, c.-à-d. de
-complexité globale **`L` ou `XL`** (tier `reasoning`, voir « Évaluation de
-complexité »). Pour les plans `XS`/`S`/`M`, le comportement des phases est
-**inchangé** (`AskUserQuestion` standard en Phase 2, gate binaire directe en
-Phases 4 et 6). Aucune nouvelle évaluation : on réutilise la complexité déjà
-établie en Phase 1.
+En **Phase 2**, le grilling s'active pour **toutes les complexités** (XS, S, M,
+L, XL). En Phases 4 et 6, il reste réservé aux plans `L`/`XL` (comportement
+inchangé). Aucune nouvelle évaluation : on réutilise la complexité déjà établie
+en Phase 1.
 
 ### Toggle de configuration
 
@@ -278,8 +226,11 @@ Lire `grilling.enabled` dans `./doc/roadmap/.skill-config.yml` :
 
 | Valeur | Effet |
 |---|---|
-| absente / `true` | Grilling actif sur les plans complexes (**défaut opt-out**) |
-| `false` | Grilling désactivé — comportement des phases inchangé, quelle que soit la complexité |
+| absente / `true` | Grilling actif (défaut) |
+| `false` | Grilling désactivé dans les Phases 4 et 6 — **sans effet sur la Phase 2** |
+
+> ⚠️ La Phase 2 ignore `grilling.enabled` : le grilling y est **toujours actif**,
+> quelle que soit la valeur de ce champ.
 
 ### Mécanique : frontier réduite
 

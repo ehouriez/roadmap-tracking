@@ -7,7 +7,7 @@ description: >
 license: MIT
 metadata:
   author: Emmanuel Houriez
-  version: "3.7.0"
+  version: "3.8.0"
   domain: productivity
   keywords: >
     roadmap, planification, suivi de tâche, traçage de demande, plan, issue
@@ -69,7 +69,7 @@ Charge-les **à la demande**, seulement quand la phase l'exige :
 | Fichier | Quand le lire |
 |---|---|
 | `references/environment.md` | **Toujours au démarrage** — mapping IDE, tiers, défauts, schéma config, formatage commandes |
-| `references/forms.md` | Phase 2 — construire le formulaire de cadrage interactif |
+| `references/forms.md` | Phase 2 — matière des questions et catégories de grilling |
 | `references/templates.md` | Phase 5 — nommage `NNN-kebab`, front matter YAML, template de plan |
 | `references/roadmap-file.md` | Phase 5 et à chaque changement de statut — structure et tri de `roadmap.md` |
 | `references/github-issues.md` | **Mode `github` uniquement** — dès qu'une issue doit être créée ou mise à jour |
@@ -136,10 +136,6 @@ Modules chargés **au moment pertinent** via l'outil de lecture. Ne charger **ja
 > (Cas 1) — aucun arrêt. Phase 6 supprimée si l'utilisateur choisit « Commencer
 > l'implémentation » au POINT D'ARRÊT 2 de la Phase 5. **−2 tours sur les plans
 > simples.** Les plans L/XL conservent l'intégralité des arrêts.
->
-> **Fast-track (XS + solo, S + solo en `mode: auto`)** : phases 2-6 supprimées,
-> ⏸️ supprimés, tests.mode non demandé, étape 0 supprimée. Plan écrit → Phase 7
-> directe → commit unique → ✅ one-shot.
 
 **Reprise** d'un plan existant et **clôture** : voir `modules/wrapup.md`.
 
