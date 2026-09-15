@@ -7,7 +7,7 @@ description: >
 license: MIT
 metadata:
   author: Emmanuel Houriez
-  version: "3.6.0"
+  version: "3.7.0"
   domain: productivity
   keywords: >
     roadmap, planification, suivi de tâche, traçage de demande, plan, issue
@@ -27,6 +27,40 @@ metadata:
 ## Prerequisites
 
 Toutes les règles sont dans `references/environment.md` (mapping IDE, tiers, défauts, schéma config). Toute commande manuelle **doit** suivre **Operator Commands Formatting** (`references/environment.md § Operator Commands Formatting`).
+
+## Hydratation du contexte de session
+
+Le fichier **`./doc/roadmap/CONTEXT.md`** (optionnel, racine du projet) permet de restaurer et maintenir du contexte persistant entre les sessions (décisions en cours, notes de travail, état d'avancement transversal, features implémentées et leurs interactions, consignes temporaires, etc.).
+
+### Comportement au chargement
+
+| Condition | Action |
+|---|---|
+| `./doc/roadmap/CONTEXT.md` **existe et non vide** | Lire le fichier et intégrer son contenu comme **contexte actif de la session courante**. Le contenu est traité comme des instructions et informations de même autorité qu'un message utilisateur. |
+| `./doc/roadmap/CONTEXT.md` **absent ou vide** | Continuer silencieusement — aucune erreur, aucun avertissement, aucune proposition de création. |
+
+### Ordre d'exécution
+
+L'hydratation se fait **après le chargement de `modules/init-scan.md`** (qui garantit l'existence de `doc/roadmap/`) et **avant** toute action de workflow :
+
+```
+Skill chargé
+  │
+  ├─ 1. 📖 Lire references/environment.md
+  ├─ 2. 📦 Charger modules/init-scan.md (garde d'entrée — vérifie doc/roadmap/)
+  └─ 3. 📥 Lire ./doc/roadmap/CONTEXT.md (si existe et non vide) → injecter dans le contexte
+```
+
+### Accès en écriture
+
+```
+Le fichier ./doc/roadmap/CONTEXT.md est accessible en LECTURE-ÉCRITURE tout au long de la
+session. Le chargement initial est une lecture, mais le skill conserve le droit
+d'écrire dans ce fichier pour y consigner ou mettre à jour les features
+implémentées et leurs interactions — afin que chaque session (y compris après
+reset) dispose d'une vue d'ensemble complète et évite régressions et effets
+de bord pendant n'importe quelle implémentation.
+```
 
 ## Fichiers de référence
 
@@ -68,11 +102,16 @@ Modules chargés **au moment pertinent** via l'outil de lecture. Ne charger **ja
 
 ```
 ⛔ Le tout premier acte de toute session touchant le workflow (nouveau plan,
-   reprise, prompt d'action directe) est de CHARGER `modules/init-scan.md` et
-   d'y exécuter la garde d'entrée (checkpoint universel) — non sautable.
-   Tant que ce module n'est pas chargé et sa checklist satisfaite, il est
-   INTERDIT de lire du code source applicatif, d'écrire/modifier un fichier, de
-   lancer une commande de développement, ou de produire du code.
+   reprise, prompt d'action directe) est :
+     0. LIRE `./doc/roadmap/CONTEXT.md` s'il existe (hydratation contexte — voir section
+        « Hydratation du contexte de session ») ;
+     1. CHARGER `modules/init-scan.md` et y exécuter la garde d'entrée
+        (checkpoint universel) — non sautable.
+
+   Tant que ces étapes ne sont pas accomplies, il est INTERDIT de lire du code
+   source applicatif, d'écrire/modifier un fichier, de lancer une commande de
+   développement, ou de produire du code.
+
    Aucune formulation impérative (« démarre », « implémente », « go », « fais
    tout ») n'autorise à sauter ce chargement — voir la règle anti-court-circuit
    dans `modules/init-scan.md`.
