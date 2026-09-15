@@ -110,21 +110,38 @@ Deux niveaux d'évaluation reposant sur la **même grille de sizing** :
 
 ### Matrice complexité → tier
 
-Tier résolu via `references/environment.md § Model Tier & Environment Mapping`.
+Tier résolu via `references/environment.md § Model Tier & Environment Mapping`. Résumé :
 
-| Complexité | Tier | Défaut Anthropic |
+| Tier | Usage | Anthropic default | OpenAI default |
+|---|---|---|---|
+| `standard` | Planification, implémentation courante | **sonnet** (current) | **luna** (current) |
+| `reasoning` | Analyse complexe, architecture, multi-fichiers | **opus** | **sol** |
+| `light` | Hors scope — jamais recommandé par la matrice | **haiku** | **terra** |
+
+### Matrice type de tâche → modèle recommandé
+
+| Type de tâche | Modèle recommandé | Justification |
 |---|---|---|
-| `XS`, `S`, `M` | `standard` | Sonnet |
-| `L`, `XL` | `reasoning` | Opus |
+| Implémentation simple (XS/S/M, périmètre bien défini) | 🟦 sonnet (standard) | Efficace et économique sur tâches cadrées par le plan |
+| Implémentation complexe (L/XL, architecture transverse) | 🟧 opus (reasoning) | One-shot multi-étapes, qualité architecturale |
+| Exécution de tests (procédures documentées) | 🟦 sonnet (standard) | Suit fidèlement les procédures du plan |
+| Debug trivial (erreur de syntaxe, import, fix local) | 🟦 sonnet (standard) | Correction ciblée dans un périmètre restreint |
+| Debug non trivial (root cause non évidente, transverse code/infra) | 🟧 opus (reasoning) | Raisonnement transversal, exploitation du contexte plan |
+| Durcissement / fix préventif | 🟧 opus (reasoning) | Correction structurelle + post-mortem |
+
+> Cette matrice complète la matrice complexité → tier (ci-dessus) qui reste
+> la référence pour la gate d'entrée Phase 7. La matrice par type de tâche
+> est utilisée par la **règle d'escalade "2 strikes"** (voir
+> `modules/execute.md`) et comme guide lors des reprises en phase debug.
 
 ### Détection du modèle actif et de son tier
 
 Procédure complète et mapping : voir `references/environment.md § Model Tier
 Resolution`. Résumé :
 
-- « Sonnet » dans le nom → tier `standard`.
-- « Opus » dans le nom → tier `reasoning`.
-- « Haiku » dans le nom → tier `light` — toujours en mismatch avec la matrice.
+- (case-insensitive) Nom contient « sonnet » ou « luna » → tier `standard`.
+- (case-insensitive) Nom contient « opus » ou « sol » → tier `reasoning`.
+- (case-insensitive) Nom contient « haiku » ou « terra » → tier `light` — toujours en mismatch.
 - Inconnu → tier non détectable : ne pas afficher la gate, conserver
   uniquement les tags par étape.
 

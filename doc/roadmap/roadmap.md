@@ -1,7 +1,7 @@
 # Roadmap roadmap-tracking
 
 > Backlog actif. L'historique détaillé est archivé dans `_archives/`.
-> Dernière mise à jour : 2026-09-13.
+> Dernière mise à jour : 2026-09-15.
 
 ## Contexte
 
@@ -17,6 +17,11 @@ Backlog consolidé : plans nommés d'après leur issue GitHub (voir `doc/roadmap
 ---
 
 ## Fait
+
+### Plans livrés (2026-09-15)
+
+- **[Plan: 21] `#21` — Intégration recommandations audit #129** (2026-09-15) 🔵 — 4 axes d'amélioration intégrés : matrice type de tâche → modèle recommandé, règle d'escalade "2 strikes" (proxy comportemental anti-errance), section `## Diagnostic en cours` dans le template de plan, rationale proxy vs budget chiffré. 4 remédiations post-audit appliquées (procédure échec tests intermédiaires, Diagnostic hors template actif, colonne Usage, case-insensitive).
+  [`21-roadmap-tracking-Integration-recommandations-audit-#129.md`](21-roadmap-tracking-Integration-recommandations-audit-#129.md)
 
 - **[Issue: #12] `#12` — Add /clear block at Phase 5+ gates** (2026-09-14) 🔵 — Bloc informatif `/clear` injecté à 5 gates (Phase 5 POINT D'ARRÊT 2, Phase 6, tests intermédiaires, 🧪 Tests finaux, reprise wrapup). 10/10 tests PASS. Économie estimée 20K–250K tokens selon la phase et la complexité du plan.
   [`12-session-clear-gate-suggestion.md`](12-session-clear-gate-suggestion.md)

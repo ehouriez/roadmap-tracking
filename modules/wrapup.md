@@ -70,6 +70,16 @@
 > si le modèle actif a changé depuis la dernière évaluation (voir « Re-jeu de la
 > gate sur changement de modèle »).
 
+> **Vérification "2 strikes" sur reprise.** Après la gate modèle et avant
+> d'afficher le point d'arrêt de reprise, inspecter le tableau « Résultats
+> joués et vérifiés » de la section `## Tests` du plan. Si la règle
+> "2 strikes" est déclenchée (≥ 2 ❌ consécutifs sur le même bloc, modèle
+> actif = tier `standard`), afficher la recommandation d'escalade (voir
+> « Règle d'escalade "2 strikes" » dans `modules/execute.md`) **avant** le
+> `⏸️` de reprise. L'opérateur voit la recommandation dans le même résumé
+> que l'état du plan — pas de tour supplémentaire. Vérifier aussi les
+> critères d'escalade immédiate si un seul ❌ est présent.
+
 2. **STOP.** Attendre la validation. Ne rien implémenter, ne lire aucun code
    source applicatif, ne lancer aucune commande tant que l'utilisateur n'a pas
    choisi une option.

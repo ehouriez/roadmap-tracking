@@ -370,9 +370,21 @@ l'étape 0 de la Phase 7. À la fin de l'implémentation d'une étape sélection
 4. **STOP.** Ne pas passer à l'étape suivante tant que les résultats ne sont pas
    reçus.
 
-5. **Si les tests échouent** : analyser, corriger l'implémentation, régénérer la
-   procédure **et** un nouveau bloc `📦 Commit proposé`, re-soumettre. Boucler
-   jusqu'à validation.
+5. **Si les tests échouent** :
+   1. Analyser les résultats transmis.
+   2. **Mettre à jour la section `## Diagnostic en cours`** du fichier plan
+      (voir `references/templates.md`) :
+      - Ajouter les hypothèses éliminées par cette session.
+      - Documenter les pistes ouvertes non encore vérifiées.
+      - Lister les vérifications à jouer (commandes concrètes).
+      - Mettre à jour le compteur de strikes dans le tableau des blocs en échec.
+      Si la section n'existe pas encore, la créer à la volée.
+   3. Corriger l'implémentation.
+   4. **Vérifier la règle "2 strikes"** (voir « Règle d'escalade "2 strikes" »
+      ci-dessous) avant de re-soumettre les tests.
+   5. Régénérer la procédure de tests intermédiaires **et** un nouveau bloc
+      `📦 Commit proposé` pour les corrections.
+   6. Boucler jusqu'à validation de cette étape.
 
 6. **Si les tests passent** : **consigner les résultats reçus dans la section
    `## Tests` du fichier plan** (ligne dans le tableau « Résultats joués et
@@ -475,11 +487,20 @@ transmis les résultats de l'étape `🧪 Tests`.
   `roadmap.md`, issue GitHub — voir ci-dessus).
 - **Si un ou plusieurs tests échouent** :
   1. Analyser les résultats transmis.
-  2. Corriger l'implémentation.
-  3. **Revenir à l'étape `🧪 Tests`** : régénérer une procédure de test mise à
+  2. **Mettre à jour la section `## Diagnostic en cours`** du fichier plan
+     (voir `references/templates.md`) :
+     - Ajouter les hypothèses éliminées par cette session.
+     - Documenter les pistes ouvertes non encore vérifiées.
+     - Lister les vérifications à jouer (commandes concrètes).
+     - Mettre à jour le compteur de strikes dans le tableau des blocs en échec.
+     Si la section n'existe pas encore, la créer à la volée.
+  3. Corriger l'implémentation.
+  4. **Vérifier la règle "2 strikes"** (voir « Règle d'escalade \"2 strikes\" »
+     ci-dessous) avant de re-soumettre les tests.
+  5. **Revenir à l'étape `🧪 Tests`** : régénérer une procédure de test mise à
      jour (incluant les vérifications de non-régression si pertinent) **et** un
      nouveau bloc `📦 Commit proposé` pour les corrections.
-  4. Boucler jusqu'à validation complète.
+  6. Boucler jusqu'à validation complète.
 
 ## Commit d'implémentation pré-tests (référence de format)
 
@@ -508,3 +529,113 @@ templates de tests ci-dessus.
 > **Un commit = un changement logique.** Si une étape touche des périmètres
 > clairement distincts (ex. code applicatif + mise à jour doc), proposer
 > **deux commits séparés** plutôt qu'un seul.
+
+---
+
+## Règle d'escalade "2 strikes" — détection d'errance en phase tests/fix
+
+> **Objectif** : détecter l'errance d'un modèle en phase debug et recommander
+> une escalade avant d'accumuler des sessions improductives. Cette règle
+> remplace un budget chiffré (inaccessible à runtime) par un proxy
+> comportemental : le nombre d'échecs consécutifs sur le même bloc de test.
+
+### Déclenchement
+
+```
+SI   le tableau « Résultats joués et vérifiés » (section ## Tests du plan)
+     contient ≥ 2 verdicts ❌ consécutifs sur le **même bloc/test**
+ET   ces verdicts proviennent de sessions distinctes (même modèle)
+ET   le modèle actif est de tier standard (Sonnet ou Luna)
+ALORS  déclencher la recommandation d'escalade ci-dessous.
+```
+
+**Précisions** :
+- « Même bloc/test » = même identifiant dans la colonne « Test » du tableau
+  (ex. « Bloc C — réconciliation boot »). Un ❌ sur le bloc A suivi d'un ❌
+  sur le bloc C ne déclenche pas la règle.
+- « Sessions distinctes » = les verdicts proviennent d'entrées de journal de
+  session différentes. Deux ❌ dans la même boucle d'itération
+  (`autonomous-tests.md`) ne comptent pas — la garde-fou `max_iterations`
+  gère ce cas.
+- La règle ne s'applique **pas** si le modèle actif est déjà `reasoning`
+  (Opus) — il n'y a pas d'escalade au-dessus.
+
+### Recommandation d'escalade
+
+Quand la règle est déclenchée, afficher dans le chat :
+
+```
+⚠️ Escalade recommandée — règle "2 strikes"
+
+Le bloc de test « {nom_du_bloc} » a échoué lors de {N} sessions consécutives
+avec le modèle actuel ({modèle_actif}, tier {tier_actif}).
+
+Historique des tentatives (section ## Tests du plan) :
+| Session | Verdict | Diagnostic résumé |
+|---|---|---|
+| {date_1} | ❌ | {diagnostic_1} |
+| {date_2} | ❌ | {diagnostic_2} |
+
+→ Recommande une escalade vers un modèle de tier reasoning (ex. Opus)
+  pour exploiter le contexte plan accumulé et diagnostiquer la root cause.
+  Voir references/environment.md § Generic Action Mapping pour la commande.
+
+---
+⏸️ Réponds `bypass` pour continuer avec le modèle actuel, ou change de
+   modèle via la commande de ton IDE puis relance avec `continue`.
+```
+
+> Ce point d'arrêt est **identique en mécanique** à la gate modèle
+> existante (même format, même options `bypass`/switch). L'opérateur reste
+> décideur : la règle recommande, elle n'impose pas.
+
+### Critères d'escalade immédiate (bypass de la règle 2 strikes)
+
+Certains patterns justifient une escalade dès le **1er échec**, sans
+attendre le 2ème strike. Afficher le même bloc `⚠️` avec la mention
+« Escalade immédiate recommandée » si l'un de ces critères est détecté :
+
+- Le problème implique l'interaction entre code et infrastructure (Docker,
+  CI/CD, registre d'images, chaîne de déploiement).
+- La session avec modèle de tier `standard` (Sonnet ou Luna) a produit un diagnostic **sans preuve matérielle**
+  (hypothèse formulée mais non vérifiée par inspection d'artefact runtime).
+- Le plan consigne une piste pertinente non exploitée par les sessions
+  précédentes (visible dans la section `## Diagnostic en cours`).
+- La session a bloqué >10min sans output.
+
+> Ces critères sont évalués **par le modèle lui-même** à l'entrée de chaque
+> session de reprise en phase tests/fix. Ils ne sont pas mécaniques (pas de
+> compteur automatique) — c'est une heuristique de jugement guidée par le
+> contexte plan.
+
+### Interaction avec la garde-fou `max_iterations` (mode autonomous)
+
+La règle "2 strikes" et la garde-fou `max_iterations` opèrent à des
+granularités différentes et se complètent :
+
+| Mécanisme | Granularité | Scope | Action |
+|---|---|---|---|
+| `max_iterations` | Intra-session (boucle itérative) | 1 étape | STOP après N itérations dans la même session |
+| "2 strikes" | Inter-sessions | 1 bloc de test | Recommandation d'escalade modèle |
+
+Un bloc qui atteint `max_iterations` en session 1, puis à nouveau en
+session 2, déclenche "2 strikes" — la combinaison est naturelle.
+
+> **Pourquoi "2 strikes" et pas un budget chiffré ?**
+>
+> Le rapport d'audit §6.3.3 proposait une grille budgétaire par complexité
+> de plan (ex. L = $16-26). Cette approche suppose un accès runtime aux
+> données de coût (tokens consommés, prix/token) — données inaccessibles à
+> l'agent (pas de clé API Langfuse, pas de visibilité sur le champ `usage`
+> de l'API LLM).
+>
+> La règle "2 strikes" est un **proxy comportemental** : elle détecte
+> l'errance via le même signal qu'un humain utiliserait — « ce test échoue
+> pour la 2ème fois sans progression ». Sur #129, ce signal aurait
+> économisé $3,99 et ~33min vs. l'escalade tardive réelle.
+>
+> Avantages du proxy comportemental vs. budget chiffré :
+> - **Indépendant de l'infrastructure d'observabilité** (pas de Langfuse requis).
+> - **Signal qualitatif** : détecte l'errance même si le coût est faible.
+> - **Fonctionne pour tout modèle** : le seuil de coût serait à recalibrer
+>   à chaque changement de pricing ; le compteur d'échecs est stable.

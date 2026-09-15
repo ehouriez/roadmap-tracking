@@ -53,11 +53,14 @@ To determine the active model's tier at invocation:
 
 1. Read model name from system prompt ("You are powered by the model named …").
 2. If `models.map` is configured: match by name → use mapped tier.
-3. Otherwise apply Anthropic defaults:
-   - Name contains "Sonnet" → `standard` tier.
-   - Name contains "Opus"   → `reasoning` tier.
-   - Name contains "Haiku"  → `light` tier (always a mismatch with planning matrix).
-   - Unknown               → tier undetectable; skip model gate, keep step tags only.
+3. Otherwise apply Anthropic or OpenAI defaults (all name checks are **case-insensitive**):
+   - Name contains "sonnet" → `standard` tier.
+   - Name contains "opus"   → `reasoning` tier.
+   - Name contains "haiku"  → `light` tier (always a mismatch with planning matrix).
+   - Name contains "luna"   → `standard` tier.
+   - Name contains "sol"    → `reasoning` tier.
+   - Name contains "terra"  → `light` tier (always a mismatch with planning matrix).
+   - Unknown                → tier undetectable; skip model gate, keep step tags only.
 
 ---
 

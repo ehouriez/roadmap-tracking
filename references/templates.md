@@ -198,6 +198,47 @@ Pourquoi ce plan existe (1-3 phrases).
 ```
 
 > **Décisions techniques**, **Tests** et **Journal de session** peuvent être
-> vides à la création et se remplissent au fil des sessions. La section
-> **Tests** devient **obligatoirement non vide** dès qu'une étape de tests
-> (intermédiaire ou finale) est jouée, dans les deux modes.
+> vides à la création et se remplissent au fil des sessions. La section **Tests**
+> devient **obligatoirement non vide** dès qu'une étape de tests (intermédiaire
+> ou finale) est jouée, dans les deux modes. La section **Diagnostic en cours**
+> est créée à la volée au premier échec de test et supprimée (ou marquée
+> « Résolu ») quand le diagnostic aboutit — elle n'est **jamais incluse à la
+> création** (voir encadré ci-dessous).
+
+---
+
+### Structure de référence pour `## Diagnostic en cours` (créée à la volée — jamais incluse à la création)
+
+> ⛔ **Ne pas inclure cette section lors de la création d'un plan.** Elle est
+> créée à la volée dès le premier échec de test en phase tests/fix, et supprimée
+> (ou marquée « Résolu ») quand le diagnostic aboutit. La structure ci-dessous
+> est une **référence d'implémentation** — copier uniquement quand la section
+> doit être créée pour la première fois dans un plan en cours d'exécution.
+
+```markdown
+## Diagnostic en cours
+
+> Section activée **à la première occurrence d'un échec de test** en phase
+> tests/fix. Absente à la création du plan, créée à la volée quand nécessaire.
+> Supprimée (ou marquée « Résolu ») quand le diagnostic aboutit. Se distingue
+> du journal de session (narratif) par sa structure imposée, conçue pour
+> accélérer la reprise par le modèle suivant.
+>
+> **Règle d'écriture** : cette section est mise à jour **à chaque session**
+> de la boucle tests/fix, en plus du journal de session. Le journal reste
+> narratif ; le diagnostic est structuré.
+
+### Bloc(s) en échec
+
+| Bloc | Dernière tentative | Strikes | Verdict |
+|------|-------------------|---------|---------|
+
+### Hypothèses éliminées
+- [x] *(exemple)* Race condition procédure → fixée (health-check wait, session N)
+
+### Pistes ouvertes (non vérifiées)
+- [ ] ⚠️ *(exemple)* L'image Docker en cours contient-elle le code attendu ?
+
+### Vérifications à jouer
+- *(exemple)* `docker exec <container> grep <function> /app/server.js`
+```
