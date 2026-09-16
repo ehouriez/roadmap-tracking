@@ -11,13 +11,18 @@
 
 > 🔍 MODE CADRAGE — aucune écriture, aucune commande.
 
-Lève les ambiguïtés via **grilling** (voir « Grilling adaptatif ») — quel que soit
-le niveau de complexité (XS, S, M, L, XL). Catégories d'amorçage par défaut :
+Mappe la demande comme un **arbre de décisions**, puis lève les ambiguïtés via
+**grilling** (voir « Grilling adaptatif ») — quel que soit le niveau de complexité
+(XS, S, M, L, XL). Catégories d'amorçage par défaut :
 **périmètre** (inclus / hors scope), **critères de succès**, **dépendances**
 (bloquantes / bloquées), **parties prenantes** (décideurs / impactés),
 **alternatives écartées**, **risques identifiés**.
 
-Termine ta compréhension par un court résumé (2-3 phrases) **avant** le premier round de grilling.
+Affiche ta compréhension en 2-3 phrases **avant** le premier round (voir
+`references/forms.md § Avant le premier appel`). La Phase 2 se poursuit en
+rounds successifs jusqu'à ce que la **frontier soit vide** — elle se clôt par
+une **confirmation de compréhension partagée** et un **résumé structuré** des
+décisions prises avant Phase 3.
 
 ### Assistance design (UX/UI)
 
@@ -232,21 +237,35 @@ Lire `grilling.enabled` dans `./doc/roadmap/.skill-config.yml` :
 > ⚠️ La Phase 2 ignore `grilling.enabled` : le grilling y est **toujours actif**,
 > quelle que soit la valeur de ce champ.
 
-### Mécanique : frontier réduite
+### Mécanique : frontier illimitée
 
-Le grilling se déroule en **rounds**, mappé comme un arbre de décision : chaque
-décision tranchée ouvre les questions qui en dépendaient. Contrairement à un
-grilling exhaustif, la profondeur est **bornée (« frontier réduite »)** :
+Le grilling mappe la demande comme un **arbre de décisions** : chaque décision
+tranchée branche vers les sous-décisions qui en dépendent. La **frontier** est
+l'ensemble des décisions dont les prérequis sont déjà résolus — les questions
+que tu peux poser *maintenant* sans supposer des réponses pas encore reçues.
 
-1. **Round d'amorçage** : poser en un seul round toutes les **catégories
-   pré-amorcées de la phase** dont les prérequis sont déjà connus. Chaque
-   question est numérotée et accompagnée de ta **réponse recommandée**.
-2. **Round de suivi (max 1)** : uniquement si des réponses du round d'amorçage
-   ouvrent des zones d'ombre évidentes. Poser ces questions de suivi, puis
-   **stop**.
-3. **Fin** : le grilling s'arrête dès que les catégories sont couvertes + le
-   round de suivi éventuel est traité. Ne pas dériver vers la conception
-   d'architecture profonde — le grilling **cadre**, il ne conçoit pas.
+**Round d'amorçage (round 1)** : les catégories pré-amorcées de la phase forment
+la frontier initiale (voir `references/forms.md`). Poster avec `AskUserQuestion`
+quand disponible (choix cliquables). Chaque question est numérotée et accompagnée
+de ta **réponse recommandée**.
+
+**Rounds suivants (2, 3, …)** : les réponses reçues résolvent des décisions et
+repoussent la frontier. Recomputer la frontier. Si non vide → nouveau round en
+format texte `❓ **Qn**` (voir § Format d'un round). Si vide → § Terminaison.
+
+Ne pas dériver vers la conception d'architecture profonde — le grilling
+**cadre**, il ne conçoit pas.
+
+Une question dont la réponse dépend d'une autre question encore ouverte dans ce
+round appartient au **round suivant**, pas à celui-ci.
+
+**Profondeur par phase** (cap sur les rounds) :
+
+| Phase | Frontier | Cap |
+|-------|----------|-----|
+| **Phase 2** | Illimitée | Aucun — continuer tant que la frontier n'est pas vide |
+| **Phase 4** | Réduite | Amorçage + **max 1 round de suivi**, puis stop |
+| **Phase 6** | Réduite | Amorçage + **max 1 round de suivi**, puis stop |
 
 Les catégories peuvent être surchargées par phase via
 `grilling.categories.phase2 | phase4 | phase6` dans `.skill-config.yml` (voir
@@ -274,8 +293,36 @@ suivant.
 
 Les **faits** (contenu de fichiers, état du dépôt, configuration) sont à
 récupérer par tes propres outils, jamais demandés à l'utilisateur. Seules les
-**décisions** lui sont posées. Une question dont la réponse dépend d'un fait non
-encore établi attend que le fait soit récupéré.
+**décisions** lui sont posées.
+
+Quand une question frontier nécessite un fait non encore établi, dispatche un
+sub-agent pour le récupérer — **sans bloquer les autres questions de la
+frontier** : seules les questions *en aval* de ce fait attendent le résultat du
+sub-agent ; les questions indépendantes sont posées immédiatement. Une
+exploration en cours est un prérequis non résolu : seules ses dépendantes en
+héritent.
+
+### Terminaison
+
+La Phase 2 se termine quand la frontier est **vide** : chaque branche de
+l'arbre de décisions a été visitée, rien n'est supposé silencieusement.
+
+Produire alors un **résumé structuré des décisions prises** et demander à
+l'utilisateur de **confirmer la compréhension partagée** avant Phase 3. Ce
+résumé sert d'input à la Phase 3.
+
+```
+### ✅ Compréhension partagée — résumé
+
+| Dimension | Décision retenue |
+|-----------|-----------------|
+| Périmètre | ... |
+| Critères de succès | ... |
+| Approche / contraintes | ... |
+| Dépendances | ... |
+
+Confirmes-tu cette compréhension avant que je propose le plan ?
+```
 
 ---
 

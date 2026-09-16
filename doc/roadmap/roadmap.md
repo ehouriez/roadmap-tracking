@@ -1,7 +1,7 @@
 # Roadmap roadmap-tracking
 
 > Backlog actif. L'historique détaillé est archivé dans `_archives/`.
-> Dernière mise à jour : 2026-09-15.
+> Dernière mise à jour : 2026-09-16.
 
 ## Contexte
 
@@ -13,6 +13,11 @@ Backlog consolidé : plans nommés d'après leur issue GitHub (voir `doc/roadmap
 
 ## À faire
 
+### [Issue: #24] Phase 2 : Intégration méthodologie grilling (frontier illimitée) [PRIORITÉ: HAUTE] [Complexité: M] 🟢
+
+Plan : [`24-phase2-grilling-frontier-methodology.md`](24-phase2-grilling-frontier-methodology.md)
+
+Remplacer la mécanique "frontier réduite" (cap 2 rounds) par la méthodologie complète du skill `grilling` : design tree, rounds frontier illimités, terminaison par frontier vide + confirmation, résumé structuré vers Phase 3.
 
 ---
 

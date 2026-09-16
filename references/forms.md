@@ -1,29 +1,36 @@
 # Formulaire de cadrage interactif (Phase 2)
 
-Le cadrage se fait avec l'outil **`AskUserQuestion`** quand il est disponible
+Le cadrage Phase 2 se déroule en **rounds** via la mécanique de frontier illimitée
+(voir `modules/plan.md § Grilling adaptatif`).
+
+**Round d'amorçage (round 1)** : utiliser **`AskUserQuestion`** quand disponible
 (Claude Code, Codex) — des choix cliquables, pas un formulaire texte.
 
-**Fallback IDE sans `AskUserQuestion`** : afficher les questions en texte plain
-sous forme numérotée avec les options sous forme de liste `a) … b) … c) …`.
+**Rounds suivants (2, 3, …)** : utiliser le **format texte** `❓ **Qn**`
+(voir `modules/plan.md § Format d'un round`). L'émergence des questions depuis
+les réponses précédentes est incompatible avec les contraintes de `AskUserQuestion`.
+
+**Fallback IDE sans `AskUserQuestion`** (round 1) : afficher les questions en texte
+plain sous forme numérotée avec les options sous forme de liste `a) … b) … c) …`.
 Inviter l'utilisateur à répondre avec les numéros/lettres. L'option « Autre »
 doit être explicitement proposée en dernière option.
 Voir `references/environment.md § Generic Action Mapping`.
 
-## Contraintes de l'outil et batching
+## Contraintes du round d'amorçage (round 1 — `AskUserQuestion` uniquement)
 
 | Contrainte | Conséquence |
 |---|---|
-| Max **4 questions** par appel | Découper le cadrage en plusieurs appels successifs |
+| Max **4 questions** par appel | Découper les catégories en plusieurs appels successifs si besoin |
 | Max **4 options** par question | Garder les options les plus pertinentes ; l'option « Autre » est ajoutée nativement |
 | Réponses multiples | Mettre `multiSelect: true` (ex. « hors scope explicite ») |
 | Champ libre | Inutile de prévoir une option « Autre : ___ » : l'outil la fournit |
 | `header` | Label court (≤ 12 caractères), ex. « Périmètre », « Objectifs » |
 | Recommandation | Placer l'option recommandée en premier avec « (Recommandé) » |
 
-**Stratégie de découpage** : regroupe par thème, ~3-4 questions par appel.
-Un plan simple (XS/S) → **3-4 questions** (1 appel). Un plan complexe (M/L/XL)
-→ **5-10 questions** (2-3 appels). N'enchaîne un appel qu'après les réponses du
-précédent, pour adapter les questions suivantes aux réponses reçues.
+**Stratégie de découpage (round 1)** : regroupe par thème, ~3-4 questions par appel.
+N'enchaîne un appel qu'après les réponses du précédent, pour adapter les questions
+suivantes aux réponses reçues. Les rounds suivants (format texte) n'ont pas de
+contrainte de batching — poser toute la frontier en un seul message.
 
 ## Avant le premier appel
 
@@ -80,7 +87,13 @@ risque technique, propose une alternative, anticipe les cas limites, suggère un
 simplification si la demande semble sur-ingénierée. Formule-la comme un choix
 (d'accord / pas pertinent / à discuter).
 
-## Après les réponses
+## Après les réponses d'un round
+
+Recompute la frontier :
+- **Frontier non vide** → poser le round suivant en format texte `❓ **Qn**`
+  (voir `modules/plan.md § Format d'un round`). STOP, attendre les réponses.
+- **Frontier vide** → produire le résumé structuré et demander la confirmation
+  de compréhension partagée (voir `modules/plan.md § Terminaison`).
+  Enchaîner sur la **Phase 3 — Proposition du plan** après confirmation.
 
 Les questions restées sans réponse sont traitées selon ton meilleur jugement.
-Enchaîne sur la **Phase 3 — Proposition du plan**.
