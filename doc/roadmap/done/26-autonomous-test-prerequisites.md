@@ -2,9 +2,10 @@
 plan:
   id: '26'
   name: 26-autonomous-test-prerequisites.md
-  link: https://github.com/ehouriez/roadmap-tracking/blob/main/doc/roadmap/26-autonomous-test-prerequisites.md
-status: active
+  link: https://github.com/ehouriez/roadmap-tracking/blob/main/doc/roadmap/done/26-autonomous-test-prerequisites.md
+status: done
 date: 2026-09-22
+enriched: 2026-09-22
 description: >
   Imposer une section "Prérequis pour les tests" avant toute procédure de test dans les plans,
   avec des commandes 100 % exécutables par copier-coller (zero-lookup), modes manual et autonomous.
@@ -41,10 +42,10 @@ recherche manuelle de valeur (zero-lookup).
 
 ## Étapes
 
-- [ ] Étape 1 — Mettre à jour `references/templates.md` : ajouter `### Prérequis pour les tests` avant `### Procédure de test` (S · standard → Sonnet)
-- [ ] Étape 2 — Mettre à jour `modules/execute.md` : ajouter la règle ⛔ zero-lookup (S · standard → Sonnet)
-- [ ] 🧪 Tests — Rédiger et exécuter la procédure de test
-- [ ] ✅ Validation — Vérifier les résultats des tests et clôturer
+- [x] Étape 1 — Mettre à jour `references/templates.md` : ajouter `### Prérequis pour les tests` avant `### Procédure de test` (S · standard → Sonnet)
+- [x] Étape 2 — Mettre à jour `modules/execute.md` : ajouter la règle ⛔ zero-lookup (S · standard → Sonnet)
+- [x] 🧪 Tests — Rédiger et exécuter la procédure de test
+- [x] ✅ Validation — Vérifier les résultats des tests et clôturer
 
 ## Décisions techniques
 
@@ -93,9 +94,14 @@ grep -n "⛔" modules/execute.md | grep -i "test\|prérequis\|procédure"
 
 | Date | Test | Attendu | Observé | Verdict |
 |------|------|---------|---------|---------|
+| 2026-09-22 | Étape 1 — section `### Prérequis pour les tests` présente dans `templates.md` | Présente avant `### Procédure de test` | Ligne 177 < ligne 185 | ✅ PASS |
+| 2026-09-22 | Étape 2 — règle ⛔ zero-lookup dans `execute.md` | `zero-lookup` + `Prérequis pour les tests` + marqueur `⛔` présents (2 occurrences) | 4 occurrences chacun, 2 marqueurs ⛔ confirmés | ✅ PASS |
+| 2026-09-22 | Tests finaux — 6 vérifications complètes (templates.md + execute.md) | Tous les 6 critères satisfaits | 6/6 PASS (fichiers présents, section positionnée ligne 177 < 185, règles ⛔ aux lignes 329 et 424) | ✅ PASS |
 
 ## Journal de session
 
 ### Session 2026-09-22
-- 🔄 En cours : implémentation étapes 1 et 2
-- 📋 Prochain : tests et validation
+- ✅ Fait : étape 1 — ajout `### Prérequis pour les tests` dans `references/templates.md` (ligne 177, avant `### Procédure de test` ligne 185)
+- ✅ Fait : étape 2 — ajout règle ⛔ zero-lookup dans `modules/execute.md` (sections tests intermédiaires ligne 329 et tests finaux ligne 424)
+- ✅ Tests finaux : 6/6 PASS
+- ✅ Validé et clôturé

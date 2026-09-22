@@ -13,17 +13,16 @@ Backlog consolidé : plans nommés d'après leur issue GitHub (voir `doc/roadmap
 
 ## À faire
 
-### [Issue: #26] Autonomous Test Prerequisites [PRIORITÉ: MOYENNE] [Complexité: M] 🟢
-
-Plan : [`26-autonomous-test-prerequisites.md`](26-autonomous-test-prerequisites.md)
-
-Imposer une section `### Prérequis pour les tests` avant toute procédure de test, avec commandes zero-lookup (modes `manual` et `autonomous`). Modifications : `references/templates.md` + `modules/execute.md`.
+*(aucun plan actif)*
 
 ---
 
 ## Fait
 
 ### Plans livrés (2026-09-22)
+
+- **[Issue: #26] `#26` — Autonomous Test Prerequisites** (2026-09-22) 🔵 — Ajout de `### Prérequis pour les tests` avant `### Procédure de test` dans `references/templates.md`. Règle ⛔ zero-lookup imposant la section dans `modules/execute.md` (tests intermédiaires + tests finaux). Modes `manual` et `autonomous` couverts. 6/6 tests PASS.
+  [`26-autonomous-test-prerequisites.md`](done/26-autonomous-test-prerequisites.md)
 
 - **[Issue: #24] `#24` — Phase 2 : Intégration méthodologie grilling (frontier illimitée)** (2026-09-22) 🔵 — Remplacement de la frontier réduite (cap 2 rounds) par la méthodologie complète : design tree, rounds illimités, terminaison frontier vide + confirmation, résumé structuré vers Phase 3. Mise à jour `modules/plan.md` § Grilling adaptatif + `references/forms.md`. 10/10 tests PASS.
   [`24-phase2-grilling-frontier-methodology.md`](done/24-phase2-grilling-frontier-methodology.md)

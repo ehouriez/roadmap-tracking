@@ -326,6 +326,18 @@ l'étape 0 de la Phase 7. À la fin de l'implémentation d'une étape sélection
 1. **Déterminer les tests unitaires pertinents** ciblés sur le périmètre de
    **cette étape uniquement**.
 
+> ⛔ **Règle zero-lookup — `### Prérequis pour les tests` obligatoire avant toute procédure.**
+> Créer ou mettre à jour la section `### Prérequis pour les tests` dans `## Tests`
+> du fichier plan **avant** d'écrire `### Procédure de test` (voir
+> `references/templates.md`). Elle doit contenir toutes les valeurs, chemins
+> absolus, variables d'environnement et commandes de setup nécessaires à
+> l'exécution — copier-coller direct sans recherche manuelle (zero-lookup).
+>
+> **Heuristique** : avant d'écrire `### Prérequis pour les tests`, lister d'abord
+> toutes les commandes de la procédure et relever chaque valeur non dérivable
+> de l'environnement standard (chemins absolus, IDs, ports, noms de services).
+> Ces valeurs sont exactement ce qui doit figurer dans les prérequis.
+
 2. **Rédiger une procédure de tests unitaires détaillée pas à pas** dans la
    section `## Tests` du fichier plan (voir `references/templates.md`), entre
    balises de code. Cette procédure :
@@ -413,6 +425,13 @@ N-2) sont terminées. Tu dois :
    - **Tests end-to-end** → modification touchant un flux complet (API → front,
      inter-services, pipeline, etc.).
    - **Les deux** → modification structurelle majeure ou transverse.
+
+> ⛔ **Règle zero-lookup — `### Prérequis pour les tests` obligatoire avant toute procédure.**
+> Créer ou mettre à jour la section `### Prérequis pour les tests` dans `## Tests`
+> du fichier plan **avant** d'écrire `### Procédure de test` (voir
+> `references/templates.md`). Elle doit contenir toutes les valeurs, chemins
+> absolus, variables d'environnement et commandes de setup nécessaires à
+> l'exécution — copier-coller direct sans recherche manuelle (zero-lookup).
 
 2. **Rédiger une procédure de test détaillée pas à pas** dans la section
    `## Tests` du fichier plan (voir `references/templates.md`), entre balises de

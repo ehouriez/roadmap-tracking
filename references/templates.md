@@ -174,6 +174,14 @@ Pourquoi ce plan existe (1-3 phrases).
 > pas : ce fichier est la source de vérité traçable. Voir SKILL.md
 > « ⛔ Règle absolue — traçabilité des tests dans le fichier plan ».
 
+### Prérequis pour les tests
+
+```bash
+(commandes de setup — répertoire de travail, variables d'env, outils requis,
+ valeurs à substituer dans la procédure. Toutes les valeurs nécessaires à
+ l'exécution sont définies ici : zero-lookup, copier-coller direct.)
+```
+
 ### Procédure de test
 
 ```bash
