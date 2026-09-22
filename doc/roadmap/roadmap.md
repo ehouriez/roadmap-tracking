@@ -1,7 +1,7 @@
 # Roadmap roadmap-tracking
 
 > Backlog actif. L'historique détaillé est archivé dans `_archives/`.
-> Dernière mise à jour : 2026-09-22. (clôture #24)
+> Dernière mise à jour : 2026-09-22.
 
 ## Contexte
 
@@ -12,6 +12,12 @@ Backlog consolidé : plans nommés d'après leur issue GitHub (voir `doc/roadmap
 ---
 
 ## À faire
+
+### [Issue: #26] Autonomous Test Prerequisites [PRIORITÉ: MOYENNE] [Complexité: M] 🟢
+
+Plan : [`26-autonomous-test-prerequisites.md`](26-autonomous-test-prerequisites.md)
+
+Imposer une section `### Prérequis pour les tests` avant toute procédure de test, avec commandes zero-lookup (modes `manual` et `autonomous`). Modifications : `references/templates.md` + `modules/execute.md`.
 
 ---
 
