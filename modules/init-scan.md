@@ -108,7 +108,7 @@ puis écrire `help.welcomed: true` dans `.skill-config.yml`.
 Si l'utilisateur ne référence pas un plan existant dans son premier prompt :
 
 1. **Lister les plans existants** (mémoires, contexte projet, et inspection de
-   `./doc/roadmap/`) **impérativement sous forme de tableau markdown** — voir
+   `./doc/roadmap/` — **hors `./doc/roadmap/done/`**) **impérativement sous forme de tableau markdown** — voir
    « ⛔ Règle absolue — format des rapports ». Ne JAMAIS rendre ce listing en
    format `clé: valeur` (`#: 1` / `Fichier: …` / `Statut: …`), en lignes
    séparées par des filets (`───`), ni en puces : le gabarit ci-dessous est
@@ -152,6 +152,13 @@ Fichier: 28-autre.md
 >   `y.md` (front matter partiel : `status`, `complexity` manquants) »).
 > - La reprise d'un plan non conforme suit la branche dédiée (voir
 >   « Workflow : reprise d'un plan existant § Plan non conforme »).
+
+> **Plans clôturés (`doc/roadmap/done/`).** Les fichiers dans `./doc/roadmap/done/`
+> sont des plans `status: done`. Ils sont **exclus du listing** ci-dessus : seul
+> le reste à faire est affiché à l'utilisateur. Le skill **peut et doit** les
+> lire pour récupérer du contexte pertinent (décisions techniques, dépendances
+> historiques, patterns validés) lors du cadrage ou de l'implémentation d'un
+> nouveau plan. L'exclusion du listing n'est **jamais** une interdiction de lecture.
 
 2. **Demander** : « Souhaites-tu repartir d'un de ces plans existants (indique
    le numéro) ou créer un nouveau plan pour cette session ? »

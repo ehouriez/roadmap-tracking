@@ -8,6 +8,7 @@ priorité, description, issue liée).
 - Création d'un nouveau plan.
 - Changement de statut d'un plan.
 - Modification significative d'un plan.
+- Clôture d'un plan (déplacement vers `done/` + mise à jour du lien vers `done/NNN-slug.md`).
 - Archivage (déplacer le fichier dans `_archives/` + mettre à jour le statut).
 
 ## Icônes de statut
@@ -18,6 +19,14 @@ priorité, description, issue liée).
 | `done` | 🔵 | Terminé et validé |
 | `blocked` | 🔴 | Bloqué (dépendance / décision en attente) |
 | `archived` | ⚪ | Archivé (dans `_archives/`) |
+
+## Sous-répertoire `done/`
+
+Les plans clôturés (`status: done`) sont stockés dans `./doc/roadmap/done/`.
+Les liens dans la section « Fait » de `roadmap.md` pointent vers `done/NNN-slug.md`
+(chemin relatif depuis `doc/roadmap/`).
+
+Les plans archivés (`status: archived`) restent dans `_archives/` — concept distinct.
 
 ## Tri de la section « À faire »
 
@@ -74,7 +83,7 @@ Description succincte. **Bloqué par** : [raison].
 ### Plans livrés (YYYY-MM-DD → YYYY-MM-DD)
 
 - **[Issue: #8] `#8` — Titre** (YYYY-MM-DD) 🔵 — Ce qui a été livré.
-  [`8-nom-du-plan.md`](8-nom-du-plan.md)
+  [`8-nom-du-plan.md`](done/8-nom-du-plan.md)
 
 ---
 

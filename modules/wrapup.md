@@ -120,26 +120,36 @@
 
 > **Clôture d'un plan validé — checklist COMPLÈTE (ne rien omettre).** Dès que
 > toutes les étapes sont livrées **et** validées, la clôture consiste à mettre à
-> jour **les trois supports** de suivi, dans cet ordre :
+> jour **les quatre supports** de suivi, dans cet ordre :
 >
 > 1. **Fichier de plan** : passer le front matter à `status: done`, cocher la
 >    dernière étape et consigner la validation dans le journal de session.
 >    **Remettre `intent: null`** si le champ `intent` est présent dans le front
->    matter (Axe B — reset automatique à la clôture).
-> 2. **`roadmap.md`** : déplacer l'entrée de la section « À faire » vers
->    **« Fait »** (statut `done` 🔵).
-> 3. **Issue GitHub rattachée** *(mode `github` uniquement)* : la **fermer**
+>    matter (Axe B — reset automatique à la clôture). Mettre à jour `plan.link`
+>    pour refléter le nouveau chemin dans `done/` *(mode `github` : URL GitHub
+>    vers `doc/roadmap/done/NNN-slug.md` ; mode `local` : chemin relatif
+>    `doc/roadmap/done/NNN-slug.md`)*.
+> 2. **Déplacement vers `done/`** : déplacer le fichier plan dans
+>    `doc/roadmap/done/` via `git mv` (créer le répertoire si absent) :
+>    ```bash
+>    mkdir -p ./doc/roadmap/done
+>    git mv ./doc/roadmap/{NNN}-slug.md ./doc/roadmap/done/{NNN}-slug.md
+>    ```
+> 3. **`roadmap.md`** : déplacer l'entrée de la section « À faire » vers
+>    **« Fait »** (statut `done` 🔵) et mettre à jour le lien vers
+>    `done/{NNN}-slug.md` (voir `references/roadmap-file.md`).
+> 4. **Issue GitHub rattachée** *(mode `github` uniquement)* : la **fermer**
 >    (`gh issue close <issue.id>`), idéalement précédée d'un commentaire de
 >    clôture récapitulant ce qui a été livré et validé (`gh issue comment
 >    <issue.id> --body "…"`). Voir `references/github-issues.md`. Si le plan n'a
 >    pas d'issue rattachée (`issue.id` absent / fallback `draft-`), sauter et
 >    signaler.
->    **Mode `local`** : cette étape n'existe pas — `status: done` + `roadmap.md`
->    suffisent. Le signaler explicitement à l'utilisateur.
+>    **Mode `local`** : cette étape n'existe pas — `status: done` + déplacement
+>    + `roadmap.md` suffisent. Le signaler explicitement à l'utilisateur.
 >
-> Ces trois actions vont **ensemble** en mode `github` : `status: done` dans le
-> plan implique une entrée en « Fait » **et** une issue fermée. Ne jamais laisser
-> une issue ouverte alors que son plan est `done`.
+> Ces quatre actions vont **ensemble** en mode `github` : `status: done` dans le
+> plan implique un déplacement dans `done/`, une entrée en « Fait » **et** une
+> issue fermée. Ne jamais laisser une issue ouverte alors que son plan est `done`.
 >
 > **Ne jamais** déplacer un plan validé vers `_archives/roadmap_done.md` : ce
 > fichier est un historique figé qui n'est plus utilisé. L'archivage physique
