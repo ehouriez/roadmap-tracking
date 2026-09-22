@@ -2,8 +2,8 @@
 plan:
   id: '24'
   name: 24-phase2-grilling-frontier-methodology.md
-  link: https://github.com/ehouriez/roadmap-tracking/blob/main/doc/roadmap/24-phase2-grilling-frontier-methodology.md
-status: active
+  link: https://github.com/ehouriez/roadmap-tracking/blob/main/doc/roadmap/done/24-phase2-grilling-frontier-methodology.md
+status: done
 date: 2026-09-16
 description: >
   Remplacer la mécanique "frontier réduite" (cap 2 rounds) de la Phase 2 par la
@@ -44,7 +44,7 @@ Remplacer la mécanique "frontier réduite" (cap artificiel à 2 rounds) de la P
 - [x] Étape 2 — Mettre à jour `modules/plan.md` § Phase 2 : ajouter mapping design tree, confirmation compréhension partagée, résumé structuré vers Phase 3 (S · standard → Sonnet)
 - [x] Étape 3 — Mettre à jour `references/forms.md` : clarifier frontière AskUserQuestion (round 1) / format texte `❓ Qn` (rounds 2+) (S · standard → Sonnet)
 - [x] 🧪 Tests — Vérification contraintes C1-C7 et A1-A3 + dry-run mental migration DB
-- [ ] ✅ Validation — Contrôle final + clôture
+- [x] ✅ Validation — Contrôle final + clôture
 
 ## Décisions techniques
 
@@ -85,6 +85,7 @@ Vérification par checklist fonctionnelle (C1-C7) et architecturale (A1-A3) + dr
 
 ### Session 2026-09-16
 - ✅ Fait : Issue #24 créée, fichier plan créé, roadmap.md mis à jour
-- 🔄 En cours : Implémentation étapes 1-3
-- 📋 Prochain : Étape 1 — réécriture § Grilling adaptatif
-- 🚧 Blocages : aucun
+- ✅ Fait : Étapes 1-3 implémentées, 10/10 tests PASS
+
+### Session 2026-09-22
+- ✅ Clôture : ✅ Validation complétée, status: done, plan déplacé dans done/

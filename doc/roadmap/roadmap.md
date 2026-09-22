@@ -1,7 +1,7 @@
 # Roadmap roadmap-tracking
 
 > Backlog actif. L'historique détaillé est archivé dans `_archives/`.
-> Dernière mise à jour : 2026-09-22.
+> Dernière mise à jour : 2026-09-22. (clôture #24)
 
 ## Contexte
 
@@ -13,17 +13,14 @@ Backlog consolidé : plans nommés d'après leur issue GitHub (voir `doc/roadmap
 
 ## À faire
 
-### [Issue: #24] Phase 2 : Intégration méthodologie grilling (frontier illimitée) [PRIORITÉ: HAUTE] [Complexité: M] 🟢
-
-Plan : [`24-phase2-grilling-frontier-methodology.md`](24-phase2-grilling-frontier-methodology.md)
-
-Remplacer la mécanique "frontier réduite" (cap 2 rounds) par la méthodologie complète du skill `grilling` : design tree, rounds frontier illimités, terminaison par frontier vide + confirmation, résumé structuré vers Phase 3.
-
 ---
 
 ## Fait
 
 ### Plans livrés (2026-09-22)
+
+- **[Issue: #24] `#24` — Phase 2 : Intégration méthodologie grilling (frontier illimitée)** (2026-09-22) 🔵 — Remplacement de la frontier réduite (cap 2 rounds) par la méthodologie complète : design tree, rounds illimités, terminaison frontier vide + confirmation, résumé structuré vers Phase 3. Mise à jour `modules/plan.md` § Grilling adaptatif + `references/forms.md`. 10/10 tests PASS.
+  [`24-phase2-grilling-frontier-methodology.md`](done/24-phase2-grilling-frontier-methodology.md)
 
 - **[Issue: #25] `#25` — Gestion des plans clôturés dans done/** (2026-09-22) 🔵 — Plans `status: done` déplacés dans `doc/roadmap/done/`. Listing init-scan exclut `done/` (seul le reste à faire affiché). Règle explicite : le skill peut lire `done/` pour du contexte. Migration 23 plans existants. 10/10 tests PASS.
   [`25-done-subfolder-plan-management.md`](done/25-done-subfolder-plan-management.md)
