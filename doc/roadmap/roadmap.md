@@ -1,7 +1,7 @@
 # Roadmap roadmap-tracking
 
 > Backlog actif. L'historique détaillé est archivé dans `_archives/`.
-> Dernière mise à jour : 2026-09-16.
+> Dernière mise à jour : 2026-09-22.
 
 ## Contexte
 
@@ -12,6 +12,14 @@ Backlog consolidé : plans nommés d'après leur issue GitHub (voir `doc/roadmap
 ---
 
 ## À faire
+
+### [Issue: #25] Gestion des plans clôturés dans doc/roadmap/done/ [PRIORITÉ: MOYENNE] [Complexité: M] 🟢
+
+Plan : [`25-done-subfolder-plan-management.md`](25-done-subfolder-plan-management.md)
+
+Stocker les plans `status: done` dans `doc/roadmap/done/`, exclure ce sous-répertoire du listing init-scan, ajouter une règle de consultation contexte, et migrer les 23 plans existants.
+
+---
 
 ### [Issue: #24] Phase 2 : Intégration méthodologie grilling (frontier illimitée) [PRIORITÉ: HAUTE] [Complexité: M] 🟢
 
