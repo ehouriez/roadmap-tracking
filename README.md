@@ -1,5 +1,62 @@
 # roadmap-tracking
 
+> **v4.0.0 — Breaking change.** See [What changed](#whats-new-in-v400) and
+> [update instructions](#update) before upgrading an existing project.
+
+## What's new in v4.0.0
+
+**Scalability & Token Architecture** (plan #27) — removes the fixed startup
+token cost that became untenable at 500+ plans (~70 K tokens measured on a
+real 285-plan project).
+
+| Improvement | Detail |
+|---|---|
+| **Index-first startup** | Reads `.index.json` (~few KB) instead of `roadmap.md` (~275 KB) — **−82 % startup tokens** |
+| **Generated roadmap.md** | Built from front matter (single source of truth) — zero manual drift |
+| **Lazy listing** | Active + blocked only, sorted by priority, with `+ N done` counter and verbal filters |
+| **4 new scripts** | `build_roadmap.py`, `doctor.py`, `normalize_status.py`, `split_context.py` |
+| **Auto-normalisation** | `normalize_status.py` maps legacy statuses (`in-progress`→`active`, `cancelled`→`archived`) and moves misplaced plans to `done/` / `archived/` |
+| **Integrity audit** | `doctor.py` — status vs folder, orphan deps, stale index, broken links |
+| **CONTEXT.md budget** | Core bounded at ≤ 200 l. / 15 KB ; overflow sections split to `context/*.md` on-demand via `split_context.py` |
+| **Universal index guard A.1** | Fires before any listing/resume — absent index triggers generation + normalisation + doctor |
+| **`aide migration`** | Step-by-step adoption guide for existing projects |
+| **`archived/` directory** | Renamed from `_archives/` — consistent past-participle naming with `done/` |
+
+### Upgrade an existing project
+
+After updating the plugin, the skill detects and proposes every required
+migration step automatically at session start. Or run manually:
+
+```bash
+echo "=== Generate Index ==="
+python3 ~/.claude/plugins/cache/roadmap-tracking/roadmap-tracking/4.0.0/scripts/build_roadmap.py --roadmap-dir doc/roadmap --write
+
+echo "=== Normalise Statuses And Move Misplaced Plans ==="
+python3 ~/.claude/plugins/cache/roadmap-tracking/roadmap-tracking/4.0.0/scripts/normalize_status.py --roadmap-dir doc/roadmap --write
+
+echo "=== Run Integrity Audit ==="
+python3 ~/.claude/plugins/cache/roadmap-tracking/roadmap-tracking/4.0.0/scripts/doctor.py --roadmap-dir doc/roadmap
+```
+
+### Update the plugin
+
+**Claude Code** — from a session launched in any project:
+
+```
+/plugin marketplace update roadmap-tracking
+/plugin update roadmap-tracking
+/clear
+```
+
+**Codex** — from a session launched in any project:
+
+```
+/plugin update roadmap-tracking
+/clear
+```
+
+---
+
 A Claude Code skill (packaged as a plugin) to **frame, plan, track and trace**
 any development, configuration or architecture request through:
 
