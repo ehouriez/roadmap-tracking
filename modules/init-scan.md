@@ -115,14 +115,31 @@ puis écrire `help.welcomed: true` dans `.skill-config.yml`.
 > Cette règle s'applique à toute lecture directe de `roadmap.md`, quelle que soit
 > la phase ou le module.
 
+> ⛔ **Source du listing : l'index `.index.json`, pas le narratif.**
+> `./doc/roadmap/.index.json` est un index machine compact (~quelques Ko) généré
+> par `scripts/build_roadmap.py` à partir du front matter des plans. Le skill le
+> lit pour lister/filtrer les plans — **jamais** `roadmap.md` ni les plans un par un.
+> Chaque entrée : `{id, status, priority, complexity, title, deps, path}`.
+> - **Index présent** → lire `.index.json` et dériver le tableau de listing
+>   directement depuis ses entrées (statut, titre, issue = `id` si mode `github`).
+>   Les plans `status: done` en sont exclus (ils vivent dans `done/INDEX.md`).
+> - **Index absent** (projet non encore migré = rétrocompat) → fallback : lecture
+>   bornée de `roadmap.md` (règle ci-dessus) + inspection de `./doc/roadmap/`.
+>   Proposer de générer l'index : « Aucun index `.index.json` — veux-tu le créer
+>   via `python3 scripts/build_roadmap.py --write` ? (il accélère tous les démarrages) ».
+> - **Index périmé** : la détection de péremption et sa proposition de
+>   régénération relèvent de l'étape 7 du plan #27 (réconciliation au démarrage),
+>   pas de cette règle de listing.
+
 Si l'utilisateur ne référence pas un plan existant dans son premier prompt :
 
-1. **Lister les plans existants** (mémoires, contexte projet, et inspection de
-   `./doc/roadmap/` — **hors `./doc/roadmap/done/`**) **impérativement sous forme de tableau markdown** — voir
-   « ⛔ Règle absolue — format des rapports ». Ne JAMAIS rendre ce listing en
-   format `clé: valeur` (`#: 1` / `Fichier: …` / `Statut: …`), en lignes
-   séparées par des filets (`───`), ni en puces : le gabarit ci-dessous est
-   contraignant.
+1. **Lister les plans existants** depuis `.index.json` (voir règle ci-dessus ;
+   fallback lecture bornée de `roadmap.md` + inspection de `./doc/roadmap/` si
+   l'index est absent) — **hors plans `done`** — **impérativement sous forme de
+   tableau markdown** — voir « ⛔ Règle absolue — format des rapports ». Ne JAMAIS
+   rendre ce listing en format `clé: valeur` (`#: 1` / `Fichier: …` /
+   `Statut: …`), en lignes séparées par des filets (`───`), ni en puces : le
+   gabarit ci-dessous est contraignant.
 
 ✅ **SEUL format autorisé** :
 

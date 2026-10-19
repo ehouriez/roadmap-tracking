@@ -135,9 +135,18 @@
 >    mkdir -p ./doc/roadmap/done
 >    git mv ./doc/roadmap/{NNN}-slug.md ./doc/roadmap/done/{NNN}-slug.md
 >    ```
-> 3. **`roadmap.md`** : déplacer l'entrée de la section « À faire » vers
->    **« Fait »** (statut `done` 🔵) et mettre à jour le lien vers
->    `done/{NNN}-slug.md` (voir `references/roadmap-file.md`).
+> 3. **Régénérer les vues** (`roadmap.md`, `.index.json`, `done/INDEX.md`) :
+>    `roadmap.md` et l'index sont des **artefacts générés** depuis le front matter
+>    (source de vérité unique) — ne **jamais** les éditer à la main. Après le
+>    `status: done` (support 1) et le `git mv` vers `done/` (support 2),
+>    régénérer :
+>    ```bash
+>    python3 scripts/build_roadmap.py --roadmap-dir doc/roadmap --write
+>    ```
+>    L'entrée quitte automatiquement « À faire » (le plan n'est plus `active`) et
+>    bascule dans `done/INDEX.md`. Si le script est absent (projet non migré),
+>    retomber sur l'édition manuelle de `roadmap.md` (voir
+>    `references/roadmap-file.md`).
 > 4. **Issue GitHub rattachée** *(mode `github` uniquement)* : la **fermer**
 >    (`gh issue close <issue.id>`), idéalement précédée d'un commentaire de
 >    clôture récapitulant ce qui a été livré et validé (`gh issue comment

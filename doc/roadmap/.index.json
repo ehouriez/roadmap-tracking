@@ -1,0 +1,248 @@
+[
+  {
+    "id": "1",
+    "status": "done",
+    "priority": "high",
+    "complexity": "XL",
+    "title": "[🧩] Plan #1 - roadmap-tracking : agnostique IDE/modèles + autonomie + plugin (axes A→E)",
+    "deps": [],
+    "path": "done/1-roadmap-tracking-agnostic-autonomy-plugin.md"
+  },
+  {
+    "id": "2",
+    "status": "done",
+    "priority": "high",
+    "complexity": "L",
+    "title": "[🧪] Plan #2 - roadmap-tracking : tests e2e d'installation fraîche (black-box)",
+    "deps": [],
+    "path": "done/2-roadmap-tracking-tests-e2e-autonomes.md"
+  },
+  {
+    "id": "3",
+    "status": "done",
+    "priority": "medium",
+    "complexity": "M",
+    "title": "[🛠️] Plan #3 - roadmap-tracking : correction des findings e2e",
+    "deps": [],
+    "path": "done/3-roadmap-tracking-corrections-findings-e2e.md"
+  },
+  {
+    "id": "4",
+    "status": "done",
+    "priority": "medium",
+    "complexity": "XS",
+    "title": "[🐛] Plan #4 - roadmap-tracking : format tableau obligatoire pour tous les rapports",
+    "deps": [],
+    "path": "done/4-roadmap-tracking-rapport-format-tableau.md"
+  },
+  {
+    "id": "5",
+    "status": "done",
+    "priority": "medium",
+    "complexity": "M",
+    "title": "[🔀] Plan #5 - roadmap-tracking : proposition autonomous + re-jeu gate modèle",
+    "deps": [],
+    "path": "done/5-roadmap-tracking-autonomous-proposal-model-gate-replay.md"
+  },
+  {
+    "id": "6",
+    "status": "done",
+    "priority": "medium",
+    "complexity": "XS",
+    "title": "[🐛] Plan #6 - roadmap-tracking : proposition du mode de tests axée sur l'accessibilité de l'environnement",
+    "deps": [],
+    "path": "done/6-roadmap-tracking-tests-mode-accessibilite.md"
+  },
+  {
+    "id": "7",
+    "status": "done",
+    "priority": "medium",
+    "complexity": "XS",
+    "title": "[🐛] Plan #7 - roadmap-tracking : résolution tests.mode non-sautable dans la garde d'entrée",
+    "deps": [],
+    "path": "done/7-roadmap-tracking-tests-mode-garde-entree.md"
+  },
+  {
+    "id": "8",
+    "status": "done",
+    "priority": "medium",
+    "complexity": "L",
+    "title": "[🔥] Plan #8 - Roadmap Tracking Grilling",
+    "deps": [],
+    "path": "done/8-roadmap-tracking-grilling.md"
+  },
+  {
+    "id": "9",
+    "status": "done",
+    "priority": "medium",
+    "complexity": "S",
+    "title": "[⚡] Plan #9 - One-shot Implementation Option + Complexity in Breakpoints",
+    "deps": [],
+    "path": "done/9-roadmap-tracking-one-shot-complexity.md"
+  },
+  {
+    "id": "10",
+    "status": "done",
+    "priority": "high",
+    "complexity": "S",
+    "title": "[🛡️] Plan #10 - Invocation Guard for Skill Files",
+    "deps": [],
+    "path": "done/10-roadmap-tracking-invocation-guard.md"
+  },
+  {
+    "id": "11",
+    "status": "done",
+    "priority": "high",
+    "complexity": "S",
+    "title": "[🛡️] Plan #11 - Harden Applicability Rules and Startup Rule",
+    "deps": [],
+    "path": "done/11-applicabilite-regle-demarrage-hardening.md"
+  },
+  {
+    "id": "12",
+    "status": "done",
+    "priority": "medium",
+    "complexity": "S",
+    "title": "[💾] Plan #12 - Session Clear Gate Suggestion",
+    "deps": [],
+    "path": "done/12-session-clear-gate-suggestion.md"
+  },
+  {
+    "id": "13",
+    "status": "done",
+    "priority": "medium",
+    "complexity": "S",
+    "title": "[⚡] Plan #13 - SKILL.md Compression P1",
+    "deps": [],
+    "path": "done/13-skill-compression-p1.md"
+  },
+  {
+    "id": "14",
+    "status": "done",
+    "priority": "high",
+    "complexity": "M",
+    "title": "Plan d'implémentation — Axes d'amélioration du skill roadmap-tracking",
+    "deps": [],
+    "path": "done/14-analyse-axes-amélioration.md"
+  },
+  {
+    "id": "15",
+    "status": null,
+    "priority": null,
+    "complexity": null,
+    "title": "15 — Bug : hook cold-start inactif + guardrail de désengagement bypassé",
+    "deps": [],
+    "path": "done/15-bug-hook-cold-start-et-guardrail-desengagement.md"
+  },
+  {
+    "id": "16",
+    "status": null,
+    "priority": null,
+    "complexity": null,
+    "title": "16 — Robustesse du skill face aux modes système : garde mécanique (hooks)",
+    "deps": [],
+    "path": "done/16-robustesse-hooks-mecaniques-anti-bypass.md"
+  },
+  {
+    "id": "17",
+    "status": "done",
+    "priority": "high",
+    "complexity": "M",
+    "title": "[⚡] Plan #17 - Scission modulaire SKILL.md (L1)",
+    "deps": [],
+    "path": "done/17-roadmap-tracking-optimisation-tokens-architecture-scission-modulaire.md"
+  },
+  {
+    "id": "18",
+    "status": "done",
+    "priority": "medium",
+    "complexity": "S",
+    "title": "[⚡] Plan #18 - Compression sémantique du noyau SKILL.md (L3)",
+    "deps": [],
+    "path": "done/18-roadmap-tracking-optimisation-tokens-architecture-compression-semantique.md"
+  },
+  {
+    "id": "19",
+    "status": "done",
+    "priority": "medium",
+    "complexity": "S",
+    "title": "Plan #19 — Levier L2 : Élimination des tours superflus / Fast-path",
+    "deps": [
+      "16",
+      "17"
+    ],
+    "path": "done/19-roadmap-tracking-optimisation-tokens-elimination-tours-superflus-fast-path.md"
+  },
+  {
+    "id": "20",
+    "status": "done",
+    "priority": "high",
+    "complexity": "M",
+    "title": "[🔒] Plan #20 - Lock Model Gate Template",
+    "deps": [],
+    "path": "done/20-lock-model-gate-template.md"
+  },
+  {
+    "id": "21",
+    "status": "done",
+    "priority": "high",
+    "complexity": "M",
+    "title": null,
+    "deps": [],
+    "path": "done/21-fix-xs-s-solo-disengagement-fast-track.md"
+  },
+  {
+    "id": "22",
+    "status": "done",
+    "priority": "high",
+    "complexity": "L",
+    "title": "Plan #22 — Intégration des recommandations d'audit #129 au skill roadmap-tracking",
+    "deps": [],
+    "path": "done/22-roadmap-tracking-Integration-recommandations-audit-#129.md"
+  },
+  {
+    "id": "23",
+    "status": "done",
+    "priority": "high",
+    "complexity": "S",
+    "title": "[🔧] Plan #23 - Phase 2 Grilling Obligatoire",
+    "deps": [],
+    "path": "done/23-phase2-grilling-obligatoire.md"
+  },
+  {
+    "id": "24",
+    "status": "done",
+    "priority": "high",
+    "complexity": "M",
+    "title": "[🔍] Plan #24 — Phase 2 : Intégration méthodologie grilling (frontier illimitée)",
+    "deps": [],
+    "path": "done/24-phase2-grilling-frontier-methodology.md"
+  },
+  {
+    "id": "25",
+    "status": "done",
+    "priority": "medium",
+    "complexity": "M",
+    "title": "[📁] Plan #25 - Done Subfolder Plan Management",
+    "deps": [],
+    "path": "done/25-done-subfolder-plan-management.md"
+  },
+  {
+    "id": "26",
+    "status": "done",
+    "priority": "medium",
+    "complexity": "M",
+    "title": "[🧪] Plan #26 - Autonomous Test Prerequisites",
+    "deps": [],
+    "path": "done/26-autonomous-test-prerequisites.md"
+  },
+  {
+    "id": "27",
+    "status": "active",
+    "priority": "high",
+    "complexity": "XL",
+    "title": "[🏗️] Plan #27 - Scalability & Token Architecture",
+    "deps": [],
+    "path": "27-scalability-token-architecture.md"
+  }
+]

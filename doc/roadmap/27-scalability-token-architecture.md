@@ -91,8 +91,8 @@ intenable à 500/1000 plans. Principe directeur : **le skill lit un index compac
 - [x] Étape 2 — Mapping du vocabulaire de statut : `in-progress`→`active`, `cancelled`→`archived` ; ajouter une **garde de validation** (statut ∈ enum) dans `references/roadmap-file.md` + `references/templates.md` ; documenter le mapping (S · standard → Sonnet)
 
 ### Lot 2 — Index généré (cœur de la scalabilité)
-- [ ] Étape 3 — `scripts/build_roadmap.py` : scanne le front matter (racine + `done/`) → génère `.index.json` compact (`{id,status,priority,complexity,title,deps,path}`), `roadmap.md` (backlog actif trié priorité→ID) et `done/INDEX.md` ; modes `--dry-run` (défaut) / `--write` / `--check` (écarts index↔réel) (L · reasoning → Opus)
-- [ ] Étape 4 — Adapter `modules/init-scan.md` : listing depuis l'index (fallback lecture directe si index absent = rétrocompat) ; régénération de l'index à la clôture d'un plan (hook dans `modules/wrapup.md`) (M · reasoning → Opus)
+- [x] Étape 3 — `scripts/build_roadmap.py` : scanne le front matter (racine + `done/`) → génère `.index.json` compact (`{id,status,priority,complexity,title,deps,path}`), `roadmap.md` (backlog actif trié priorité→ID) et `done/INDEX.md` ; modes `--dry-run` (défaut) / `--write` / `--check` (écarts index↔réel) (L · reasoning → Opus)
+- [x] Étape 4 — Adapter `modules/init-scan.md` : listing depuis l'index (fallback lecture directe si index absent = rétrocompat) ; régénération de l'index à la clôture d'un plan (hook dans `modules/wrapup.md`) (M · reasoning → Opus)
 - [ ] Étape 5 — Listing paresseux : par défaut actifs + bloqués triés par priorité + compteur « + N done » ; filtres `plans high` / `plans blocked` / `plans #250-300` (S · standard → Sonnet)
 
 ### Lot 3 — Intégrité, réconciliation & observabilité
@@ -169,6 +169,50 @@ grep -n "status.*Mapping automatique\|in-progress.*active" $TEMPLATES
 | 2026-10-19 | Étape 1 — règle bornée init-scan.md | Présente, head-50/tail-30/grep, toutes phases, placement correct | Ligne 108, toutes assertions positives | ✅ |
 | 2026-10-19 | Étape 2 — mapping + garde roadmap-file.md + templates.md | Section Vocabulaire, 4 canoniques, mapping, garde, templates ref | Toutes assertions grep positives | ✅ |
 
+### Lot 2 — procédure (étapes 3-4)
+
+```bash
+SKILL_REPO=/mnt/c/INETUM/AGV/agv-adm/GIT_GITHUB/skills/roadmap-tracking
+RM=$SKILL_REPO/doc/roadmap
+
+echo "=== E3.1 Script self-check ==="
+python3 $SKILL_REPO/scripts/build_roadmap.py --self-check
+
+echo "=== E3.2 Generation (write) + check up-to-date (exit 0) ==="
+python3 $SKILL_REPO/scripts/build_roadmap.py --roadmap-dir $RM --write
+python3 $SKILL_REPO/scripts/build_roadmap.py --roadmap-dir $RM --check
+
+echo "=== E3.3 Drift detection returns exit 1 ==="
+python3 -c "import json;p='$RM/.index.json';d=json.load(open(p));d.append({'id':'999','status':'active','priority':'low','complexity':'S','title':'x','deps':[],'path':'999-x.md'});json.dump(d,open(p,'w'),ensure_ascii=False,indent=2)"
+python3 $SKILL_REPO/scripts/build_roadmap.py --roadmap-dir $RM --check; echo "exit=$?"
+python3 $SKILL_REPO/scripts/build_roadmap.py --roadmap-dir $RM --write
+
+echo "=== E3.4 Done excluded from backlog, present in done index ==="
+grep -c "Issue: #" $RM/roadmap.md
+grep -c "| #" $RM/done/INDEX.md
+
+echo "=== E4.1 init-scan reads .index.json with fallback ==="
+grep -n "\.index\.json\|Index absent\|fallback" $SKILL_REPO/modules/init-scan.md
+
+echo "=== E4.2 wrapup regenerates index at closure ==="
+grep -n "build_roadmap.py --roadmap-dir doc/roadmap --write" $SKILL_REPO/modules/wrapup.md
+```
+
+**Résultats attendus :**
+- Étape 3 : `self-check passed` ; `--write` crée `.index.json` + `roadmap.md` + `done/INDEX.md` ; `--check` exit 0 quand à jour, exit 1 + diff (`- plan 999`) quand périmé ; `roadmap.md` ne liste que le backlog actif (1 entrée `#27`), les 24 `done` sont dans `done/INDEX.md`.
+- Étape 4 : `init-scan.md` instruit de lire `.index.json` d'abord avec fallback lecture bornée si absent ; `wrapup.md` régénère les vues via `build_roadmap.py --write` à la clôture.
+
+### Résultats joués et vérifiés — Lot 2 (étapes 3-4)
+
+| Date | Test | Attendu | Observé | Verdict |
+|------|------|---------|---------|---------|
+| 2026-10-19 | E3.1 self-check | `self-check passed` | `✅ self-check passed` | ✅ |
+| 2026-10-19 | E3.2 write + check | write 3 fichiers, check exit 0 | 3 fichiers écrits, `up to date (27 plans)` exit 0 | ✅ |
+| 2026-10-19 | E3.3 drift exit 1 | exit 1 + `- plan 999` | `stale`, `- plan 999`, exit 1 | ✅ |
+| 2026-10-19 | E3.4 backlog/done split | backlog 1 actif, 24 done indexés | roadmap.md 1 `#27`, index actif=1 done=24 | ✅ |
+| 2026-10-19 | E4.1 init-scan index-first | ref `.index.json` + fallback | 5 occurrences `.index.json`, fallback présent | ✅ |
+| 2026-10-19 | E4.2 wrapup regen hook | hook `build_roadmap --write` | 1 occurrence | ✅ |
+
 ## Journal de session
 
 ### Session 2026-10-19 (création)
@@ -180,3 +224,8 @@ grep -n "status.*Mapping automatique\|in-progress.*active" $TEMPLATES
 - ✅ Fait : Étape 1 — règle `⛔ Lecture bornée de roadmap.md` ajoutée dans `modules/init-scan.md` (head-50/tail-30/grep, règle globale toutes phases). Étape 2 — section `## Vocabulaire de statut` avec enum + mapping (`in-progress`→`active`, `cancelled`→`archived`) + garde de validation ajoutés dans `references/roadmap-file.md` ; champ `status` mis à jour dans `references/templates.md`.
 - 📋 Prochain : Lot 2 — étape 3 (`scripts/build_roadmap.py`).
 - 🚧 Blocages : aucun.
+
+### Session 2026-10-19 (implémentation Lot 2 — étapes 3-4)
+- ✅ Fait : Étape 3 — `scripts/build_roadmap.py` créé (réutilise le parseur de front matter de `migrate_plan_ids.py`, zéro dépendance). Scanne racine + `done/`, applique le mapping de statut, génère `.index.json` (JSON, fichier caché sous `doc/roadmap/`, consommé par le skill), `roadmap.md` (backlog actif trié priorité→ID, généré tel quel) et `done/INDEX.md` ; modes `--dry-run`/`--write`/`--check`/`--self-check`. Étape 4 — `modules/init-scan.md` : listing index-first (`.index.json`) avec fallback lecture bornée si absent (rétrocompat) ; `modules/wrapup.md` : la clôture régénère les vues via `build_roadmap.py --write` (support 3 n'est plus un édit manuel de `roadmap.md`). Décisions utilisateur : index = JSON ; `roadmap.md` généré tel quel. Index généré pour 27 plans (1 actif / 24 done / 2 archived). Tests autonomes → voir section `## Tests`.
+- 📋 Prochain : Lot 2 — étape 5 (listing paresseux / filtres), puis Lot 3.
+- 🚧 Blocages : aucun. ⚠️ `build_roadmap.py` et les vues générées sont versionnés dans le repo du skill mais le skill s'exécute depuis le cache plugin : la copie cache ne contiendra le script qu'après publication/sync de la nouvelle version.
