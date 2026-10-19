@@ -34,9 +34,15 @@ issue:
 
 # [🏗️] Plan #27 - Scalability & Token Architecture
 
-> **Origine** : rapport d'audit `doc/rapports/rapport-ameliorations-2026-10-17.md`
-> (projet de référence Auxitum, 287 plans). Décisions utilisateur actées :
-> statuts hors-enum **mappés** (pas officialisés) ; `/impeccable` **non utilisé**.
+> **⚠️ PRÉREQUIS DE REPRISE — lire avant toute implémentation** :
+> `doc/rapports/rapport-ameliorations-2026-10-17.md` (rapport d'audit complet,
+> mesures tokens, contre-propositions, décisions). Ce rapport est la source de
+> vérité pour le *pourquoi* de chaque étape. Sans lui, les choix d'implémentation
+> manquent de contexte (ex. : pourquoi pas de dossiers par statut §4.2, pourquoi
+> mapper et non officialiser les statuts §Q1, estimation gains −82 % §8).
+>
+> Décisions utilisateur actées : statuts hors-enum **mappés** (`in-progress`→`active`,
+> `cancelled`→`archived`) ; `/impeccable` **non utilisé**.
 >
 > **Mode `github`** : issue [#27](https://github.com/ehouriez/roadmap-tracking/issues/27) créée le 2026-10-19.
 
