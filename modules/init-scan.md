@@ -232,12 +232,14 @@ Vérifier si `./doc/roadmap/.index.json` existe :
   >   2. **Lire immédiatement l'index tout frais** (`.index.json`) et chercher
   >      les plans mal placés : `status: done` hors `done/`, `status: archived`
   >      hors `archived/`, ou `status: active`/`blocked` sous `done/`/`archived/`.
-  >   3. **Si des plans mal placés sont détectés** → afficher un tableau récap
-  >      et proposer via `AskUserQuestion` :
-  >      « Normaliser les déplacements via
-  >      `python3 scripts/normalize_status.py --roadmap-dir doc/roadmap --write`
-  >      (dry-run d'abord pour confirmer) ? » — Si Oui : exécuter, puis régénérer
-  >      l'index (`build_roadmap --write`). Si Non : continuer.
+  >   3. **Si des plans mal placés sont détectés** → afficher le tableau récap,
+  >      puis **⏸️ STOP OBLIGATOIRE** — poser via `AskUserQuestion` :
+  >      « X plan(s) mal placé(s) détecté(s). Normaliser via
+  >      `normalize_status.py --write` (dry-run d'abord) ? »
+  >      **Ne pas continuer vers la reprise ou le listing avant d'avoir reçu la
+  >      réponse.** La demande de reprise d'un plan en attente ne dispense PAS
+  >      de ce point d'arrêt. Si Oui : dry-run, puis `--write`, puis
+  >      `build_roadmap --write`. Si Non : continuer.
   >   4. Continuer vers 📏 (budget CONTEXT.md) puis le listing / la reprise.
   > - **Non** → continuer en mode fallback (lecture bornée de `roadmap.md`) ;
   >   l'index ne sera plus proposé cette session.
@@ -276,8 +278,12 @@ Vérifier si `./doc/roadmap/.index.json` existe :
 >   2. Lire l'index tout frais et chercher les plans mal placés (`status: done`
 >      hors `done/`, `status: archived` hors `archived/`, `active`/`blocked`
 >      sous `done/`/`archived/`).
->   3. Si plans mal placés → proposer `normalize_status.py --roadmap-dir doc/roadmap --write`
->      (dry-run d'abord). Si Oui : exécuter + régénérer l'index.
+>   3. Si plans mal placés → **⏸️ STOP OBLIGATOIRE** — poser via `AskUserQuestion` :
+>      « X plan(s) mal placé(s) détecté(s). Normaliser via
+>      `normalize_status.py --write` (dry-run d'abord) ? »
+>      Ne pas continuer avant d'avoir reçu la réponse — même si la reprise
+>      d'un plan a été demandée. Si Oui : dry-run, puis `--write`, puis
+>      `build_roadmap --write`. Si Non : continuer.
 >   4. Continuer vers le listing.
 > - **Index périmé** : la détection de péremption et sa proposition de
 >   régénération relèvent de la réconciliation au démarrage (règle ci-dessous),
@@ -589,8 +595,12 @@ Vérifier **dans l'ordre** :
      2. Lire l'index tout frais et chercher les plans mal placés (`status: done`
         hors `done/`, `status: archived` hors `archived/`, `active`/`blocked`
         sous `done/`/`archived/`).
-     3. Si plans mal placés → proposer `normalize_status.py --roadmap-dir doc/roadmap --write`
-        (dry-run d'abord). Si Oui : exécuter + régénérer l'index.
+     3. Si plans mal placés → **⏸️ STOP OBLIGATOIRE** — poser via `AskUserQuestion` :
+        « X plan(s) mal placé(s) détecté(s). Normaliser via
+        `normalize_status.py --write` (dry-run d'abord) ? »
+        Ne pas continuer avant d'avoir reçu la réponse — même si la reprise
+        d'un plan a été demandée. Si Oui : dry-run, puis `--write`, puis
+        `build_roadmap --write`. Si Non : continuer.
      4. Continuer.
    - **Non** → mode fallback ; ne plus proposer cette session.
    → Cette garde s'exécute **que le prompt référence un plan existant ou non**.
@@ -635,7 +645,7 @@ une **intention**, pas une **autorisation de sauter les checkpoints**.
 
 | L'utilisateur dit | Ce que ça signifie pour le skill |
 |---|---|
-| « Reprends le plan #NNN » / « On va reprendre le plan #NNN » | **A.1 d'abord** (index absent → proposer génération ; index présent → silencieux) → résumé du plan → `⏸️` → choix utilisateur |
+| « Reprends le plan #NNN » / « On va reprendre le plan #NNN » | **A.1 d'abord** (index absent → générer ; si plans mal placés → **⏸️ STOP** proposer normalize avant de continuer) → résumé du plan → `⏸️` → choix utilisateur |
 | « Démarre toutes les étapes de #109 » | **A.1 d'abord** → Reprendre #109 → résumé → `⏸️` → résoudre `tests.mode` → Phase 7 étape 0 (mode `manual`) → implémenter |
 | « Implémente l'étape 3 » | **A.1 d'abord** → Reprendre le plan → `⏸️` → résoudre `tests.mode` → Phase 7 étape 0 (mode `manual`) → implémenter |
 | « Go » / « Fais tout » | ≠ autorisation de bypass. Dérouler le workflow normalement |
