@@ -564,29 +564,41 @@ Vérifier **dans l'ordre** :
    → Le premier message après invocation du skill doit afficher `🧠 MODE PLAN`
    ou `🔍 MODE CADRAGE`. Jamais `🔨 MODE ACT` en premier message.
 
-2. **Plan identifié ?**
+2. **Index guard A.1 exécutée ?** *(avant tout branchement listing / reprise)*
+   → Vérifier si `./doc/roadmap/.index.json` existe.
+   → **Présent** → continuer silencieusement.
+   → **Absent** → poser via `AskUserQuestion` : « Aucun index `.index.json`
+   détecté — veux-tu le générer maintenant via `build_roadmap.py --write` ?
+   (accélère tous les démarrages et active la réconciliation automatique) »
+   - **Oui** → `python3 scripts/build_roadmap.py --roadmap-dir doc/roadmap --write`,
+     puis exécuter la 🩺 Réconciliation (plans mal placés depuis l'index frais).
+   - **Non** → mode fallback ; ne plus proposer cette session.
+   → Cette garde s'exécute **que le prompt référence un plan existant ou non**.
+   Ne pas la sauter sous prétexte qu'une reprise directe a été demandée.
+
+3. **Plan identifié ?**
    → Si le prompt référence un plan existant (`#NNN`, nom de fichier, nom
    reconnaissable du plan) : dérouler le workflow **« Reprise d'un plan
    existant »** (résumé, point d'arrêt, choix utilisateur).
    → Sinon : dérouler la **« Règle de démarrage »** (listing des plans,
    question, attente de réponse).
 
-3. **Point d'arrêt respecté ?**
+4. **Point d'arrêt respecté ?**
    → La reprise ET la création imposent un point d'arrêt `⏸️` avant toute
    implémentation. Vérifier qu'il a été posé ET que l'utilisateur y a répondu
    explicitement.
 
-4. **`tests.mode` résolu ?**
+5. **`tests.mode` résolu ?**
    → Si on entre en implémentation : lire `tests.mode` dans
    `./doc/roadmap/.skill-config.yml`.
    → **Fixé** (`manual` ou `autonomous`) → continuer.
    → **Non fixé** (clé absente, fichier absent, ou `null`) → poser
    **MAINTENANT** la question `AskUserQuestion` « L'environnement de test de ce
    projet est-il directement accessible depuis cet IDE ? » et persister le choix
-   dans `.skill-config.yml` avant de continuer. Ne pas passer à l'item 5 tant
+   dans `.skill-config.yml` avant de continuer. Ne pas passer à l'item 6 tant
    que ce choix n'est pas persisté.
 
-5. **Phase 7 étape 0 exécutée ?**
+6. **Phase 7 étape 0 exécutée ?**
    → **Mode `autonomous`** : cette étape est supprimée — passer directement à
    l'implémentation.
    → **Mode `manual`** : la question `AskUserQuestion` sur les tests
@@ -603,14 +615,15 @@ une **intention**, pas une **autorisation de sauter les checkpoints**.
 
 | L'utilisateur dit | Ce que ça signifie pour le skill |
 |---|---|
-| « Démarre toutes les étapes de #109 » | Reprendre #109 → résumé → `⏸️` → résoudre `tests.mode` → Phase 7 étape 0 (mode `manual`) → implémenter |
-| « Implémente l'étape 3 » | Reprendre le plan → `⏸️` → résoudre `tests.mode` → Phase 7 étape 0 (mode `manual`) → implémenter |
+| « Reprends le plan #NNN » / « On va reprendre le plan #NNN » | **A.1 d'abord** (index absent → proposer génération ; index présent → silencieux) → résumé du plan → `⏸️` → choix utilisateur |
+| « Démarre toutes les étapes de #109 » | **A.1 d'abord** → Reprendre #109 → résumé → `⏸️` → résoudre `tests.mode` → Phase 7 étape 0 (mode `manual`) → implémenter |
+| « Implémente l'étape 3 » | **A.1 d'abord** → Reprendre le plan → `⏸️` → résoudre `tests.mode` → Phase 7 étape 0 (mode `manual`) → implémenter |
 | « Go » / « Fais tout » | ≠ autorisation de bypass. Dérouler le workflow normalement |
-| « Continue » / « Reprends » | Reprendre le plan → résumé → `⏸️` → choix utilisateur |
+| « Continue » / « Reprends » | **A.1 d'abord** → Reprendre le plan → résumé → `⏸️` → choix utilisateur |
 
 > **Principe : aucune formulation utilisateur, aussi impérative soit-elle,
-> n'autorise à sauter un point d'arrêt `⏸️`, la résolution de `tests.mode`
-> ou l'étape 0 de la Phase 7.**
+> n'autorise à sauter la garde A.1 (index guard), un point d'arrêt `⏸️`,
+> la résolution de `tests.mode` ou l'étape 0 de la Phase 7.**
 
 > **Bypass tacite — cas à risque élevé.** Certaines formes de prompt invitent
 > à implémenter directement sans déclencher de signal d'alerte apparent :

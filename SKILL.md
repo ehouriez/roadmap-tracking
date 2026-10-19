@@ -7,7 +7,7 @@ description: >
 license: MIT
 metadata:
   author: Emmanuel Houriez
-  version: "4.0.2"
+  version: "4.0.3"
   domain: productivity
   keywords: >
     roadmap, planification, suivi de tâche, traçage de demande, plan, issue
