@@ -11,6 +11,43 @@ Drives a strict **7-phase workflow** — silent analysis, interactive scoping,
 plan proposal, validation, plan creation, validation, then step-by-step
 implementation — with hard stop points between planning and coding.
 
+## Quickstart (5 min)
+
+> **Existing project** — adopting roadmap-tracking on a project that already has
+> plans or a `roadmap.md` not yet managed by this skill.
+
+```bash
+echo "=== Install The Plugin ==="
+claude plugin marketplace add ehouriez/roadmap-tracking
+claude plugin install roadmap-tracking@roadmap-tracking
+
+echo "=== Open Your Project In Claude Code ==="
+cd /path/to/your/project && claude
+```
+
+Inside the session, the skill fires automatically and asks:
+1. **Solo or collaborative?** (stored in `.skill-config.yml`)
+2. **Reconcile?** — if plans are out of place or the index is stale, it proposes
+   running `normalize_status.py` and `build_roadmap.py` for you.
+
+To adopt manually or migrate an existing `roadmap.md`:
+
+```bash
+echo "=== Generate Index And Roadmap From Front Matter ==="
+python3 ~/.claude/plugins/cache/roadmap-tracking/roadmap-tracking/latest/scripts/build_roadmap.py --roadmap-dir doc/roadmap --write
+
+echo "=== Normalise Legacy Statuses And Move Misplaced Plans ==="
+python3 ~/.claude/plugins/cache/roadmap-tracking/roadmap-tracking/latest/scripts/normalize_status.py --roadmap-dir doc/roadmap
+
+echo "=== Apply When Output Looks Correct ==="
+python3 ~/.claude/plugins/cache/roadmap-tracking/roadmap-tracking/latest/scripts/normalize_status.py --roadmap-dir doc/roadmap --write
+```
+
+> Type `aide migration` inside any Claude Code session with the skill active to
+> get the full step-by-step adoption guide.
+
+---
+
 ## Key features
 
 | Feature | Description |

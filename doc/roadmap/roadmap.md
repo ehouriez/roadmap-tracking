@@ -6,8 +6,4 @@
 
 ## À faire
 
-### [Issue: #27] [🏗️] Plan #27 - Scalability & Token Architecture [PRIORITÉ: HAUTE] [Complexité: XL] 🟢
-
-Plan : [`27-scalability-token-architecture.md`](27-scalability-token-architecture.md)
-
----
+_Aucun plan actif._

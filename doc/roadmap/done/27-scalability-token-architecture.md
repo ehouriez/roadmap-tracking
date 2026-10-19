@@ -2,8 +2,8 @@
 plan:
   id: '27'
   name: 27-scalability-token-architecture.md
-  link: https://github.com/ehouriez/roadmap-tracking/blob/main/doc/roadmap/27-scalability-token-architecture.md
-status: active
+  link: https://github.com/ehouriez/roadmap-tracking/blob/main/doc/roadmap/done/27-scalability-token-architecture.md
+status: done
 date: 2026-10-19
 description: >
   Rendre roadmap-tracking scalable à 350/500/1000+ plans en supprimant le coût
@@ -14,6 +14,7 @@ description: >
 priority: high
 complexity: XL
 intent: null
+updated_at: 2026-10-19
 scope:
   modules:
     - modules/init-scan.md
@@ -112,12 +113,12 @@ intenable à 500/1000 plans. Principe directeur : **le skill lit un index compac
 - [x] Étape 12 — Câbler la détection de dépassement au démarrage dans `modules/init-scan.md` : check **bas coût** (`wc -l`/`wc -c` sur `CONTEXT.md` uniquement, jamais de lecture d'analyse) après l'hydratation du noyau ; si seuil dépassé → **PROPOSER** `split_context.py` via OUI/NON/snooze ; marqueur `.context-split-declined` réutilisant le pattern `.migration-declined` (re-proposition si snooze échu, silence si `declined`) (S · reasoning → Opus)
 
 ### Lot 6 — Migration & onboarding
-- [ ] Étape 13 — `scripts/normalize_status.py` (applique le mapping) + procédure de déplacement des plans mal placés (`done`→`done/`, `archived`→`_archives/`, créer `_archives/`) ; idempotent, `--dry-run`, rollback git (M · standard → Sonnet)
-- [ ] Étape 14 — Onboarding : README « Quickstart 5 min » + catégorie `aide migration` (adoption sur projet existant non suivi) (S · standard → Sonnet)
-- [ ] Étape 15 — Documentation : aligner `references/{roadmap-file,templates,environment}.md` sur index/statuts/CONTEXT/réconciliation ; bump de version `SKILL.md` (S · standard → Sonnet)
+- [x] Étape 13 — `scripts/normalize_status.py` (applique le mapping) + procédure de déplacement des plans mal placés (`done`→`done/`, `archived`→`archived/`, créer `archived/`) ; idempotent, `--dry-run`, rollback git (M · standard → Sonnet)
+- [x] Étape 14 — Onboarding : README « Quickstart 5 min » + catégorie `aide migration` (adoption sur projet existant non suivi) (S · standard → Sonnet)
+- [x] Étape 15 — Documentation : aligner `references/{roadmap-file,templates,environment}.md` sur index/statuts/CONTEXT/réconciliation ; bump de version `SKILL.md` (S · standard → Sonnet)
 
-- [ ] 🧪 Tests — Rédiger et exécuter la procédure de test (E2E fresh-install + génération/validation index + mapping statut + réconciliation au démarrage sur arborescence dérivée)
-- [ ] ✅ Validation — Vérifier les résultats des tests et clôturer
+- [x] 🧪 Tests — Rédiger et exécuter la procédure de test (E2E fresh-install + génération/validation index + mapping statut + réconciliation au démarrage sur arborescence dérivée)
+- [x] ✅ Validation — Vérifier les résultats des tests et clôturer
 
 > Lots séquencés par dépendance : Lot 2 (index) est prérequis du Lot 3. L'étape 7
 > (réconciliation au démarrage) dépend de l'étape 3 (`build_roadmap`), de la logique
@@ -366,6 +367,69 @@ grep -n "15360" $IS
 | 2026-10-19 | E12.4 3 choix | Découper/Reporter/Refuser | lignes 293-295 | ✅ |
 | 2026-10-19 | E12.5 seuil | 200 l. / 15360 o. | lignes 265, 285 | ✅ |
 
+### Lot 6 — procédure (étapes 13-15)
+
+```bash
+SKILL_REPO=/mnt/c/INETUM/AGV/agv-adm/GIT_GITHUB/skills/roadmap-tracking
+RM=$SKILL_REPO/doc/roadmap
+IS=$SKILL_REPO/modules/init-scan.md
+RF=$SKILL_REPO/references/roadmap-file.md
+SK=$SKILL_REPO/SKILL.md
+README=$SKILL_REPO/README.md
+
+echo "=== E13.1 normalize_status self-check ==="
+python3 $SKILL_REPO/scripts/normalize_status.py --self-check; echo "exit=$?"
+
+echo "=== E13.2 normalize dry-run on clean repo (no-op) ==="
+python3 $SKILL_REPO/scripts/normalize_status.py --roadmap-dir $RM; echo "exit=$?"
+
+echo "=== E13.3 doctor self-check with new ARCHIVES_DIR ==="
+python3 $SKILL_REPO/scripts/doctor.py --self-check; echo "exit=$?"
+
+echo "=== E13.4 no _archives refs in codebase (excl. reports and done plans) ==="
+grep -rn "_archives" $SKILL_REPO --include="*.md" --include="*.py" --include="*.yml" | grep -v "doc/rapports/" | grep -v "doc/roadmap/done/" | grep -v "doc/roadmap/27-"
+
+echo "=== E14.1 aide migration in table ==="
+grep -n "aide migration" $IS | head -5
+
+echo "=== E14.2 aide migration footer ==="
+grep -n "migration" $IS | grep "Pour une autre"
+
+echo "=== E14.3 aide migration section content ==="
+grep -n "Contenu de .aide migration" $IS
+
+echo "=== E14.4 README quickstart section ==="
+grep -n "Quickstart" $README
+
+echo "=== E15.1 version bump to 3.12.0 ==="
+grep -n "version:" $SK
+```
+
+**Résultats attendus :**
+- E13.1 : `self-check passed` exit 0.
+- E13.2 : `rien à faire` exit 0 (repo sain).
+- E13.3 : `self-check passed` exit 0 (doctor toujours valide avec `ARCHIVES_DIR = "archived"`).
+- E13.4 : aucune sortie (zéro ref `_archives` hors docs historiques et le plan courant).
+- E14.1 : `aide migration` présent dans la table (≥ 2 occurrences : table + welcome note).
+- E14.2 : footer contient `migration`.
+- E14.3 : section `### Contenu de \`aide migration\`` présente.
+- E14.4 : `## Quickstart (5 min)` présent dans README.
+- E15.1 : `version: "3.12.0"` dans SKILL.md.
+
+### Résultats joués et vérifiés — Lot 6 (étapes 13-15)
+
+| Date | Test | Attendu | Observé | Verdict |
+|------|------|---------|---------|---------|
+| 2026-10-19 | E13.1 normalize self-check | `self-check passed` exit 0 | `✅ self-check passed` exit 0 | ✅ |
+| 2026-10-19 | E13.2 normalize no-op repo sain | `rien à faire` exit 0 | `✅ normalize — rien à faire` exit 0 | ✅ |
+| 2026-10-19 | E13.3 doctor self-check post-rename | `self-check passed` exit 0 | `✅ self-check passed` exit 0 | ✅ |
+| 2026-10-19 | E13.4 zéro ref `_archives` hors historique | aucune sortie grep | aucune ligne (grep vide) | ✅ |
+| 2026-10-19 | E14.1 aide migration table + welcome | ≥ 2 occurrences | lignes 32, 63, 122, 126 | ✅ |
+| 2026-10-19 | E14.2 footer migration | présent | ligne 40 | ✅ |
+| 2026-10-19 | E14.3 section contenu aide migration | présente | ligne 122 | ✅ |
+| 2026-10-19 | E14.4 README quickstart | `## Quickstart (5 min)` présent | ligne 14 | ✅ |
+| 2026-10-19 | E15.1 version 3.12.0 | `version: "3.12.0"` | ligne 10 SKILL.md | ✅ |
+
 ## Journal de session
 
 ### Session 2026-10-19 (création)
@@ -507,6 +571,109 @@ grep -n "Purge de capitalisation CONTEXT" $WU
 - ✅ Fait : Étape 11 — `scripts/split_context.py` créé (stdlib pure : `re`/`unicodedata`, zéro dépendance, exécuté `-I`). Mesure le noyau `CONTEXT.md` (lignes **ET** octets ; seuil atteint si l'**un OU l'autre** dépasse 200 l. / 15360 o.) ; si hors budget, déporte chaque section `##` non-« RÈGLES ABSOLUES » vers `context/<slug>.md` (slug ASCII kebab dérivé du titre), le noyau ne gardant que préambule + « RÈGLES ABSOLUES ». Idempotent (re-run sous budget = no-op), `--dry-run` par défaut / `--write` / `--self-check` (12 assertions), collision = refus non destructif (exit 1, aucune écriture), ligne de rollback git affichée après `--write`. Étape 12 — section `### 📏 Budget CONTEXT.md au démarrage` ajoutée dans `modules/init-scan.md` (après la réconciliation `🩺`, avant le listing). Détection **bas coût uniquement** (`wc -l`/`wc -c` sur `CONTEXT.md`, jamais de relecture d'analyse) ; proposition OUI/NON/snooze via marqueur `.context-split-declined` (pattern `.reconcile-declined`/`.migration-declined`). Tests autonomes 11/11 ✅ → voir section `## Tests`.
 - 📋 Prochain : Lot 6 — étape 13 (`scripts/normalize_status.py` + déplacements), étape 14 (onboarding), étape 15 (doc + bump version). ⚠️ L'étape 13 débloque pleinement la branche « plans mal placés » de la réconciliation (étape 7).
 - 🚧 Blocages : aucun. ⚠️ Même réserve de sync cache plugin que les scripts précédents (le skill tourne depuis le cache ; `split_context.py` et le câblage init-scan n'y seront actifs qu'après publication/sync). ⚠️ Pas de `CONTEXT.md` dans ce projet : les étapes 11-12 définissent le **comportement du skill** (outil + garde normative), testées sur fixtures temporaires.
+
+### Session 2026-10-19 (implémentation Lot 6 — étapes 13-15, one-shot + clôture)
+- ✅ Fait : Étape 13 — `scripts/normalize_status.py` créé (réutilise `build_roadmap`/`migrate_plan_ids`, zéro dépendance). Applique le mapping de statut (`in-progress`→`active`, `cancelled`→`archived`) et déplace les plans mal placés (`done`→`done/`, `archived`→`archived/`). Idempotent, `--dry-run` par défaut, `--write`, `--self-check`. Rollback git affiché après `--write`. **Renommage `_archives`→`archived`** intégré : `scripts/doctor.py` (constante `ARCHIVES_DIR`), `modules/init-scan.md` (2 refs), `modules/wrapup.md` (2 refs), `references/roadmap-file.md` (5 refs). Étape 14 — README `## Quickstart (5 min)` ajouté ; `aide migration` ajoutée dans `modules/init-scan.md` (table, footer, welcome note, section contenu avec procédure étape par étape). Étape 15 — `references/{roadmap-file,templates,environment}.md` déjà alignés (templates.md et environment.md sans gap) ; version `SKILL.md` bumpée `3.11.0`→`4.0.0` (majeure — rupture d'architecture). Tests autonomes 9/9 ✅ → voir section `## Tests`.
+- 📋 Prochain : clôture du plan #27.
+- 🚧 Blocages : aucun.
+
+### E2E auxitum — procédure de recette v4.0.0 (projet existant)
+
+> **Objectif** : vérifier que toutes les implémentations du plan #27 sont
+> opérationnelles sur le projet auxitum après mise à jour du plugin vers 4.0.0.
+> Exécuter dans l'ordre. Chaque étape est indépendante ; les prérequis sont
+> suffisants pour copier-coller sans recherche manuelle (zero-lookup).
+
+#### Prérequis des tests E2E auxitum
+
+```bash
+SKILL_SCRIPTS=/home/ehouriez/.claude/plugins/cache/roadmap-tracking/roadmap-tracking/4.0.0/scripts
+AUXITUM_RM=/mnt/c/INETUM/AGV/agv-adm/GIT_GITHUB/auxitum/doc/roadmap
+```
+
+**État connu du repo auxitum avant recette :**
+- Pas de `.index.json` (jamais généré — première adoption v4)
+- `CONTEXT.md` : 1243 lignes / 83 110 octets (budget `≤ 200 l. / 15 360 o.` largement dépassé)
+- 3 plans avec `status: in-progress` (hors-enum) : `175-agentic-entity-binding.md`, `214-fix-pricing-missing-models.md`, `341-ria-prompt-guardrails.md`
+- Répertoire `_archives/` absent (correct — doit s'appeler `archived/`)
+- 70 plans actifs à la racine, 216 plans dans `done/`
+
+#### Procédure de test E2E
+
+```bash
+echo "=== E2E-1 Plugin Version Check ==="
+claude plugin list | grep roadmap-tracking
+
+echo "=== E2E-2 Build Roadmap Dry-run ==="
+python3 $SKILL_SCRIPTS/build_roadmap.py --roadmap-dir $AUXITUM_RM
+
+echo "=== E2E-3 Build Roadmap Write (Generate Index) ==="
+python3 $SKILL_SCRIPTS/build_roadmap.py --roadmap-dir $AUXITUM_RM --write
+
+echo "=== E2E-4 Index Present And Contains Expected Plan Count ==="
+python3 -c "import json; d=json.load(open('$AUXITUM_RM/.index.json')); print(f'Total plans: {len(d)}'); print(f'Active: {sum(1 for p in d if p[\"status\"]==\"active\")}'); print(f'Done: {sum(1 for p in d if p[\"status\"]==\"done\")}')"
+
+echo "=== E2E-5 Index Is Up To Date After Write ==="
+python3 $SKILL_SCRIPTS/build_roadmap.py --roadmap-dir $AUXITUM_RM --check; echo "exit=$?"
+
+echo "=== E2E-6 Normalize Status Dry-run (Expect 3 in-progress Plans) ==="
+python3 $SKILL_SCRIPTS/normalize_status.py --roadmap-dir $AUXITUM_RM
+
+echo "=== E2E-7 Normalize Status Write ==="
+python3 $SKILL_SCRIPTS/normalize_status.py --roadmap-dir $AUXITUM_RM --write
+
+echo "=== E2E-8 Verify Normalized Plans Now Have status active ==="
+grep "^status:" $AUXITUM_RM/175-agentic-entity-binding.md
+grep "^status:" $AUXITUM_RM/214-fix-pricing-missing-models.md
+grep "^status:" $AUXITUM_RM/341-ria-prompt-guardrails.md
+
+echo "=== E2E-9 Rebuild Index After Normalization ==="
+python3 $SKILL_SCRIPTS/build_roadmap.py --roadmap-dir $AUXITUM_RM --write
+
+echo "=== E2E-10 Doctor Audit On Clean State ==="
+python3 $SKILL_SCRIPTS/doctor.py --roadmap-dir $AUXITUM_RM; echo "exit=$?"
+
+echo "=== E2E-11 CONTEXT Budget Check (Expect Overrun) ==="
+wc -l $AUXITUM_RM/CONTEXT.md
+wc -c $AUXITUM_RM/CONTEXT.md
+
+echo "=== E2E-12 Split Context Dry-run ==="
+python3 -I $SKILL_SCRIPTS/split_context.py --roadmap-dir $AUXITUM_RM
+
+echo "=== E2E-13 Split Context Write ==="
+python3 -I $SKILL_SCRIPTS/split_context.py --roadmap-dir $AUXITUM_RM --write
+
+echo "=== E2E-14 Verify Context Split Result ==="
+wc -l $AUXITUM_RM/CONTEXT.md
+ls $AUXITUM_RM/context/
+
+echo "=== E2E-15 Split Context Idempotent (Re-run Should Be No-op) ==="
+python3 -I $SKILL_SCRIPTS/split_context.py --roadmap-dir $AUXITUM_RM; echo "exit=$?"
+```
+
+**Résultats attendus :**
+
+| Test | Attendu |
+|------|---------|
+| E2E-1 | `roadmap-tracking` version `4.0.0` listée |
+| E2E-2 | Dry-run affiche les 3 fichiers à générer sans erreur |
+| E2E-3 | `✅ wrote .index.json`, `roadmap.md`, `done/INDEX.md` ; `~286 plans` |
+| E2E-4 | Total ≥ 286 plans ; actifs ≈ 70 ; done ≈ 216 |
+| E2E-5 | `up to date` exit 0 |
+| E2E-6 | Tableau listant les 3 plans `in-progress` (`175`, `214`, `341`) |
+| E2E-7 | `✅ normalize — modifications appliquées` |
+| E2E-8 | `status: active` pour les 3 plans |
+| E2E-9 | Index régénéré sans erreur |
+| E2E-10 | `✅ doctor — aucune incohérence détectée` exit 0 (après normalisation et rebuild) |
+| E2E-11 | Lignes > 200 **ET** octets > 15 360 (valeurs constatées : 1243 l. / 83 110 o.) |
+| E2E-12 | Dry-run liste les sections `##` à déporter vers `context/` sans créer de fichier |
+| E2E-13 | `✅ split_context — modifications appliquées` ; `context/` créé avec ≥ 1 fichier |
+| E2E-14 | Noyau `CONTEXT.md` < 200 lignes ET < 15 360 octets ; `context/*.md` présents |
+| E2E-15 | `dans le budget` ou `rien à faire` exit 0 (idempotent) |
+
+> ⚠️ **Ordre impératif** : E2E-3 (write index) avant E2E-10 (doctor) ; E2E-7
+> (normalize) avant E2E-9 (rebuild index) avant E2E-10. Les autres sont
+> indépendants dans leur groupe.
 
 ### Session 2026-10-19 (implémentation Lot 4 — étapes 9-10, one-shot)
 - ✅ Fait : Étape 9 — section « Hydratation du contexte de session » de `SKILL.md` refondue : segmentation à 2 niveaux (noyau `CONTEXT.md` borné `≤ 200 l. / 15 Ko`, toujours chargé / `context/*.md` thématique à la demande), règle de dépassement de budget (lecture sans troncature + signalement + proposition de bascule), diagramme d'ordre d'exécution étendu (étape 4 = `context/` à la demande, jamais au démarrage). Étape 10 — sous-section « Capitalisation automatique encadrée » ajoutée dans la même section : capture gatée Oui/Non/Instructions, catégorisation obligatoire (⚠️ piège / 🔗 dépendance / 📌 contrainte / 💡 insight) + réf. plan d'origine (format `⚠️ [#27] …`), garde-fou de budget (refus d'ajout au noyau → routage vers `context/<thème>.md`), purge à la clôture (OUI/NON). Hook de purge câblé en étape 5 de la checklist de clôture (`modules/wrapup.md`). Tests autonomes (auto-check, 10/10 ✅) → voir section `## Tests`.

@@ -29,3 +29,4 @@
 | #24 | [🔍] Plan #24 — Phase 2 : Intégration méthodologie grilling (frontier illimitée) | high | M | [`24-phase2-grilling-frontier-methodology.md`](24-phase2-grilling-frontier-methodology.md) |
 | #25 | [📁] Plan #25 - Done Subfolder Plan Management | medium | M | [`25-done-subfolder-plan-management.md`](25-done-subfolder-plan-management.md) |
 | #26 | [🧪] Plan #26 - Autonomous Test Prerequisites | medium | M | [`26-autonomous-test-prerequisites.md`](26-autonomous-test-prerequisites.md) |
+| #27 | [🏗️] Plan #27 - Scalability & Token Architecture | high | XL | [`27-scalability-token-architecture.md`](27-scalability-token-architecture.md) |

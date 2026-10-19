@@ -238,11 +238,11 @@
   },
   {
     "id": "27",
-    "status": "active",
+    "status": "done",
     "priority": "high",
     "complexity": "XL",
     "title": "[🏗️] Plan #27 - Scalability & Token Architecture",
     "deps": [],
-    "path": "27-scalability-token-architecture.md"
+    "path": "done/27-scalability-token-architecture.md"
   }
 ]

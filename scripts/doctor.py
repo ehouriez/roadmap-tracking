@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Audit roadmap integrity from plan front matter — report, never auto-destroy.
 
-Reads only the front matter of every plan (root + ``done/`` + ``_archives/``)
+Reads only the front matter of every plan (root + ``done/`` + ``archived/``)
 plus the generated ``.index.json`` and ``done/INDEX.md``. It reports drift that
 accumulates silently (report findings F3/F4/F6 of the 2026-10-17 audit) and
 *proposes* a correction for each one — it never moves, deletes or rewrites a
@@ -11,7 +11,7 @@ Checks:
 - status in enum        — status is one of active/blocked/done/archived
                           (a historical variant in-progress/cancelled is flagged
                           as mappable; anything else as unknown).
-- status vs location    — done lives in done/, archived in _archives/, and an
+- status vs location    — done lives in done/, archived in archived/, and an
                           active/blocked plan is not buried in either.
 - dependency integrity  — every depends_on id resolves to a known plan.
 - done index links      — every file linked from done/INDEX.md exists on disk.
@@ -46,11 +46,8 @@ from migrate_plan_ids import (
 )
 
 DONE_DIR = "done"
-ARCHIVES_DIR = "_archives"
-# shortcut: normalize_status.py (plan #27 step 11) is not implemented yet; the
-# proposed fixes name it as the command to run once it ships. Until then these
-# are manual edits. Upgrade the wording when step 11 lands.
-NORMALIZE_SCRIPT = "scripts/normalize_status.py (livré étape 11)"
+ARCHIVES_DIR = "archived"
+NORMALIZE_SCRIPT = "scripts/normalize_status.py"
 
 
 class Finding:
@@ -77,7 +74,7 @@ def raw_status(path: Path) -> str | None:
 
 
 def location_of(rel_path: str) -> str:
-    """Return the top-level folder a plan lives in: done/, _archives/ or root."""
+    """Return the top-level folder a plan lives in: done/, archived/ or root."""
     head = Path(rel_path).parts[0] if Path(rel_path).parts else ""
     if head == DONE_DIR:
         return DONE_DIR
@@ -122,7 +119,7 @@ def check_status_location(index: list[dict]) -> list[Finding]:
             ))
         elif status == "archived" and loc != ARCHIVES_DIR:
             findings.append(Finding(
-                "plan mal placé", entry["path"], "`archived` hors de `_archives/`",
+                "plan mal placé", entry["path"], "`archived` hors de `archived/`",
                 f"déplacer vers `{ARCHIVES_DIR}/` (`git mv`, créer le dossier si absent)",
             ))
         elif status in ("active", "blocked") and loc != "root":
@@ -228,19 +225,19 @@ def self_check() -> int:
     """Assert-based self-check on in-memory fixtures (no disk writes)."""
     assert location_of("27-x.md") == "root"
     assert location_of("done/9-x.md") == DONE_DIR
-    assert location_of("_archives/3-x.md") == ARCHIVES_DIR
+    assert location_of("archived/3-x.md") == ARCHIVES_DIR
 
     index = [
         {"id": "1", "status": "active", "deps": ["999"], "path": "1-a.md",
          "priority": "high", "complexity": "M", "title": "A"},
         {"id": "2", "status": "done", "deps": [], "path": "2-done.md",
          "priority": "low", "complexity": "S", "title": "B"},
-        {"id": "3", "status": "archived", "deps": [], "path": "_archives/3-arch.md",
+        {"id": "3", "status": "archived", "deps": [], "path": "archived/3-arch.md",
          "priority": "low", "complexity": "S", "title": "C"},
     ]
     loc = check_status_location(index)
     assert any(f.plan == "2-done.md" for f in loc), "done at root not flagged"
-    assert not any(f.plan == "_archives/3-arch.md" for f in loc), "archived in _archives/ wrongly flagged"
+    assert not any(f.plan == "archived/3-arch.md" for f in loc), "archived in archived/ wrongly flagged"
     deps = check_dependencies(index)
     assert len(deps) == 1 and deps[0].plan == "1-a.md", "orphan dep not flagged"
     assert render_report([]).startswith("✅"), "clean report wrong"

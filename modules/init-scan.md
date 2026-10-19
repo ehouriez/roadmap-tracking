@@ -29,6 +29,7 @@ règle de démarrage, comme les questions de culture générale) :
 | `aide intégrations` | Skill `impeccable`, mapping IDE, actions génériques |
 | `aide doctor` | Audit complet `doctor.py` : commande, catégories de findings, lecture du rapport |
 | `aide stats` | Statistiques portfolio depuis `.index.json` : comptages par statut/priorité/complexité, sans lire les plans |
+| `aide migration` | Adoption sur projet existant : quickstart 5 min, scripts de normalisation et d'index, procédure étape par étape |
 | `aide roadmap` | Alias de `aide` — aide complète |
 | `help` | Alias de `aide` — aide complète |
 
@@ -36,7 +37,7 @@ Chaque aide par catégorie se termine par :
 
 ```
 💡 Pour l'aide complète : « aide »
-   Pour une autre catégorie : « aide [workflow|config|planification|plans|tests|git|intégrations|doctor|stats] »
+   Pour une autre catégorie : « aide [workflow|config|planification|plans|tests|git|intégrations|doctor|stats|migration] »
 ```
 
 ### Note de bienvenue (première exécution uniquement)
@@ -59,6 +60,7 @@ Pour obtenir de l'aide sur le skill, dis :
   « aide intégrations »  → Skill impeccable (UX/UI), IDE
   « aide doctor »        → Audit complet : doctor.py, findings, rapport
   « aide stats »         → Statistiques portfolio depuis l'index
+  « aide migration »     → Adoption sur projet existant : quickstart, scripts
 
 Cette note n'apparaîtra qu'une seule fois.
 ```
@@ -77,7 +79,7 @@ le doctor vérifie exhaustivement `doc/roadmap/` sans modifier aucun fichier.
 | Catégorie | Ce que ça détecte |
 |---|---|
 | Statut hors-enum | `in-progress`, `cancelled`, valeurs inconnues ; propose le mapping |
-| Statut vs dossier | plan `done` hors `done/` ; plan `archived` hors `_archives/` |
+| Statut vs dossier | plan `done` hors `done/` ; plan `archived` hors `archived/` |
 | Dépendances orphelines | `depends_on` référençant un plan introuvable |
 | Liens `done/INDEX.md` cassés | entrées pointant vers des fichiers absents |
 | Index périmé | `.index.json` plus vieux qu'un plan ou `roadmap.md` modifié |
@@ -116,6 +118,59 @@ indiquer « Index absent — génère-le via `python3 scripts/build_roadmap.py -
 ```
 
 > Source : `.index.json` uniquement — aucun plan lu individuellement.
+
+### Contenu de `aide migration`
+
+🚀 **Migration — adoption de roadmap-tracking sur un projet existant**
+
+Déclencheurs reconnus : `aide migration`, `migration`.
+
+**Quand utiliser cette aide** : ton projet a déjà des plans (`doc/roadmap/`) ou un `roadmap.md` maintenu à la main et tu veux passer sous roadmap-tracking.
+
+**Étapes d'adoption (5 min) :**
+
+1. **Installer le plugin** (si pas encore fait) :
+
+   ```bash
+   echo "=== Install Plugin ==="
+   claude plugin marketplace add ehouriez/roadmap-tracking
+   claude plugin install roadmap-tracking@roadmap-tracking
+   ```
+
+2. **Générer l'index et le roadmap depuis ton front matter existant** :
+
+   ```bash
+   echo "=== Dry-run Index Generation ==="
+   python3 scripts/build_roadmap.py --roadmap-dir doc/roadmap
+
+   echo "=== Write Index And Roadmap ==="
+   python3 scripts/build_roadmap.py --roadmap-dir doc/roadmap --write
+   ```
+
+3. **Normaliser les statuts et déplacer les plans mal placés** :
+
+   ```bash
+   echo "=== Dry-run Normalisation ==="
+   python3 scripts/normalize_status.py --roadmap-dir doc/roadmap
+
+   echo "=== Apply When Output Looks Correct ==="
+   python3 scripts/normalize_status.py --roadmap-dir doc/roadmap --write
+   ```
+
+4. **Auditer l'intégrité** (optionnel mais recommandé) :
+
+   ```bash
+   echo "=== Run Integrity Audit ==="
+   python3 scripts/doctor.py --roadmap-dir doc/roadmap
+   ```
+
+5. **Migrer les IDs de plans vers les numéros d'issues GitHub** (mode `github` uniquement) :
+   Voir `aide git` → section migration d'IDs.
+
+**Résultat attendu** : `.index.json` généré, `roadmap.md` synchronisé depuis le front matter, plans `done` dans `done/`, plans `archived` dans `archived/`, statuts canoniques.
+
+> 💡 La réconciliation au démarrage (étape 7 du plan #27) détecte et propose
+> automatiquement ces opérations à chaque session si l'état dérive.
 
 ---
 
@@ -207,7 +262,7 @@ puis écrire `help.welcomed: true` dans `.skill-config.yml`.
 |---|---|---|
 | Index périmé | mtime d'un plan `*.md` (racine + `done/`) ou de `roadmap.md` **> mtime** de `.index.json` | `stat` seul, aucun parsing |
 | `roadmap.md` désynchronisé | mtime de `.index.json` **> mtime** de `roadmap.md` | `stat` seul |
-| Plan mal placé | entrée `.index.json` avec `status: done` hors `done/`, ou `status: archived` hors `_archives/`, ou `active`/`blocked` sous `done/`-`_archives/` | `.index.json` déjà chargé |
+| Plan mal placé | entrée `.index.json` avec `status: done` hors `done/`, ou `status: archived` hors `archived/`, ou `active`/`blocked` sous `done/`-`archived/` | `.index.json` déjà chargé |
 
 > Le statut hors-enum, les dépendances orphelines et les liens `done/` cassés
 > **ne sont pas** détectés ici (coût de parsing) : ils relèvent d'`aide doctor`.

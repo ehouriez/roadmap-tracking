@@ -9,7 +9,7 @@ priorité, description, issue liée).
 - Changement de statut d'un plan.
 - Modification significative d'un plan.
 - Clôture d'un plan (déplacement vers `done/` + mise à jour du lien vers `done/NNN-slug.md`).
-- Archivage (déplacer le fichier dans `_archives/` + mettre à jour le statut).
+- Archivage (déplacer le fichier dans `archived/` + mettre à jour le statut).
 
 ## Vocabulaire de statut
 
@@ -20,7 +20,7 @@ priorité, description, issue liée).
 | `active` | 🟢 | En cours de travail |
 | `blocked` | 🔴 | Bloqué (dépendance / décision en attente) |
 | `done` | 🔵 | Terminé et validé |
-| `archived` | ⚪ | Archivé (dans `_archives/`) |
+| `archived` | ⚪ | Archivé (dans `archived/`) |
 
 Ces quatre valeurs sont les **seules valeurs canoniques** du champ `status` dans le front matter d'un plan.
 
@@ -47,7 +47,7 @@ Les plans clôturés (`status: done`) sont stockés dans `./doc/roadmap/done/`.
 Les liens dans la section « Fait » de `roadmap.md` pointent vers `done/NNN-slug.md`
 (chemin relatif depuis `doc/roadmap/`).
 
-Les plans archivés (`status: archived`) restent dans `_archives/` — concept distinct.
+Les plans archivés (`status: archived`) restent dans `archived/` — concept distinct.
 
 ## Tri de la section « À faire »
 
@@ -59,7 +59,7 @@ numéro de plan croissant.
 ```markdown
 # Roadmap [NOM DU PROJET]
 
-> Backlog actif. L'historique détaillé est archivé dans `_archives/`.
+> Backlog actif. L'historique détaillé est archivé dans `archived/`.
 > Dernière mise à jour : YYYY-MM-DD.
 
 ## Contexte
@@ -111,7 +111,7 @@ Description succincte. **Bloqué par** : [raison].
 ## Archivé
 
 - ⚪ `#12` — Titre — Archivé le YYYY-MM-DD — Raison.
-  [`_archives/12-nom-du-plan.md`](_archives/12-nom-du-plan.md)
+  [`archived/12-nom-du-plan.md`](archived/12-nom-du-plan.md)
 ```
 
 > Le `#` reste réservé au **texte** (`#27`) ; les cibles de liens et les noms de

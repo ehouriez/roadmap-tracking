@@ -166,8 +166,8 @@
 > plan implique un déplacement dans `done/`, une entrée en « Fait » **et** une
 > issue fermée. Ne jamais laisser une issue ouverte alors que son plan est `done`.
 >
-> **Ne jamais** déplacer un plan validé vers `_archives/roadmap_done.md` : ce
+> **Ne jamais** déplacer un plan validé vers `archived/roadmap_done.md` : ce
 > fichier est un historique figé qui n'est plus utilisé. L'archivage physique
-> dans `_archives/` (statut `archived` ⚪) est une opération distincte et rare
+> dans `archived/` (statut `archived` ⚪) est une opération distincte et rare
 > (voir `references/roadmap-file.md`), pas la clôture normale d'un plan.
 
