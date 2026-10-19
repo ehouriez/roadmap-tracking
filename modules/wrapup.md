@@ -156,6 +156,12 @@
 >    **Mode `local`** : cette étape n'existe pas — `status: done` + déplacement
 >    + `roadmap.md` suffisent. Le signaler explicitement à l'utilisateur.
 >
+> 5. **Purge de capitalisation CONTEXT** : proposer (OUI/NON, jamais silencieux)
+>    de retirer du noyau `CONTEXT.md` et des `context/*.md` les entrées devenues
+>    obsolètes du fait de ce plan clos (ex. un piège `⚠️ [#NNN]` résolu). Voir
+>    `SKILL.md § Hydratation du contexte de session — Capitalisation automatique
+>    encadrée`. Rien à purger ou refus → continuer sans modification.
+>
 > Ces quatre actions vont **ensemble** en mode `github` : `status: done` dans le
 > plan implique un déplacement dans `done/`, une entrée en « Fait » **et** une
 > issue fermée. Ne jamais laisser une issue ouverte alors que son plan est `done`.

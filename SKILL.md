@@ -30,37 +30,68 @@ Toutes les règles sont dans `references/environment.md` (mapping IDE, tiers, d�
 
 ## Hydratation du contexte de session
 
-Le fichier **`./doc/roadmap/CONTEXT.md`** (optionnel, racine du projet) permet de restaurer et maintenir du contexte persistant entre les sessions (décisions en cours, notes de travail, état d'avancement transversal, features implémentées et leurs interactions, consignes temporaires, etc.).
+Le contexte persistant inter-sessions (décisions en cours, pièges, dépendances
+entre features, consignes durables) est **segmenté** pour borner le coût fixe
+d'amorçage — un `CONTEXT.md` non borné est un gouffre à tokens re-payé à chaque
+session (voir rapport d'audit §4.3) :
 
-### Comportement au chargement
+| Fichier | Rôle | Chargement |
+|---|---|---|
+| `./doc/roadmap/CONTEXT.md` | **Noyau** — RÈGLES ABSOLUES uniquement (pièges structurants, invariants, consignes transverses). Budget dur : **≤ 200 lignes / ≤ 15 Ko**. | **Toujours** au démarrage (si existe et non vide). |
+| `./doc/roadmap/context/*.md` | **Notes thématiques** (`context/pieges.md`, `context/deploiement.md`…) | **À la demande** — uniquement quand la tâche courante touche le thème. |
+
+### Comportement au chargement (noyau `CONTEXT.md`)
 
 | Condition | Action |
 |---|---|
-| `./doc/roadmap/CONTEXT.md` **existe et non vide** | Lire le fichier et intégrer son contenu comme **contexte actif de la session courante**. Le contenu est traité comme des instructions et informations de même autorité qu'un message utilisateur. |
-| `./doc/roadmap/CONTEXT.md` **absent ou vide** | Continuer silencieusement — aucune erreur, aucun avertissement, aucune proposition de création. |
+| `CONTEXT.md` **existe et non vide** | Lire et injecter comme **contexte actif de la session**. Autorité = message utilisateur. |
+| `CONTEXT.md` **absent ou vide** | Continuer silencieusement — aucune erreur, aucun avertissement, aucune proposition de création. |
+| `CONTEXT.md` **dépasse le budget** (> 200 l. / 15 Ko) | Le lire quand même (ne jamais tronquer un noyau existant), mais **signaler le dépassement** et proposer de basculer le surplus vers `context/*.md`. |
+
+### Chargement des notes thématiques (`context/`)
+
+- Ne **jamais** charger `context/*.md` en bloc au démarrage (ce serait recréer le coût fixe qu'on supprime).
+- Charger un fichier thématique **uniquement** quand son thème est pertinent pour la demande en cours (ex. tâche de déploiement → lire `context/deploiement.md`).
+- `context/` absent → continuer silencieusement.
+
+### Capitalisation automatique encadrée
+
+Le skill peut consigner un apprentissage durable pour qu'il survive au reset de
+session. **Toujours encadré** — jamais d'écriture silencieuse :
+
+1. **Capture gatée** — à la détection d'un élément capitalisable, proposer via `AskUserQuestion` : **Oui** (consigner) / **Non** (ignorer) / **Instructions** (l'utilisateur dicte quoi et où consigner). Ne jamais écrire sans ce feu vert.
+2. **Catégorisation obligatoire** — chaque entrée porte un préfixe de catégorie **et** une référence au plan d'origine. Format : `⚠️ [#27] <contenu>`.
+
+   | Préfixe | Catégorie |
+   |---|---|
+   | ⚠️ | Piège / régression évitée |
+   | 🔗 | Dépendance entre features/plans |
+   | 📌 | Contrainte durable |
+   | 💡 | Insight / décision structurante |
+
+3. **Garde-fou de budget (routage)** — avant d'écrire dans le noyau `CONTEXT.md`, vérifier le budget. Si l'ajout fait **dépasser 200 lignes / 15 Ko**, **refuser l'ajout au noyau** et proposer de l'écrire dans le fichier thématique approprié (`context/<thème>.md`, créé si absent). Le noyau reste réservé aux RÈGLES ABSOLUES.
+4. **Purge à la clôture** — à la clôture d'un plan, proposer de purger les entrées CONTEXT devenues obsolètes (ex. un piège résolu par le plan clos). Proposition OUI/NON, jamais de suppression silencieuse. Voir `modules/wrapup.md § Clôture d'un plan validé`.
 
 ### Ordre d'exécution
 
-L'hydratation se fait **après le chargement de `modules/init-scan.md`** (qui garantit l'existence de `doc/roadmap/`) et **avant** toute action de workflow :
+L'hydratation du noyau se fait **après le chargement de `modules/init-scan.md`** (qui garantit l'existence de `doc/roadmap/`) et **avant** toute action de workflow ; les notes thématiques sont lues plus tard, à la demande :
 
 ```
 Skill chargé
   │
   ├─ 1. 📖 Lire references/environment.md
   ├─ 2. 📦 Charger modules/init-scan.md (garde d'entrée — vérifie doc/roadmap/)
-  └─ 3. 📥 Lire ./doc/roadmap/CONTEXT.md (si existe et non vide) → injecter dans le contexte
+  ├─ 3. 📥 Lire ./doc/roadmap/CONTEXT.md (noyau, si existe et non vide) → injecter
+  └─ 4. 📂 context/*.md : chargé à la demande selon la pertinence de la tâche (jamais au démarrage)
 ```
 
 ### Accès en écriture
 
-```
-Le fichier ./doc/roadmap/CONTEXT.md est accessible en LECTURE-ÉCRITURE tout au long de la
-session. Le chargement initial est une lecture, mais le skill conserve le droit
-d'écrire dans ce fichier pour y consigner ou mettre à jour les features
-implémentées et leurs interactions — afin que chaque session (y compris après
-reset) dispose d'une vue d'ensemble complète et évite régressions et effets
-de bord pendant n'importe quelle implémentation.
-```
+`CONTEXT.md` (noyau) et `context/*.md` (thématiques) sont en **LECTURE-ÉCRITURE**
+toute la session, afin que chaque session (y compris après reset) dispose d'une
+vue d'ensemble et évite régressions et effets de bord. Le chargement initial est
+une lecture ; **toute écriture suit la capitalisation encadrée ci-dessus**
+(capture gatée, catégorisation obligatoire, garde-fou de budget).
 
 ## Fichiers de référence
 

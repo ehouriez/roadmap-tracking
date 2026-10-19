@@ -101,8 +101,8 @@ intenable à 500/1000 plans. Principe directeur : **le skill lit un index compac
 - [x] Étape 8 — Catégories d'aide `aide doctor` et `aide stats` (observabilité portfolio depuis l'index, sans lire les plans) dans `modules/init-scan.md` (S · standard → Sonnet)
 
 ### Lot 4 — CONTEXT.md maîtrisé
-- [ ] Étape 9 — Segmentation : noyau `CONTEXT.md` (RÈGLES ABSOLUES, budget dur ~200 l./15 Ko, toujours chargé) + dossier `context/*.md` thématique chargé à la demande ; mettre à jour la section « Hydratation » de `SKILL.md` (M · reasoning → Opus)
-- [ ] Étape 10 — Capitalisation auto encadrée : capture gatée OUI/NON/instructions, catégorisation obligatoire (⚠️🔗📌💡) + réf. plan d'origine, garde-fou de budget (refus d'ajout si seuil dépassé → bascule thématique), purge proposée à la clôture de plan (M · reasoning → Opus)
+- [x] Étape 9 — Segmentation : noyau `CONTEXT.md` (RÈGLES ABSOLUES, budget dur ~200 l./15 Ko, toujours chargé) + dossier `context/*.md` thématique chargé à la demande ; mettre à jour la section « Hydratation » de `SKILL.md` (M · reasoning → Opus)
+- [x] Étape 10 — Capitalisation auto encadrée : capture gatée OUI/NON/instructions, catégorisation obligatoire (⚠️🔗📌💡) + réf. plan d'origine, garde-fou de budget (refus d'ajout si seuil dépassé → bascule thématique), purge proposée à la clôture de plan (M · reasoning → Opus)
 
 ### Lot 5 — Migration & onboarding
 - [ ] Étape 11 — `scripts/normalize_status.py` (applique le mapping) + procédure de déplacement des plans mal placés (`done`→`done/`, `archived`→`_archives/`, créer `_archives/`) ; idempotent, `--dry-run`, rollback git (M · standard → Sonnet)
@@ -389,3 +389,65 @@ grep -n "index uniquement\|aucun plan lu" $IS
 - ✅ Fait : Étape 8 — `aide doctor` et `aide stats` ajoutées dans `modules/init-scan.md` : table des déclencheurs, footer (catégorie list), welcome note, et sections de contenu dédiées (`### Contenu de \`aide doctor\`` / `### Contenu de \`aide stats\``). `aide doctor` documente les 5 catégories d'audit + commande + options. `aide stats` documente le format de sortie à 3 dimensions (statut/priorité/complexité) depuis `.index.json` uniquement, avec fallback si index absent. Déclencheurs `stats` et `portfolio` aussi reconnus.
 - 📋 Prochain : Lot 4 — étape 9 (segmentation CONTEXT.md).
 - 🚧 Blocages : aucun.
+
+### Lot 4 — procédure (étapes 9-10)
+
+```bash
+SKILL_REPO=/mnt/c/INETUM/AGV/agv-adm/GIT_GITHUB/skills/roadmap-tracking
+SK=$SKILL_REPO/SKILL.md
+WU=$SKILL_REPO/modules/wrapup.md
+
+echo "=== E9.1 Budget dur 200 lignes / 15 Ko ==="
+grep -n "200 lignes / ≤ 15 Ko\|200 l. / 15 Ko\|200 lignes / 15 Ko" $SK
+
+echo "=== E9.2 Table deux niveaux noyau + context/ ==="
+grep -n "Noyau\|context/\*.md" $SK | head -5
+
+echo "=== E9.3 context/ à la demande, jamais au démarrage ==="
+grep -n "jamais au démarrage" $SK
+
+echo "=== E9.4 Dépassement budget → signaler + basculer ==="
+grep -n "dépasse le budget\|signaler le dépassement" $SK
+
+echo "=== E9.5 Ordre exec: context/ à la demande (step 4) ==="
+grep -n "context/\*.md : chargé à la demande" $SK
+
+echo "=== E10.1 Capture gatée Oui/Non/Instructions ==="
+grep -n "Capture gatée" $SK
+
+echo "=== E10.2 Catégorisation ⚠️🔗📌💡 + réf plan ==="
+grep -n "Catégorisation obligatoire\|Piège / régression\|Dépendance entre\|Contrainte durable\|Insight / décision" $SK
+
+echo "=== E10.3 Garde-fou budget → refuse noyau → bascule thématique ==="
+grep -n "Garde-fou de budget\|refuser l'ajout au noyau" $SK
+
+echo "=== E10.4 Purge à la clôture (SKILL.md) ==="
+grep -n "Purge à la clôture" $SK
+
+echo "=== E10.5 wrapup.md étape 5 purge CONTEXT ==="
+grep -n "Purge de capitalisation CONTEXT" $WU
+```
+
+**Résultats attendus :**
+- Étape 9 : table à 2 niveaux (noyau `CONTEXT.md` budget `≤ 200 lignes / ≤ 15 Ko` + `context/*.md` à la demande) ; règle de dépassement de budget (lire sans tronquer + signaler + basculer) ; `context/*.md` jamais chargé au démarrage ; diagramme d'ordre d'exécution avec étape 4 « context/ à la demande ».
+- Étape 10 : capture gatée Oui/Non/Instructions ; catégorisation obligatoire (4 préfixes ⚠️🔗📌💡) + réf. plan d'origine ; garde-fou de budget (refus noyau → bascule thématique) ; purge à la clôture (OUI/NON) dans `SKILL.md` ; étape 5 « Purge de capitalisation CONTEXT » ajoutée à la checklist de clôture de `wrapup.md`.
+
+### Résultats joués et vérifiés — Lot 4 (étapes 9-10)
+
+| Date | Test | Attendu | Observé | Verdict |
+|------|------|---------|---------|---------|
+| 2026-10-19 | E9.1 budget dur | `≤ 200 lignes / ≤ 15 Ko` présent | lignes 40, 49, 72 | ✅ |
+| 2026-10-19 | E9.2 table 2 niveaux | noyau + `context/*.md` | lignes 40-41 | ✅ |
+| 2026-10-19 | E9.3 jamais au démarrage | mention présente | lignes 53, 85 | ✅ |
+| 2026-10-19 | E9.4 dépassement budget | lire sans tronquer + signaler + basculer | ligne 49 | ✅ |
+| 2026-10-19 | E9.5 ordre exec étape 4 | `context/*.md : chargé à la demande` | ligne 85 | ✅ |
+| 2026-10-19 | E10.1 capture gatée | Oui/Non/Instructions | ligne 62 | ✅ |
+| 2026-10-19 | E10.2 catégorisation | 4 préfixes + réf plan `[#27]` | lignes 63, 67-70 | ✅ |
+| 2026-10-19 | E10.3 garde-fou budget | refus noyau → bascule thématique | ligne 72 | ✅ |
+| 2026-10-19 | E10.4 purge clôture SKILL | OUI/NON présent | ligne 73 | ✅ |
+| 2026-10-19 | E10.5 purge wrapup | étape 5 checklist clôture | ligne 159 | ✅ |
+
+### Session 2026-10-19 (implémentation Lot 4 — étapes 9-10, one-shot)
+- ✅ Fait : Étape 9 — section « Hydratation du contexte de session » de `SKILL.md` refondue : segmentation à 2 niveaux (noyau `CONTEXT.md` borné `≤ 200 l. / 15 Ko`, toujours chargé / `context/*.md` thématique à la demande), règle de dépassement de budget (lecture sans troncature + signalement + proposition de bascule), diagramme d'ordre d'exécution étendu (étape 4 = `context/` à la demande, jamais au démarrage). Étape 10 — sous-section « Capitalisation automatique encadrée » ajoutée dans la même section : capture gatée Oui/Non/Instructions, catégorisation obligatoire (⚠️ piège / 🔗 dépendance / 📌 contrainte / 💡 insight) + réf. plan d'origine (format `⚠️ [#27] …`), garde-fou de budget (refus d'ajout au noyau → routage vers `context/<thème>.md`), purge à la clôture (OUI/NON). Hook de purge câblé en étape 5 de la checklist de clôture (`modules/wrapup.md`). Tests autonomes (auto-check, 10/10 ✅) → voir section `## Tests`.
+- 📋 Prochain : Lot 5 — étape 11 (`scripts/normalize_status.py`).
+- 🚧 Blocages : aucun. ⚠️ `SKILL.md`/`wrapup.md` édités dans le repo ; le skill tourne depuis le cache plugin — les modifications n'y seront actives qu'après publication/sync de la version. ⚠️ Pas de `CONTEXT.md`/`context/` dans ce projet : les étapes 9-10 définissent le **comportement du skill** (documentation normative), non la création de contenu CONTEXT.
