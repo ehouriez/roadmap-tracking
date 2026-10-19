@@ -28,8 +28,8 @@ scope:
     - "references/**/*.md"
     - "scripts/**/*.py"
 issue:
-  id: null
-  url: null
+  id: 27
+  url: https://github.com/ehouriez/roadmap-tracking/issues/27
 ---
 
 # [🏗️] Plan #27 - Scalability & Token Architecture
@@ -38,9 +38,7 @@ issue:
 > (projet de référence Auxitum, 287 plans). Décisions utilisateur actées :
 > statuts hors-enum **mappés** (pas officialisés) ; `/impeccable` **non utilisé**.
 >
-> ⚠️ **Mode `github`** : l'issue GitHub n'est pas encore créée. À la création de
-> l'issue, renommer le fichier en `{issue}-scalability-token-architecture.md` et
-> réaligner `plan.id` / `plan.link` / `issue.*` (voir `references/migration.md`).
+> **Mode `github`** : issue [#27](https://github.com/ehouriez/roadmap-tracking/issues/27) créée le 2026-10-19.
 
 ## Objectif
 

@@ -20,7 +20,7 @@ Plan : [`27-scalability-token-architecture.md`](27-scalability-token-architectur
 Rendre le skill scalable à 350/500/1000+ plans : `roadmap.md` + index générés
 depuis le front matter, listing paresseux, validation d'intégrité (`doctor`),
 `CONTEXT.md` segmenté/borné, capitalisation auto encadrée. Issu du rapport
-`doc/rapports/rapport-ameliorations-2026-10-17.md`. **Issue GitHub #27 à créer.**
+`doc/rapports/rapport-ameliorations-2026-10-17.md`.
 
 ---
 
