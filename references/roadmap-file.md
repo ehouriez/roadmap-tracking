@@ -11,14 +11,35 @@ priorité, description, issue liée).
 - Clôture d'un plan (déplacement vers `done/` + mise à jour du lien vers `done/NNN-slug.md`).
 - Archivage (déplacer le fichier dans `_archives/` + mettre à jour le statut).
 
-## Icônes de statut
+## Vocabulaire de statut
+
+### Valeurs canoniques (enum)
 
 | Statut | Icône | Usage |
 |---|---|---|
 | `active` | 🟢 | En cours de travail |
-| `done` | 🔵 | Terminé et validé |
 | `blocked` | 🔴 | Bloqué (dépendance / décision en attente) |
+| `done` | 🔵 | Terminé et validé |
 | `archived` | ⚪ | Archivé (dans `_archives/`) |
+
+Ces quatre valeurs sont les **seules valeurs canoniques** du champ `status` dans le front matter d'un plan.
+
+### Mapping des valeurs hors-enum
+
+Certains plans antérieurs à cette convention peuvent contenir des statuts non canoniques. Le skill les mappe automatiquement :
+
+| Valeur rencontrée | Valeur canonique | Motif |
+|---|---|---|
+| `in-progress` | `active` | Variante historique |
+| `cancelled` | `archived` | Variante historique |
+
+> ⛔ **Garde de validation** — Lors de toute lecture ou écriture d'un champ
+> `status` de plan (front matter, listing, clôture, mise à jour), vérifier que
+> la valeur ∈ `{active, blocked, done, archived}`. Si la valeur figure dans le
+> tableau de mapping ci-dessus, l'appliquer silencieusement et notifier via
+> le tableau de correction proactive (voir SKILL.md §
+> « Correction proactive des incohérences de plan »). Si la valeur est hors-enum
+> ET hors-mapping, signaler et ne pas créer/mettre à jour le plan sans correction.
 
 ## Sous-répertoire `done/`
 

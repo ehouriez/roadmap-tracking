@@ -87,8 +87,8 @@ intenable à 500/1000 plans. Principe directeur : **le skill lit un index compac
 ## Étapes
 
 ### Lot 1 — Quick wins (gains immédiats, zéro dépendance)
-- [ ] Étape 1 — Borner la lecture de `roadmap.md` dans `modules/init-scan.md` : head 50 + tail 30 + `grep` statistique, jamais de lecture intégrale ; documenter la règle (S · standard → Sonnet)
-- [ ] Étape 2 — Mapping du vocabulaire de statut : `in-progress`→`active`, `cancelled`→`archived` ; ajouter une **garde de validation** (statut ∈ enum) dans `references/roadmap-file.md` + `references/templates.md` ; documenter le mapping (S · standard → Sonnet)
+- [x] Étape 1 — Borner la lecture de `roadmap.md` dans `modules/init-scan.md` : head 50 + tail 30 + `grep` statistique, jamais de lecture intégrale ; documenter la règle (S · standard → Sonnet)
+- [x] Étape 2 — Mapping du vocabulaire de statut : `in-progress`→`active`, `cancelled`→`archived` ; ajouter une **garde de validation** (statut ∈ enum) dans `references/roadmap-file.md` + `references/templates.md` ; documenter le mapping (S · standard → Sonnet)
 
 ### Lot 2 — Index généré (cœur de la scalabilité)
 - [ ] Étape 3 — `scripts/build_roadmap.py` : scanne le front matter (racine + `done/`) → génère `.index.json` compact (`{id,status,priority,complexity,title,deps,path}`), `roadmap.md` (backlog actif trié priorité→ID) et `done/INDEX.md` ; modes `--dry-run` (défaut) / `--write` / `--check` (écarts index↔réel) (L · reasoning → Opus)
@@ -127,28 +127,56 @@ intenable à 500/1000 plans. Principe directeur : **le skill lit un index compac
 ### Prérequis pour les tests
 
 ```bash
-(à renseigner en Phase 7 — chemins absolus du repo skill, fixtures de plans
- synthétiques pour build_roadmap/doctor, invocation de scripts/e2e_fresh_install_setup.sh)
+SKILL_REPO=/mnt/c/INETUM/AGV/agv-adm/GIT_GITHUB/skills/roadmap-tracking
+INIT_SCAN=$SKILL_REPO/modules/init-scan.md
+ROADMAP_FILE=$SKILL_REPO/references/roadmap-file.md
+TEMPLATES=$SKILL_REPO/references/templates.md
 ```
 
 ### Procédure de test
 
 ```bash
-(à renseigner en Phase 7)
+echo "=== Étape 1 — Règle de lecture bornée dans init-scan.md ==="
+grep -n "Lecture bornée de" $INIT_SCAN
+
+echo "=== Étape 1 — Présence head-50, tail-30, grep ==="
+grep -n "head -50\|tail -30\|grep" $INIT_SCAN | grep -v "^Binary"
+
+echo "=== Étape 1 — Mention toutes phases ==="
+grep -n "toutes phases" $INIT_SCAN
+
+echo "=== Étape 1 — Placement correct (après bloc A.0, avant listing) ==="
+grep -n "help.welcomed: true\|Lecture bornée\|Si l'utilisateur ne référence" $INIT_SCAN | head -5
+
+echo "=== Étape 2 — Vocabulaire de statut dans roadmap-file.md ==="
+grep -n "Vocabulaire de statut\|Valeurs canoniques\|Mapping des valeurs\|Garde de validation" $ROADMAP_FILE
+
+echo "=== Étape 2 — Mapping in-progress et cancelled ==="
+grep -n "in-progress\|cancelled" $ROADMAP_FILE
+
+echo "=== Étape 2 — Status field mis à jour dans templates.md ==="
+grep -n "status.*Mapping automatique\|in-progress.*active" $TEMPLATES
 ```
 
-**Résultats attendus :** à définir par étape (index conforme au front matter,
-`doctor` détecte les dérives injectées, mapping idempotent, listing paresseux
-affiche le bon sous-ensemble, budget CONTEXT respecté).
+**Résultats attendus :**
+- Étape 1 : règle `⛔ Lecture bornée de roadmap.md` présente à la ligne ~108, avec `head -50`, `tail -30`, `grep`, mention `toutes phases` ; placée entre `help.welcomed: true` et `Si l'utilisateur ne référence pas`.
+- Étape 2 : section `## Vocabulaire de statut` présente dans `roadmap-file.md` avec sous-sections `Valeurs canoniques` (4 entrées) et `Mapping des valeurs hors-enum` (`in-progress`→`active`, `cancelled`→`archived`) + garde `⛔` ; champ `status` de `templates.md` référence `Mapping automatique`.
 
 ### Résultats joués et vérifiés
 
 | Date | Test | Attendu | Observé | Verdict |
 |------|------|---------|---------|---------|
+| 2026-10-19 | Étape 1 — règle bornée init-scan.md | Présente, head-50/tail-30/grep, toutes phases, placement correct | Ligne 108, toutes assertions positives | ✅ |
+| 2026-10-19 | Étape 2 — mapping + garde roadmap-file.md + templates.md | Section Vocabulaire, 4 canoniques, mapping, garde, templates ref | Toutes assertions grep positives | ✅ |
 
 ## Journal de session
 
-### Session 2026-10-19
+### Session 2026-10-19 (création)
 - ✅ Fait : plan créé depuis le rapport d'audit du 2026-10-17 ; décisions actées (mapping statut, pas d'impeccable). Ajout de l'étape 7 — **réconciliation au démarrage** (détection d'écart arborescence/`roadmap.md` vs conventions #27, avec proposition OUI/NON et garde de coût) — suite à une question de cadrage. 13 étapes d'implémentation.
 - 📋 Prochain : créer l'issue GitHub #27, réaligner le fichier, puis démarrer le Lot 1 (quick wins).
 - 🚧 Blocages : issue GitHub non créée (gérée par l'utilisateur).
+
+### Session 2026-10-19 (implémentation Lot 1 — étapes 1-2)
+- ✅ Fait : Étape 1 — règle `⛔ Lecture bornée de roadmap.md` ajoutée dans `modules/init-scan.md` (head-50/tail-30/grep, règle globale toutes phases). Étape 2 — section `## Vocabulaire de statut` avec enum + mapping (`in-progress`→`active`, `cancelled`→`archived`) + garde de validation ajoutés dans `references/roadmap-file.md` ; champ `status` mis à jour dans `references/templates.md`.
+- 📋 Prochain : Lot 2 — étape 3 (`scripts/build_roadmap.py`).
+- 🚧 Blocages : aucun.

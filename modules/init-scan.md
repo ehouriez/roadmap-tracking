@@ -105,6 +105,16 @@ Après le bloc A.0, si `roadmap-tracking.help.welcomed` est absent/`false` :
 **afficher la note de bienvenue** (voir « Système d'aide — Note de bienvenue » ci-dessus)
 puis écrire `help.welcomed: true` dans `.skill-config.yml`.
 
+> ⛔ **Lecture bornée de `roadmap.md` — règle non négociable (toutes phases)**
+> Ne jamais lire `./doc/roadmap/roadmap.md` en intégralité, à aucune phase du
+> workflow. La lecture complète peut dépasser 50 Ko sur un portfolio de 500+ plans
+> (~49 K tokens mesurés). Utiliser obligatoirement les formes bornées :
+> - **`head -50`** → en-tête, légende, plans `critical`/`high` actifs.
+> - **`tail -30`** → clôtures récentes, archive récente.
+> - **`grep`** → statistiques de comptage par statut ou priorité (sans charger le narratif).
+> Cette règle s'applique à toute lecture directe de `roadmap.md`, quelle que soit
+> la phase ou le module.
+
 Si l'utilisateur ne référence pas un plan existant dans son premier prompt :
 
 1. **Lister les plans existants** (mémoires, contexte projet, et inspection de

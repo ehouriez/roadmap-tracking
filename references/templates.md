@@ -49,7 +49,7 @@ lien), et un emoji cohérent :
 | `plan.name` | ✅ | Nom du fichier (ex. `27-saas-v2.md`) |
 | `plan.link` | ✅ | URL GitHub du fichier *(mode `github`)* ou chemin relatif `doc/roadmap/{id}-slug.md` *(mode `local`)* |
 | `plan.source` | ❌ | `local` si créé en mode local (absent = mode github, rétrocompat) |
-| `status` | ✅ | `active`, `done`, `archived` ou `blocked` |
+| `status` | ✅ | `active`, `done`, `archived` ou `blocked` — valeurs canoniques uniquement. Mapping automatique : `in-progress`→`active`, `cancelled`→`archived` (voir `references/roadmap-file.md § Mapping des valeurs hors-enum`). |
 | `date` | ✅ | Date de création (`YYYY-MM-DD`) |
 | `enriched` | ❌ | Dernière modif significative (`YYYY-MM-DD`) |
 | `description` | ✅ | Phrase succincte (1-2 lignes) |
