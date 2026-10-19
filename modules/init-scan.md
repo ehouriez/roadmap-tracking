@@ -133,13 +133,19 @@ puis écrire `help.welcomed: true` dans `.skill-config.yml`.
 
 Si l'utilisateur ne référence pas un plan existant dans son premier prompt :
 
-1. **Lister les plans existants** depuis `.index.json` (voir règle ci-dessus ;
+1. **Listing paresseux (défaut)** — depuis `.index.json` (voir règle ci-dessus ;
    fallback lecture bornée de `roadmap.md` + inspection de `./doc/roadmap/` si
-   l'index est absent) — **hors plans `done`** — **impérativement sous forme de
-   tableau markdown** — voir « ⛔ Règle absolue — format des rapports ». Ne JAMAIS
-   rendre ce listing en format `clé: valeur` (`#: 1` / `Fichier: …` /
-   `Statut: …`), en lignes séparées par des filets (`───`), ni en puces : le
-   gabarit ci-dessous est contraignant.
+   l'index est absent) — **impérativement sous forme de tableau markdown** — voir
+   « ⛔ Règle absolue — format des rapports ». Ne JAMAIS rendre ce listing en
+   format `clé: valeur` (`#: 1` / `Fichier: …` / `Statut: …`), en lignes
+   séparées par des filets (`───`), ni en puces : le gabarit ci-dessous est
+   contraignant.
+
+   **Contenu par défaut :**
+   - Plans `status: active` et `status: blocked` uniquement.
+   - Tri : priorité (critical → high → medium → low) puis `id` croissant.
+   - Ligne de compteur sous le tableau : `+ N done` (N = entrées `status: done`
+     dans `.index.json`).
 
 ✅ **SEUL format autorisé** :
 
@@ -186,6 +192,18 @@ Fichier: 28-autre.md
 > lire pour récupérer du contexte pertinent (décisions techniques, dépendances
 > historiques, patterns validés) lors du cadrage ou de l'implémentation d'un
 > nouveau plan. L'exclusion du listing n'est **jamais** une interdiction de lecture.
+
+> **Filtres verbaux (listing à la demande).** L'utilisateur peut affiner le
+> listing à tout moment via une phrase reconnue :
+>
+> | Phrase | Filtre appliqué |
+> |---|---|
+> | `plans high` | `priority: high` ou `priority: critical` (actifs + bloqués) |
+> | `plans blocked` | `status: blocked` uniquement |
+> | `plans #N-M` | `id` dans l'intervalle N–M (tout statut hors `done`) |
+>
+> Les filtres modifient le tableau affiché sans modifier `.index.json`.
+> Sur une phrase non reconnue : listing par défaut.
 
 2. **Demander** : « Souhaites-tu repartir d'un de ces plans existants (indique
    le numéro) ou créer un nouveau plan pour cette session ? »

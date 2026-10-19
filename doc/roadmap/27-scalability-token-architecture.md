@@ -93,7 +93,7 @@ intenable à 500/1000 plans. Principe directeur : **le skill lit un index compac
 ### Lot 2 — Index généré (cœur de la scalabilité)
 - [x] Étape 3 — `scripts/build_roadmap.py` : scanne le front matter (racine + `done/`) → génère `.index.json` compact (`{id,status,priority,complexity,title,deps,path}`), `roadmap.md` (backlog actif trié priorité→ID) et `done/INDEX.md` ; modes `--dry-run` (défaut) / `--write` / `--check` (écarts index↔réel) (L · reasoning → Opus)
 - [x] Étape 4 — Adapter `modules/init-scan.md` : listing depuis l'index (fallback lecture directe si index absent = rétrocompat) ; régénération de l'index à la clôture d'un plan (hook dans `modules/wrapup.md`) (M · reasoning → Opus)
-- [ ] Étape 5 — Listing paresseux : par défaut actifs + bloqués triés par priorité + compteur « + N done » ; filtres `plans high` / `plans blocked` / `plans #250-300` (S · standard → Sonnet)
+- [x] Étape 5 — Listing paresseux : par défaut actifs + bloqués triés par priorité + compteur « + N done » ; filtres `plans high` / `plans blocked` / `plans #250-300` (S · standard → Sonnet)
 
 ### Lot 3 — Intégrité, réconciliation & observabilité
 - [ ] Étape 6 — `scripts/doctor.py` : audit statut vs dossier, statut ∈ enum, dépendances réciproques, liens `done/` orphelins, index à jour ; rapport tableau + corrections **proposées** (jamais auto-destructrices) ; `--dry-run` par défaut (M · reasoning → Opus)
@@ -169,6 +169,45 @@ grep -n "status.*Mapping automatique\|in-progress.*active" $TEMPLATES
 | 2026-10-19 | Étape 1 — règle bornée init-scan.md | Présente, head-50/tail-30/grep, toutes phases, placement correct | Ligne 108, toutes assertions positives | ✅ |
 | 2026-10-19 | Étape 2 — mapping + garde roadmap-file.md + templates.md | Section Vocabulaire, 4 canoniques, mapping, garde, templates ref | Toutes assertions grep positives | ✅ |
 
+### Lot 2 — procédure (étape 5)
+
+```bash
+SKILL_REPO=/mnt/c/INETUM/AGV/agv-adm/GIT_GITHUB/skills/roadmap-tracking
+IS=$SKILL_REPO/modules/init-scan.md
+
+echo "=== E5.1 Listing paresseux — titre updated ==="
+grep -n "Listing paresseux" $IS
+
+echo "=== E5.2 Contenu par défaut : active + blocked ==="
+grep -n "status: active.*blocked\|status: blocked" $IS | head -5
+
+echo "=== E5.3 Tri priorité critical → high → medium → low ==="
+grep -n "critical → high → medium → low" $IS
+
+echo "=== E5.4 Compteur + N done ==="
+grep -n "+ N done" $IS
+
+echo "=== E5.5 Filtres verbaux présents ==="
+grep -n "Filtres verbaux\|plans high\|plans blocked\|plans #N-M" $IS
+```
+
+**Résultats attendus :**
+- E5.1 : « Listing paresseux (défaut) » présent dans la règle de démarrage.
+- E5.2 : `status: active` et `status: blocked` documentés comme contenu par défaut.
+- E5.3 : ordre de tri `critical → high → medium → low` présent.
+- E5.4 : compteur `+ N done` documenté.
+- E5.5 : section « Filtres verbaux » avec `plans high`, `plans blocked`, `plans #N-M`.
+
+### Résultats joués et vérifiés — Lot 2 (étape 5)
+
+| Date | Test | Attendu | Observé | Verdict |
+|------|------|---------|---------|---------|
+| 2026-10-19 | E5.1 listing paresseux titre | « Listing paresseux (défaut) » présent | Ligne 136, présent | ✅ |
+| 2026-10-19 | E5.2 contenu active + blocked | status active + blocked documentés | Lignes 145, 202, présents | ✅ |
+| 2026-10-19 | E5.3 tri priorité | critical → high → medium → low | Ligne 146, présent | ✅ |
+| 2026-10-19 | E5.4 compteur N done | `+ N done` documenté | Ligne 147, présent | ✅ |
+| 2026-10-19 | E5.5 filtres verbaux | plans high / blocked / #N-M présents | Lignes 196-203, présents | ✅ |
+
 ### Lot 2 — procédure (étapes 3-4)
 
 ```bash
@@ -223,6 +262,11 @@ grep -n "build_roadmap.py --roadmap-dir doc/roadmap --write" $SKILL_REPO/modules
 ### Session 2026-10-19 (implémentation Lot 1 — étapes 1-2)
 - ✅ Fait : Étape 1 — règle `⛔ Lecture bornée de roadmap.md` ajoutée dans `modules/init-scan.md` (head-50/tail-30/grep, règle globale toutes phases). Étape 2 — section `## Vocabulaire de statut` avec enum + mapping (`in-progress`→`active`, `cancelled`→`archived`) + garde de validation ajoutés dans `references/roadmap-file.md` ; champ `status` mis à jour dans `references/templates.md`.
 - 📋 Prochain : Lot 2 — étape 3 (`scripts/build_roadmap.py`).
+- 🚧 Blocages : aucun.
+
+### Session 2026-10-19 (implémentation Lot 2 — étape 5)
+- ✅ Fait : Étape 5 — Listing paresseux dans `modules/init-scan.md`. Défaut : `status: active` + `status: blocked`, tri priorité (critical→high→medium→low) puis `id`, compteur `+ N done`. Filtres verbaux : `plans high` (critical+high), `plans blocked`, `plans #N-M` (intervalle d'id).
+- 📋 Prochain : Lot 3 — étape 6 (`scripts/doctor.py`).
 - 🚧 Blocages : aucun.
 
 ### Session 2026-10-19 (implémentation Lot 2 — étapes 3-4)
