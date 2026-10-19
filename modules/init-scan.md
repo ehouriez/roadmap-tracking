@@ -128,8 +128,68 @@ puis écrire `help.welcomed: true` dans `.skill-config.yml`.
 >   Proposer de générer l'index : « Aucun index `.index.json` — veux-tu le créer
 >   via `python3 scripts/build_roadmap.py --write` ? (il accélère tous les démarrages) ».
 > - **Index périmé** : la détection de péremption et sa proposition de
->   régénération relèvent de l'étape 7 du plan #27 (réconciliation au démarrage),
+>   régénération relèvent de la réconciliation au démarrage (règle ci-dessous),
 >   pas de cette règle de listing.
+
+### 🩺 Réconciliation au démarrage (garde d'intégrité légère)
+
+> **Quand.** Une seule fois par session, **après la garde d'entrée** et **avant
+> le listing**, uniquement si `./doc/roadmap/.index.json` existe. Un index absent
+> relève du fallback de rétrocompat ci-dessus (proposition de génération), pas de
+> cette garde.
+
+> ⚠️ **Contrainte dure — détection à bas coût uniquement.** Cette garde ne lit
+> **jamais** les plans un par un et ne lance **jamais** `doctor.py` au démarrage :
+> recréer un `doctor` complet à chaque session rétablirait le coût fixe que le
+> plan #27 supprime. L'audit complet reste **sur demande** (`aide doctor`). Les
+> seuls signaux autorisés ici sont ceux dérivables de `stat` (mtime) et de
+> `.index.json` déjà chargé pour le listing.
+
+**Signaux détectés (bas coût) :**
+
+| Signal | Détection | Source |
+|---|---|---|
+| Index périmé | mtime d'un plan `*.md` (racine + `done/`) ou de `roadmap.md` **> mtime** de `.index.json` | `stat` seul, aucun parsing |
+| `roadmap.md` désynchronisé | mtime de `.index.json` **> mtime** de `roadmap.md` | `stat` seul |
+| Plan mal placé | entrée `.index.json` avec `status: done` hors `done/`, ou `status: archived` hors `_archives/`, ou `active`/`blocked` sous `done/`-`_archives/` | `.index.json` déjà chargé |
+
+> Le statut hors-enum, les dépendances orphelines et les liens `done/` cassés
+> **ne sont pas** détectés ici (coût de parsing) : ils relèvent d'`aide doctor`.
+
+**Marqueur de report / refus** — `./doc/roadmap/.reconcile-declined` (même
+pattern que `.migration-declined`). Avant toute proposition, le lire :
+
+- **Absent** → proposer la réconciliation si un signal est détecté.
+- `snooze-until: YYYY-MM-DD` **dans le futur** → ne rien proposer.
+- `snooze-until: YYYY-MM-DD` **échu** (≤ aujourd'hui) → reproposer.
+- `declined` → ne rien proposer (sauf demande explicite « réconcilie » ou
+  suppression du fichier).
+
+**Si au moins un signal est détecté** (et marqueur non bloquant) : afficher le
+constat sous forme de tableau, puis **PROPOSER** via `AskUserQuestion` (jamais
+d'application silencieuse) :
+
+```
+🩺 Écart d'intégrité détecté au démarrage :
+
+| Signal | Détail | Réconciliation proposée |
+|---|---|---|
+| Index périmé | 3 plan(s) modifié(s) après `.index.json` | `build_roadmap.py --write` |
+| Plan mal placé | `12-x.md` : `done` hors `done/` | déplacement `git mv` (ou `normalize_status.py`, livré étape 11) |
+```
+
+| Choix | Action |
+|---|---|
+| **Réconcilier maintenant** | Index périmé / `roadmap.md` désync → `python3 scripts/build_roadmap.py --roadmap-dir doc/roadmap --write`. Plans mal placés → proposer les `git mv` correspondants (le script `normalize_status.py` de l'étape 11 automatisera les déplacements ; d'ici là, déplacement manuel encadré). Sur succès, supprimer un éventuel `.reconcile-declined`. |
+| **Reporter (2 / 8 / 30 jours)** | Écrire `snooze-until: <aujourd'hui + N jours>` dans `./doc/roadmap/.reconcile-declined`. |
+| **Refuser** | Écrire `declined` dans `./doc/roadmap/.reconcile-declined` et indiquer : « Tu pourras relancer via *réconcilie* ou en supprimant `doc/roadmap/.reconcile-declined`. » |
+
+> **Suivre les instructions.** Si l'utilisateur répond par une consigne ciblée
+> (« régénère l'index seulement », « laisse les déplacements »), l'appliquer
+> telle quelle sans exiger un des trois choix ci-dessus.
+
+> **Aucun signal** → continuer silencieusement vers le listing (aucun tour
+> consommé, fidèle au principe de coût fixe nul).
 
 Si l'utilisateur ne référence pas un plan existant dans son premier prompt :
 

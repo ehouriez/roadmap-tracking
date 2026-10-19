@@ -96,8 +96,8 @@ intenable à 500/1000 plans. Principe directeur : **le skill lit un index compac
 - [x] Étape 5 — Listing paresseux : par défaut actifs + bloqués triés par priorité + compteur « + N done » ; filtres `plans high` / `plans blocked` / `plans #250-300` (S · standard → Sonnet)
 
 ### Lot 3 — Intégrité, réconciliation & observabilité
-- [ ] Étape 6 — `scripts/doctor.py` : audit statut vs dossier, statut ∈ enum, dépendances réciproques, liens `done/` orphelins, index à jour ; rapport tableau + corrections **proposées** (jamais auto-destructrices) ; `--dry-run` par défaut (M · reasoning → Opus)
-- [ ] Étape 7 — **Réconciliation au démarrage (garde d'intégrité légère)** : câbler dans `modules/init-scan.md` (règle de démarrage, après la garde d'entrée) une détection **à bas coût** d'écart entre l'état réel (arborescence `doc/roadmap/` + `roadmap.md`) et les conventions #27 — index périmé (comparaison mtime index ↔ fichiers plan), plans mal placés (statut terminal en racine), statut hors-enum, `roadmap.md` désynchronisé de l'index. Si écart → **PROPOSER** la réconciliation (`build_roadmap --write`, `normalize_status`, déplacements) via OUI/NON/instructions ; **jamais d'application silencieuse**. ⚠️ Contrainte dure : staleness check léger uniquement — **pas de `doctor` complet systématique au démarrage** (sinon on re-crée le coût fixe qu'on supprime) ; le `doctor` complet reste sur demande (`aide doctor`). Marqueur de snooze/refus réutilisant le pattern `.migration-declined` (M · reasoning → Opus)
+- [x] Étape 6 — `scripts/doctor.py` : audit statut vs dossier, statut ∈ enum, dépendances réciproques, liens `done/` orphelins, index à jour ; rapport tableau + corrections **proposées** (jamais auto-destructrices) ; `--dry-run` par défaut (M · reasoning → Opus)
+- [x] Étape 7 — **Réconciliation au démarrage (garde d'intégrité légère)** : câbler dans `modules/init-scan.md` (règle de démarrage, après la garde d'entrée) une détection **à bas coût** d'écart entre l'état réel (arborescence `doc/roadmap/` + `roadmap.md`) et les conventions #27 — index périmé (comparaison mtime index ↔ fichiers plan), plans mal placés (statut terminal en racine), statut hors-enum, `roadmap.md` désynchronisé de l'index. Si écart → **PROPOSER** la réconciliation (`build_roadmap --write`, `normalize_status`, déplacements) via OUI/NON/instructions ; **jamais d'application silencieuse**. ⚠️ Contrainte dure : staleness check léger uniquement — **pas de `doctor` complet systématique au démarrage** (sinon on re-crée le coût fixe qu'on supprime) ; le `doctor` complet reste sur demande (`aide doctor`). Marqueur de snooze/refus réutilisant le pattern `.migration-declined` (M · reasoning → Opus)
 - [ ] Étape 8 — Catégories d'aide `aide doctor` et `aide stats` (observabilité portfolio depuis l'index, sans lire les plans) dans `modules/init-scan.md` (S · standard → Sonnet)
 
 ### Lot 4 — CONTEXT.md maîtrisé
@@ -252,6 +252,64 @@ grep -n "build_roadmap.py --roadmap-dir doc/roadmap --write" $SKILL_REPO/modules
 | 2026-10-19 | E4.1 init-scan index-first | ref `.index.json` + fallback | 5 occurrences `.index.json`, fallback présent | ✅ |
 | 2026-10-19 | E4.2 wrapup regen hook | hook `build_roadmap --write` | 1 occurrence | ✅ |
 
+### Lot 3 — procédure (étapes 6-7)
+
+```bash
+SKILL_REPO=/mnt/c/INETUM/AGV/agv-adm/GIT_GITHUB/skills/roadmap-tracking
+RM=$SKILL_REPO/doc/roadmap
+IS=$SKILL_REPO/modules/init-scan.md
+
+echo "=== E6.1 doctor self-check ==="
+python3 $SKILL_REPO/scripts/doctor.py --self-check; echo "exit=$?"
+
+echo "=== E6.2 doctor on clean roadmap (exit 0) ==="
+python3 $SKILL_REPO/scripts/doctor.py --roadmap-dir $RM; echo "exit=$?"
+
+echo "=== E6.3 stale index → périmé + exit 1, then regen → clean ==="
+python3 -c "import json;p='$RM/.index.json';d=json.load(open(p));d.append({'id':'999','status':'active','priority':'low','complexity':'S','title':'x','deps':[],'path':'999-x.md'});json.dump(d,open(p,'w'),ensure_ascii=False,indent=2)"
+python3 $SKILL_REPO/scripts/doctor.py --roadmap-dir $RM; echo "exit=$?"
+python3 $SKILL_REPO/scripts/build_roadmap.py --roadmap-dir $RM --write >/dev/null
+python3 $SKILL_REPO/scripts/doctor.py --roadmap-dir $RM; echo "exit=$?"
+
+echo "=== E6.4 all finding categories on isolated fixture ==="
+# fixture: in-progress status + orphan dep at root, done plan misplaced, ghost done link
+
+echo "=== E7.1 reconciliation section present ==="
+grep -n "Réconciliation au démarrage (garde d'intégrité légère)" $IS
+echo "=== E7.2 hard constraint: never doctor at startup, aide doctor on-demand ==="
+grep -n "ne lance \*\*jamais\*\* \`doctor.py\`\|sur demande\*\* (\`aide doctor\`)" $IS
+echo "=== E7.3 low-cost signals: mtime + .index.json ==="
+grep -n "mtime\|\`stat\` seul" $IS
+echo "=== E7.4 .reconcile-declined marker + snooze/declined ==="
+grep -n "\.reconcile-declined\|snooze-until" $IS
+echo "=== E7.5 three-choice proposal + follow instructions ==="
+grep -n "Réconcilier maintenant\|Suivre les instructions" $IS
+echo "=== E7.6 placement: section before listing ==="
+grep -n "Réconciliation au démarrage\|Si l'utilisateur ne référence pas un plan existant" $IS
+```
+
+**Résultats attendus :**
+- E6.1 : `✅ self-check passed`, exit 0.
+- E6.2 : `✅ aucune incohérence détectée`, exit 0 (repo sain).
+- E6.3 : index pollué → finding `index périmé` + exit 1 ; après `--write` → clean + exit 0.
+- E6.4 : 5 findings sur fixture (statut hors-enum mappable, plan mal placé, dépendance orpheline, 2× lien `done/` orphelin) ; `--dry-run` par défaut, aucun fichier modifié.
+- E7.1-7.6 : section `🩺 Réconciliation au démarrage` présente, contrainte dure (jamais `doctor.py` au démarrage / `aide doctor` à la demande), signaux bas coût (mtime + `.index.json`), marqueur `.reconcile-declined` + snooze/declined, 3 choix + suivi d'instructions, placée avant le listing.
+
+### Résultats joués et vérifiés — Lot 3 (étapes 6-7)
+
+| Date | Test | Attendu | Observé | Verdict |
+|------|------|---------|---------|---------|
+| 2026-10-19 | E6.1 doctor self-check | `self-check passed` exit 0 | `✅ self-check passed` exit 0 | ✅ |
+| 2026-10-19 | E6.2 doctor repo sain | aucune incohérence, exit 0 | `✅ aucune incohérence détectée` exit 0 | ✅ |
+| 2026-10-19 | E6.3 index périmé + regen | périmé exit 1, puis clean exit 0 | `index périmé` exit 1, puis clean exit 0 | ✅ |
+| 2026-10-19 | E6.4 catégories de findings | 5 findings, dry-run non destructif | hors-enum + mal placé + dép orpheline + 2 liens orphelins = 5, exit 1, aucun fichier modifié | ✅ |
+| 2026-10-19 | E7.1 section présente | titre réconciliation | ligne 134 présent | ✅ |
+| 2026-10-19 | E7.2 contrainte dure | jamais doctor au démarrage + aide doctor | lignes 142-144 présentes | ✅ |
+| 2026-10-19 | E7.3 signaux bas coût | mtime + .index.json | lignes 145-153 présentes | ✅ |
+| 2026-10-19 | E7.4 marqueur snooze/declined | `.reconcile-declined` + snooze/declined | lignes 159-185 présentes | ✅ |
+| 2026-10-19 | E7.5 3 choix + instructions | Réconcilier/Reporter/Refuser + suivi | lignes 183-187 présentes | ✅ |
+| 2026-10-19 | E7.6 placement avant listing | section (134) < listing (194) | 134 < 194 | ✅ |
+
 ## Journal de session
 
 ### Session 2026-10-19 (création)
@@ -273,3 +331,8 @@ grep -n "build_roadmap.py --roadmap-dir doc/roadmap --write" $SKILL_REPO/modules
 - ✅ Fait : Étape 3 — `scripts/build_roadmap.py` créé (réutilise le parseur de front matter de `migrate_plan_ids.py`, zéro dépendance). Scanne racine + `done/`, applique le mapping de statut, génère `.index.json` (JSON, fichier caché sous `doc/roadmap/`, consommé par le skill), `roadmap.md` (backlog actif trié priorité→ID, généré tel quel) et `done/INDEX.md` ; modes `--dry-run`/`--write`/`--check`/`--self-check`. Étape 4 — `modules/init-scan.md` : listing index-first (`.index.json`) avec fallback lecture bornée si absent (rétrocompat) ; `modules/wrapup.md` : la clôture régénère les vues via `build_roadmap.py --write` (support 3 n'est plus un édit manuel de `roadmap.md`). Décisions utilisateur : index = JSON ; `roadmap.md` généré tel quel. Index généré pour 27 plans (1 actif / 24 done / 2 archived). Tests autonomes → voir section `## Tests`.
 - 📋 Prochain : Lot 2 — étape 5 (listing paresseux / filtres), puis Lot 3.
 - 🚧 Blocages : aucun. ⚠️ `build_roadmap.py` et les vues générées sont versionnés dans le repo du skill mais le skill s'exécute depuis le cache plugin : la copie cache ne contiendra le script qu'après publication/sync de la nouvelle version.
+
+### Session 2026-10-19 (implémentation Lot 3 — étapes 6-7, one-shot)
+- ✅ Fait : Étape 6 — `scripts/doctor.py` créé (réutilise le parseur + `build_index`/`map_status` de `build_roadmap.py`, zéro dépendance). Audit **non destructif** à bas coût (lit les front matter + `.index.json` ; ne modifie jamais) : statut ∈ enum (hors-enum mappable vs inconnu), statut vs dossier (`done`→`done/`, `archived`→`_archives/`), dépendances orphelines (`depends_on` introuvable), liens `done/INDEX.md` cassés, index périmé. Rapport tableau markdown, corrections **proposées** ; `--dry-run` par défaut ; `--self-check` intégré ; exit 1 si finding. Étape 7 — règle `🩺 Réconciliation au démarrage` ajoutée dans `modules/init-scan.md` (après le bloc « source du listing = index », avant le listing). Détection **à bas coût uniquement** (mtime plans/`roadmap.md` ↔ `.index.json`, mismatch statut/dossier depuis l'index déjà chargé) — **jamais** de `doctor` complet au démarrage (reste sur `aide doctor`). Proposition OUI/NON/instructions via marqueur `.reconcile-declined` (pattern `.migration-declined`). **Repli assumé (option 1)** : les déplacements de plans mal placés référencent `normalize_status.py` comme « livré étape 11 » (script non encore implémenté) ; seule la régénération d'index est exécutable aujourd'hui.
+- 📋 Prochain : Lot 3 — étape 8 (`aide doctor` + `aide stats`), puis Lot 4 (CONTEXT.md).
+- 🚧 Blocages : aucun. ⚠️ Même réserve de sync cache plugin que pour `build_roadmap.py` (le skill tourne depuis le cache ; `doctor.py` n'y sera présent qu'après publication). ⚠️ Étape 7 : la branche « déplacement de plans mal placés » n'est pleinement opérationnelle qu'après l'étape 11 (`normalize_status.py`).
