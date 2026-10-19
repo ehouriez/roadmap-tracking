@@ -239,7 +239,8 @@ Vérifier si `./doc/roadmap/.index.json` existe :
   >      **Ne pas continuer vers la reprise ou le listing avant d'avoir reçu la
   >      réponse.** La demande de reprise d'un plan en attente ne dispense PAS
   >      de ce point d'arrêt. Si Oui : dry-run, puis `--write`, puis
-  >      `build_roadmap --write`. Si Non : continuer.
+  >      `build_roadmap --write`, puis **`doctor.py --roadmap-dir doc/roadmap`**
+  >      (afficher le rapport). Si Non : continuer.
   >   4. Continuer vers 📏 (budget CONTEXT.md) puis le listing / la reprise.
   > - **Non** → continuer en mode fallback (lecture bornée de `roadmap.md`) ;
   >   l'index ne sera plus proposé cette session.
@@ -283,7 +284,8 @@ Vérifier si `./doc/roadmap/.index.json` existe :
 >      `normalize_status.py --write` (dry-run d'abord) ? »
 >      Ne pas continuer avant d'avoir reçu la réponse — même si la reprise
 >      d'un plan a été demandée. Si Oui : dry-run, puis `--write`, puis
->      `build_roadmap --write`. Si Non : continuer.
+>      `build_roadmap --write`, puis **`doctor.py --roadmap-dir doc/roadmap`**
+>      (afficher le rapport). Si Non : continuer.
 >   4. Continuer vers le listing.
 > - **Index périmé** : la détection de péremption et sa proposition de
 >   régénération relèvent de la réconciliation au démarrage (règle ci-dessous),
@@ -544,6 +546,15 @@ Poser un choix à **3 options** via `AskUserQuestion` :
    Si le dry-run signale une anomalie, **ne pas** lancer la migration : la
    remonter à l'utilisateur.
 
+3. **Après la migration réelle** : exécuter et afficher le rapport :
+
+   ```bash
+   python3 scripts/doctor.py --roadmap-dir doc/roadmap
+   ```
+
+   Un rapport propre (`✅ aucune incohérence`) confirme que la migration n'a
+   pas introduit de liens cassés ni de statuts invalides.
+
 
 ---
 
@@ -600,7 +611,8 @@ Vérifier **dans l'ordre** :
         `normalize_status.py --write` (dry-run d'abord) ? »
         Ne pas continuer avant d'avoir reçu la réponse — même si la reprise
         d'un plan a été demandée. Si Oui : dry-run, puis `--write`, puis
-        `build_roadmap --write`. Si Non : continuer.
+        `build_roadmap --write`, puis **`doctor.py --roadmap-dir doc/roadmap`**
+        (afficher le rapport). Si Non : continuer.
      4. Continuer.
    - **Non** → mode fallback ; ne plus proposer cette session.
    → Cette garde s'exécute **que le prompt référence un plan existant ou non**.
