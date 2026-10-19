@@ -104,20 +104,28 @@ intenable à 500/1000 plans. Principe directeur : **le skill lit un index compac
 - [x] Étape 9 — Segmentation : noyau `CONTEXT.md` (RÈGLES ABSOLUES, budget dur ~200 l./15 Ko, toujours chargé) + dossier `context/*.md` thématique chargé à la demande ; mettre à jour la section « Hydratation » de `SKILL.md` (M · reasoning → Opus)
 - [x] Étape 10 — Capitalisation auto encadrée : capture gatée OUI/NON/instructions, catégorisation obligatoire (⚠️🔗📌💡) + réf. plan d'origine, garde-fou de budget (refus d'ajout si seuil dépassé → bascule thématique), purge proposée à la clôture de plan (M · reasoning → Opus)
 
-### Lot 5 — Migration & onboarding
-- [ ] Étape 11 — `scripts/normalize_status.py` (applique le mapping) + procédure de déplacement des plans mal placés (`done`→`done/`, `archived`→`_archives/`, créer `_archives/`) ; idempotent, `--dry-run`, rollback git (M · standard → Sonnet)
-- [ ] Étape 12 — Onboarding : README « Quickstart 5 min » + catégorie `aide migration` (adoption sur projet existant non suivi) (S · standard → Sonnet)
-- [ ] Étape 13 — Documentation : aligner `references/{roadmap-file,templates,environment}.md` sur index/statuts/CONTEXT/réconciliation ; bump de version `SKILL.md` (S · standard → Sonnet)
+### Lot 5 — Dépassement de budget CONTEXT outillé
+> Comble le trou identifié en cadrage : la règle de dépassement de l'étape 9
+> (noyau > 200 l./15 Ko) est purement déclarative — « signaler + proposer » sans
+> outil de mesure ni de découpe. Ce lot l'outille réellement.
+- [ ] Étape 11 — `scripts/split_context.py` : mesure le noyau `CONTEXT.md` (lignes **ET** octets, seuil atteint si **l'un OU l'autre** dépasse 200 l. / 15 Ko) ; découpe le surplus par titres `##` vers `context/<slug-du-titre>.md` (le noyau ne garde que « RÈGLES ABSOLUES ») ; idempotent, `--dry-run` par défaut, `--self-check`, rollback git (M · reasoning → Opus)
+- [ ] Étape 12 — Câbler la détection de dépassement au démarrage dans `modules/init-scan.md` : check **bas coût** (`wc -l`/`wc -c` sur `CONTEXT.md` uniquement, jamais de lecture d'analyse) après l'hydratation du noyau ; si seuil dépassé → **PROPOSER** `split_context.py` via OUI/NON/snooze ; marqueur `.context-split-declined` réutilisant le pattern `.migration-declined` (re-proposition si snooze échu, silence si `declined`) (S · reasoning → Opus)
+
+### Lot 6 — Migration & onboarding
+- [ ] Étape 13 — `scripts/normalize_status.py` (applique le mapping) + procédure de déplacement des plans mal placés (`done`→`done/`, `archived`→`_archives/`, créer `_archives/`) ; idempotent, `--dry-run`, rollback git (M · standard → Sonnet)
+- [ ] Étape 14 — Onboarding : README « Quickstart 5 min » + catégorie `aide migration` (adoption sur projet existant non suivi) (S · standard → Sonnet)
+- [ ] Étape 15 — Documentation : aligner `references/{roadmap-file,templates,environment}.md` sur index/statuts/CONTEXT/réconciliation ; bump de version `SKILL.md` (S · standard → Sonnet)
 
 - [ ] 🧪 Tests — Rédiger et exécuter la procédure de test (E2E fresh-install + génération/validation index + mapping statut + réconciliation au démarrage sur arborescence dérivée)
 - [ ] ✅ Validation — Vérifier les résultats des tests et clôturer
 
 > Lots séquencés par dépendance : Lot 2 (index) est prérequis du Lot 3. L'étape 7
 > (réconciliation au démarrage) dépend de l'étape 3 (`build_roadmap`), de la logique
-> de l'étape 6 (`doctor`) et des scripts de l'étape 11 (`normalize`/déplacements) —
-> à implémenter donc **après** le Lot 5, ou en limitant d'abord la réconciliation à
+> de l'étape 6 (`doctor`) et des scripts de l'étape 13 (`normalize`/déplacements) —
+> à implémenter donc **après** le Lot 6, ou en limitant d'abord la réconciliation à
 > la régénération d'index puis en étendant. Lot 1 est indépendant et livrable
-> immédiatement. Lot 4 (CONTEXT) est indépendant des autres.
+> immédiatement. Lot 4 (CONTEXT) est indépendant des autres. Lot 5 (dépassement
+> CONTEXT outillé) dépend de l'étape 9 (segmentation) — déjà livrée.
 
 ## Tests
 
@@ -383,7 +391,7 @@ grep -n "index uniquement\|aucun plan lu" $IS
 ### Session 2026-10-19 (implémentation Lot 3 — étapes 6-7, one-shot)
 - ✅ Fait : Étape 6 — `scripts/doctor.py` créé (réutilise le parseur + `build_index`/`map_status` de `build_roadmap.py`, zéro dépendance). Audit **non destructif** à bas coût (lit les front matter + `.index.json` ; ne modifie jamais) : statut ∈ enum (hors-enum mappable vs inconnu), statut vs dossier (`done`→`done/`, `archived`→`_archives/`), dépendances orphelines (`depends_on` introuvable), liens `done/INDEX.md` cassés, index périmé. Rapport tableau markdown, corrections **proposées** ; `--dry-run` par défaut ; `--self-check` intégré ; exit 1 si finding. Étape 7 — règle `🩺 Réconciliation au démarrage` ajoutée dans `modules/init-scan.md` (après le bloc « source du listing = index », avant le listing). Détection **à bas coût uniquement** (mtime plans/`roadmap.md` ↔ `.index.json`, mismatch statut/dossier depuis l'index déjà chargé) — **jamais** de `doctor` complet au démarrage (reste sur `aide doctor`). Proposition OUI/NON/instructions via marqueur `.reconcile-declined` (pattern `.migration-declined`). **Repli assumé (option 1)** : les déplacements de plans mal placés référencent `normalize_status.py` comme « livré étape 11 » (script non encore implémenté) ; seule la régénération d'index est exécutable aujourd'hui.
 - 📋 Prochain : Lot 3 — étape 8 (`aide doctor` + `aide stats`), puis Lot 4 (CONTEXT.md).
-- 🚧 Blocages : aucun. ⚠️ Même réserve de sync cache plugin que pour `build_roadmap.py` (le skill tourne depuis le cache ; `doctor.py` n'y sera présent qu'après publication). ⚠️ Étape 7 : la branche « déplacement de plans mal placés » n'est pleinement opérationnelle qu'après l'étape 11 (`normalize_status.py`).
+- 🚧 Blocages : aucun. ⚠️ Même réserve de sync cache plugin que pour `build_roadmap.py` (le skill tourne depuis le cache ; `doctor.py` n'y sera présent qu'après publication). ⚠️ Étape 7 : la branche « déplacement de plans mal placés » n'est pleinement opérationnelle qu'après l'étape 11 (`normalize_status.py`). *(Note 2026-10-19 — recadrage postérieur : `normalize_status.py` est désormais l'**étape 13** du **Lot 6** ; un nouveau Lot 5 « Dépassement CONTEXT outillé » a été inséré. Référence historique conservée telle quelle.)*
 
 ### Session 2026-10-19 (implémentation Lot 3 — étape 8)
 - ✅ Fait : Étape 8 — `aide doctor` et `aide stats` ajoutées dans `modules/init-scan.md` : table des déclencheurs, footer (catégorie list), welcome note, et sections de contenu dédiées (`### Contenu de \`aide doctor\`` / `### Contenu de \`aide stats\``). `aide doctor` documente les 5 catégories d'audit + commande + options. `aide stats` documente le format de sortie à 3 dimensions (statut/priorité/complexité) depuis `.index.json` uniquement, avec fallback si index absent. Déclencheurs `stats` et `portfolio` aussi reconnus.
@@ -449,5 +457,5 @@ grep -n "Purge de capitalisation CONTEXT" $WU
 
 ### Session 2026-10-19 (implémentation Lot 4 — étapes 9-10, one-shot)
 - ✅ Fait : Étape 9 — section « Hydratation du contexte de session » de `SKILL.md` refondue : segmentation à 2 niveaux (noyau `CONTEXT.md` borné `≤ 200 l. / 15 Ko`, toujours chargé / `context/*.md` thématique à la demande), règle de dépassement de budget (lecture sans troncature + signalement + proposition de bascule), diagramme d'ordre d'exécution étendu (étape 4 = `context/` à la demande, jamais au démarrage). Étape 10 — sous-section « Capitalisation automatique encadrée » ajoutée dans la même section : capture gatée Oui/Non/Instructions, catégorisation obligatoire (⚠️ piège / 🔗 dépendance / 📌 contrainte / 💡 insight) + réf. plan d'origine (format `⚠️ [#27] …`), garde-fou de budget (refus d'ajout au noyau → routage vers `context/<thème>.md`), purge à la clôture (OUI/NON). Hook de purge câblé en étape 5 de la checklist de clôture (`modules/wrapup.md`). Tests autonomes (auto-check, 10/10 ✅) → voir section `## Tests`.
-- 📋 Prochain : Lot 5 — étape 11 (`scripts/normalize_status.py`).
+- 📋 Prochain : Lot 5 — étape 11 (`scripts/split_context.py`, outillage du dépassement de budget CONTEXT ; Lot 5 ajouté en recadrage, l'ancien Lot 5 Migration & onboarding devient Lot 6).
 - 🚧 Blocages : aucun. ⚠️ `SKILL.md`/`wrapup.md` édités dans le repo ; le skill tourne depuis le cache plugin — les modifications n'y seront actives qu'après publication/sync de la version. ⚠️ Pas de `CONTEXT.md`/`context/` dans ce projet : les étapes 9-10 définissent le **comportement du skill** (documentation normative), non la création de contenu CONTEXT.
