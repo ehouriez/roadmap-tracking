@@ -227,9 +227,18 @@ Vérifier si `./doc/roadmap/.index.json` existe :
 - **Absent** → proposer via `AskUserQuestion` (une seule question, deux options) :
   > « Aucun index `.index.json` détecté — il accélère tous les démarrages et
   > active la réconciliation automatique. Veux-tu le générer maintenant ? »
-  > - **Oui** → exécuter `python3 scripts/build_roadmap.py --roadmap-dir doc/roadmap --write`,
-  >   puis **enchaîner immédiatement la 🩺 Réconciliation au démarrage**
-  >   (l'index est tout frais — détecter les plans mal placés avant de continuer).
+  > - **Oui** → exécuter dans l'ordre, sans sauter aucune sous-étape :
+  >   1. `python3 scripts/build_roadmap.py --roadmap-dir doc/roadmap --write`
+  >   2. **Lire immédiatement l'index tout frais** (`.index.json`) et chercher
+  >      les plans mal placés : `status: done` hors `done/`, `status: archived`
+  >      hors `archived/`, ou `status: active`/`blocked` sous `done/`/`archived/`.
+  >   3. **Si des plans mal placés sont détectés** → afficher un tableau récap
+  >      et proposer via `AskUserQuestion` :
+  >      « Normaliser les déplacements via
+  >      `python3 scripts/normalize_status.py --roadmap-dir doc/roadmap --write`
+  >      (dry-run d'abord pour confirmer) ? » — Si Oui : exécuter, puis régénérer
+  >      l'index (`build_roadmap --write`). Si Non : continuer.
+  >   4. Continuer vers 📏 (budget CONTEXT.md) puis le listing / la reprise.
   > - **Non** → continuer en mode fallback (lecture bornée de `roadmap.md`) ;
   >   l'index ne sera plus proposé cette session.
 
@@ -262,9 +271,14 @@ Vérifier si `./doc/roadmap/.index.json` existe :
 >   bornée de `roadmap.md` (règle ci-dessus) + inspection de `./doc/roadmap/`.
 >   Proposer de générer l'index : « Aucun index `.index.json` — veux-tu le créer
 >   via `python3 scripts/build_roadmap.py --write` ? (il accélère tous les démarrages) ».
->   Si l'utilisateur accepte et que l'index est généré : **enchaîner immédiatement
->   avec la 🩺 Réconciliation au démarrage** (l'index vient d'être créé —
->   vérifier les plans mal placés depuis cet index tout frais avant le listing).
+>   Si l'utilisateur accepte : exécuter dans l'ordre :
+>   1. `python3 scripts/build_roadmap.py --roadmap-dir doc/roadmap --write`
+>   2. Lire l'index tout frais et chercher les plans mal placés (`status: done`
+>      hors `done/`, `status: archived` hors `archived/`, `active`/`blocked`
+>      sous `done/`/`archived/`).
+>   3. Si plans mal placés → proposer `normalize_status.py --roadmap-dir doc/roadmap --write`
+>      (dry-run d'abord). Si Oui : exécuter + régénérer l'index.
+>   4. Continuer vers le listing.
 > - **Index périmé** : la détection de péremption et sa proposition de
 >   régénération relèvent de la réconciliation au démarrage (règle ci-dessous),
 >   pas de cette règle de listing.
@@ -570,8 +584,14 @@ Vérifier **dans l'ordre** :
    → **Absent** → poser via `AskUserQuestion` : « Aucun index `.index.json`
    détecté — veux-tu le générer maintenant via `build_roadmap.py --write` ?
    (accélère tous les démarrages et active la réconciliation automatique) »
-   - **Oui** → `python3 scripts/build_roadmap.py --roadmap-dir doc/roadmap --write`,
-     puis exécuter la 🩺 Réconciliation (plans mal placés depuis l'index frais).
+   - **Oui** → exécuter dans l'ordre :
+     1. `python3 scripts/build_roadmap.py --roadmap-dir doc/roadmap --write`
+     2. Lire l'index tout frais et chercher les plans mal placés (`status: done`
+        hors `done/`, `status: archived` hors `archived/`, `active`/`blocked`
+        sous `done/`/`archived/`).
+     3. Si plans mal placés → proposer `normalize_status.py --roadmap-dir doc/roadmap --write`
+        (dry-run d'abord). Si Oui : exécuter + régénérer l'index.
+     4. Continuer.
    - **Non** → mode fallback ; ne plus proposer cette session.
    → Cette garde s'exécute **que le prompt référence un plan existant ou non**.
    Ne pas la sauter sous prétexte qu'une reprise directe a été demandée.
