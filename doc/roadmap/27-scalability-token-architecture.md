@@ -98,7 +98,7 @@ intenable à 500/1000 plans. Principe directeur : **le skill lit un index compac
 ### Lot 3 — Intégrité, réconciliation & observabilité
 - [x] Étape 6 — `scripts/doctor.py` : audit statut vs dossier, statut ∈ enum, dépendances réciproques, liens `done/` orphelins, index à jour ; rapport tableau + corrections **proposées** (jamais auto-destructrices) ; `--dry-run` par défaut (M · reasoning → Opus)
 - [x] Étape 7 — **Réconciliation au démarrage (garde d'intégrité légère)** : câbler dans `modules/init-scan.md` (règle de démarrage, après la garde d'entrée) une détection **à bas coût** d'écart entre l'état réel (arborescence `doc/roadmap/` + `roadmap.md`) et les conventions #27 — index périmé (comparaison mtime index ↔ fichiers plan), plans mal placés (statut terminal en racine), statut hors-enum, `roadmap.md` désynchronisé de l'index. Si écart → **PROPOSER** la réconciliation (`build_roadmap --write`, `normalize_status`, déplacements) via OUI/NON/instructions ; **jamais d'application silencieuse**. ⚠️ Contrainte dure : staleness check léger uniquement — **pas de `doctor` complet systématique au démarrage** (sinon on re-crée le coût fixe qu'on supprime) ; le `doctor` complet reste sur demande (`aide doctor`). Marqueur de snooze/refus réutilisant le pattern `.migration-declined` (M · reasoning → Opus)
-- [ ] Étape 8 — Catégories d'aide `aide doctor` et `aide stats` (observabilité portfolio depuis l'index, sans lire les plans) dans `modules/init-scan.md` (S · standard → Sonnet)
+- [x] Étape 8 — Catégories d'aide `aide doctor` et `aide stats` (observabilité portfolio depuis l'index, sans lire les plans) dans `modules/init-scan.md` (S · standard → Sonnet)
 
 ### Lot 4 — CONTEXT.md maîtrisé
 - [ ] Étape 9 — Segmentation : noyau `CONTEXT.md` (RÈGLES ABSOLUES, budget dur ~200 l./15 Ko, toujours chargé) + dossier `context/*.md` thématique chargé à la demande ; mettre à jour la section « Hydratation » de `SKILL.md` (M · reasoning → Opus)
@@ -332,7 +332,60 @@ grep -n "Réconciliation au démarrage\|Si l'utilisateur ne référence pas un p
 - 📋 Prochain : Lot 2 — étape 5 (listing paresseux / filtres), puis Lot 3.
 - 🚧 Blocages : aucun. ⚠️ `build_roadmap.py` et les vues générées sont versionnés dans le repo du skill mais le skill s'exécute depuis le cache plugin : la copie cache ne contiendra le script qu'après publication/sync de la nouvelle version.
 
+### Lot 3 — procédure (étape 8)
+
+```bash
+IS=/mnt/c/INETUM/AGV/agv-adm/GIT_GITHUB/skills/roadmap-tracking/modules/init-scan.md
+
+echo "=== E8.1 aide doctor dans la table ==="
+grep -n "aide doctor" $IS | head -3
+
+echo "=== E8.2 aide stats dans la table ==="
+grep -n "aide stats" $IS | head -3
+
+echo "=== E8.3 footer doctor|stats ==="
+grep -n "doctor|stats" $IS
+
+echo "=== E8.4 sections contenu présentes ==="
+grep -n "Contenu de .aide doctor\|Contenu de .aide stats" $IS
+
+echo "=== E8.5 5 catégories doctor ==="
+grep -n "Statut hors-enum\|Statut vs dossier\|Dépendances orphelines\|Liens.*cassés\|Index périmé" $IS | grep -v "^.*[0-9]\{3,\}:"
+
+echo "=== E8.6 format stats 3 dimensions ==="
+grep -n "| active\|| blocked\|| done\|| archived" $IS | head -5
+
+echo "=== E8.7 source index uniquement ==="
+grep -n "index uniquement\|aucun plan lu" $IS
+```
+
+**Résultats attendus :**
+- E8.1 : `aide doctor` présent table (ligne ~30) + welcome note + section contenu.
+- E8.2 : `aide stats` présent table (ligne ~31) + welcome note + section contenu.
+- E8.3 : footer contient `doctor|stats`.
+- E8.4 : sections `### Contenu de \`aide doctor\`` et `### Contenu de \`aide stats\`` présentes.
+- E8.5 : 5 catégories doctor dans le tableau de la section contenu.
+- E8.6 : format stats avec 4 statuts × 5 priorités × 5 complexités.
+- E8.7 : note « Source : `.index.json` uniquement — aucun plan lu individuellement. »
+
+### Résultats joués et vérifiés — Lot 3 (étape 8)
+
+| Date | Test | Attendu | Observé | Verdict |
+|------|------|---------|---------|---------|
+| 2026-10-19 | E8.1 aide doctor table + welcome + section | 3 occurrences minimum | lignes 30, 60, 68 | ✅ |
+| 2026-10-19 | E8.2 aide stats table + welcome + section | 3 occurrences minimum | lignes 31, 61, 95 | ✅ |
+| 2026-10-19 | E8.3 footer doctor\|stats | présent | ligne 39 | ✅ |
+| 2026-10-19 | E8.4 sections contenu | 2 sections présentes | lignes 68, 95 | ✅ |
+| 2026-10-19 | E8.5 5 catégories doctor | Statut hors-enum/vs dossier/Deps orphelines/Liens cassés/Index périmé | lignes 79-83 | ✅ |
+| 2026-10-19 | E8.6 format stats 3 dimensions | active/blocked/done/archived × critical…/XS… | lignes 111-114 | ✅ |
+| 2026-10-19 | E8.7 source index uniquement | note présente | ligne 118 | ✅ |
+
 ### Session 2026-10-19 (implémentation Lot 3 — étapes 6-7, one-shot)
 - ✅ Fait : Étape 6 — `scripts/doctor.py` créé (réutilise le parseur + `build_index`/`map_status` de `build_roadmap.py`, zéro dépendance). Audit **non destructif** à bas coût (lit les front matter + `.index.json` ; ne modifie jamais) : statut ∈ enum (hors-enum mappable vs inconnu), statut vs dossier (`done`→`done/`, `archived`→`_archives/`), dépendances orphelines (`depends_on` introuvable), liens `done/INDEX.md` cassés, index périmé. Rapport tableau markdown, corrections **proposées** ; `--dry-run` par défaut ; `--self-check` intégré ; exit 1 si finding. Étape 7 — règle `🩺 Réconciliation au démarrage` ajoutée dans `modules/init-scan.md` (après le bloc « source du listing = index », avant le listing). Détection **à bas coût uniquement** (mtime plans/`roadmap.md` ↔ `.index.json`, mismatch statut/dossier depuis l'index déjà chargé) — **jamais** de `doctor` complet au démarrage (reste sur `aide doctor`). Proposition OUI/NON/instructions via marqueur `.reconcile-declined` (pattern `.migration-declined`). **Repli assumé (option 1)** : les déplacements de plans mal placés référencent `normalize_status.py` comme « livré étape 11 » (script non encore implémenté) ; seule la régénération d'index est exécutable aujourd'hui.
 - 📋 Prochain : Lot 3 — étape 8 (`aide doctor` + `aide stats`), puis Lot 4 (CONTEXT.md).
 - 🚧 Blocages : aucun. ⚠️ Même réserve de sync cache plugin que pour `build_roadmap.py` (le skill tourne depuis le cache ; `doctor.py` n'y sera présent qu'après publication). ⚠️ Étape 7 : la branche « déplacement de plans mal placés » n'est pleinement opérationnelle qu'après l'étape 11 (`normalize_status.py`).
+
+### Session 2026-10-19 (implémentation Lot 3 — étape 8)
+- ✅ Fait : Étape 8 — `aide doctor` et `aide stats` ajoutées dans `modules/init-scan.md` : table des déclencheurs, footer (catégorie list), welcome note, et sections de contenu dédiées (`### Contenu de \`aide doctor\`` / `### Contenu de \`aide stats\``). `aide doctor` documente les 5 catégories d'audit + commande + options. `aide stats` documente le format de sortie à 3 dimensions (statut/priorité/complexité) depuis `.index.json` uniquement, avec fallback si index absent. Déclencheurs `stats` et `portfolio` aussi reconnus.
+- 📋 Prochain : Lot 4 — étape 9 (segmentation CONTEXT.md).
+- 🚧 Blocages : aucun.

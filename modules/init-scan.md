@@ -27,6 +27,8 @@ règle de démarrage, comme les questions de culture générale) :
 | `aide tests` | Tests intermédiaires, étape 🧪, étape ✅, mode autonomous, règle ⛔ |
 | `aide git` | Commits 📦, migration, issues, `.migration-declined` |
 | `aide intégrations` | Skill `impeccable`, mapping IDE, actions génériques |
+| `aide doctor` | Audit complet `doctor.py` : commande, catégories de findings, lecture du rapport |
+| `aide stats` | Statistiques portfolio depuis `.index.json` : comptages par statut/priorité/complexité, sans lire les plans |
 | `aide roadmap` | Alias de `aide` — aide complète |
 | `help` | Alias de `aide` — aide complète |
 
@@ -34,7 +36,7 @@ Chaque aide par catégorie se termine par :
 
 ```
 💡 Pour l'aide complète : « aide »
-   Pour une autre catégorie : « aide [workflow|config|planification|plans|tests|git|intégrations] »
+   Pour une autre catégorie : « aide [workflow|config|planification|plans|tests|git|intégrations|doctor|stats] »
 ```
 
 ### Note de bienvenue (première exécution uniquement)
@@ -55,11 +57,65 @@ Pour obtenir de l'aide sur le skill, dis :
   « aide tests »         → Tests intermédiaires, finaux, mode autonomous
   « aide git »           → Commits, migration de plans, issues GitHub
   « aide intégrations »  → Skill impeccable (UX/UI), IDE
+  « aide doctor »        → Audit complet : doctor.py, findings, rapport
+  « aide stats »         → Statistiques portfolio depuis l'index
 
 Cette note n'apparaîtra qu'une seule fois.
 ```
 
 Puis écrire `roadmap-tracking.help.welcomed: true` dans `.skill-config.yml`.
+
+### Contenu de `aide doctor`
+
+🩺 **Doctor — audit d'intégrité complet (sur demande)**
+
+Contrairement à la **réconciliation au démarrage** (bas coût, 3 signaux mtime),
+le doctor vérifie exhaustivement `doc/roadmap/` sans modifier aucun fichier.
+
+**Catégories d'audit :**
+
+| Catégorie | Ce que ça détecte |
+|---|---|
+| Statut hors-enum | `in-progress`, `cancelled`, valeurs inconnues ; propose le mapping |
+| Statut vs dossier | plan `done` hors `done/` ; plan `archived` hors `_archives/` |
+| Dépendances orphelines | `depends_on` référençant un plan introuvable |
+| Liens `done/INDEX.md` cassés | entrées pointant vers des fichiers absents |
+| Index périmé | `.index.json` plus vieux qu'un plan ou `roadmap.md` modifié |
+
+**Commande :**
+
+```bash
+python3 scripts/doctor.py --roadmap-dir doc/roadmap
+```
+
+Options : `--dry-run` (défaut — aucune modification) · `--self-check` (validation interne du script).
+
+Le rapport est un tableau markdown. Les corrections sont **proposées**, jamais appliquées automatiquement.
+
+### Contenu de `aide stats`
+
+📊 **Stats — observabilité portfolio (depuis `.index.json`, sans lire les plans)**
+
+Déclencheurs reconnus : `stats`, `portfolio`, `aide stats`.
+
+Comportement : lire `.index.json` et agréger. Si `.index.json` absent :
+indiquer « Index absent — génère-le via `python3 scripts/build_roadmap.py --roadmap-dir doc/roadmap --write`. »
+
+**Format de sortie :**
+
+```
+📊 Portfolio — NNN plans au total
+
+| Statut   | N | Priorité | N | Complexité | N |
+|----------|---|----------|---|------------|---|
+| active   | X | critical | X | XS         | X |
+| blocked  | X | high     | X | S          | X |
+| done     | X | medium   | X | M          | X |
+| archived | X | low      | X | L          | X |
+|          |   | none     | X | XL         | X |
+```
+
+> Source : `.index.json` uniquement — aucun plan lu individuellement.
 
 ---
 
