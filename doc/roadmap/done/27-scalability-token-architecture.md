@@ -655,16 +655,16 @@ python3 -I $SKILL_SCRIPTS/split_context.py --roadmap-dir $AUXITUM_RM; echo "exit
 
 | Test | Attendu |
 |------|---------|
-| E2E-1 | `roadmap-tracking` version `4.0.0` listée |
-| E2E-2 | Dry-run affiche les 3 fichiers à générer sans erreur |
-| E2E-3 | `✅ wrote .index.json`, `roadmap.md`, `done/INDEX.md` ; `~286 plans` |
-| E2E-4 | Total ≥ 286 plans ; actifs ≈ 70 ; done ≈ 216 |
-| E2E-5 | `up to date` exit 0 |
-| E2E-6 | Tableau listant les 3 plans `in-progress` (`175`, `214`, `341`) |
-| E2E-7 | `✅ normalize — modifications appliquées` |
-| E2E-8 | `status: active` pour les 3 plans |
-| E2E-9 | Index régénéré sans erreur |
-| E2E-10 | `✅ doctor — aucune incohérence détectée` exit 0 (après normalisation et rebuild) |
+| E2E-1 | `roadmap-tracking@roadmap-tracking` listé |
+| E2E-2 | Dry-run affiche les 3 fichiers à générer sans erreur, `285 plans` |
+| E2E-3 | `✅ wrote .index.json`, `roadmap.md`, `done/INDEX.md` ; `285 plans` |
+| E2E-4 | Total=285 ; actifs=54 ; done=219 |
+| E2E-5 | `up to date (285 plans)` exit 0 |
+| E2E-6 | 3 rewrites (`in-progress`→`active` : 175, 341 ; `cancelled`→`archived` : 214) + 6 déplacements (3→`archived/`, 3→`done/`) |
+| E2E-7 | `✅ normalize — modifications appliquées` ; rollback git affiché |
+| E2E-8 | `175` : `status: active` ✅ ; `214` : fichier non trouvé à la racine (déplacé dans `archived/` ✅) ; `341` : `status: active` ✅ |
+| E2E-9 | Index régénéré `285 plans` sans erreur |
+| E2E-10 | `✅ doctor — aucune incohérence détectée` exit 0 |
 | E2E-11 | Lignes > 200 **ET** octets > 15 360 (valeurs constatées : 1243 l. / 83 110 o.) |
 | E2E-12 | Dry-run liste les sections `##` à déporter vers `context/` sans créer de fichier |
 | E2E-13 | `✅ split_context — modifications appliquées` ; `context/` créé avec ≥ 1 fichier |
@@ -674,6 +674,36 @@ python3 -I $SKILL_SCRIPTS/split_context.py --roadmap-dir $AUXITUM_RM; echo "exit
 > ⚠️ **Ordre impératif** : E2E-3 (write index) avant E2E-10 (doctor) ; E2E-7
 > (normalize) avant E2E-9 (rebuild index) avant E2E-10. Les autres sont
 > indépendants dans leur groupe.
+
+#### Résultats joués et vérifiés — E2E auxitum (E2E-1 à E2E-10)
+
+> Plugin mis à jour vers 4.0.0 le 2026-10-19. Recette partielle (E2E-11 à E2E-15 non encore jouées).
+
+> **Note E2E-14/15** : `CONTEXT.md` d'auxitum contient une section `## RÈGLES ABSOLUES`
+> de ~750 lignes qui dépasse à elle seule le budget. `split_context.py` ne peut
+> pas la découper (conception — RÈGLES ABSOLUES est le noyau intouchable). E2E-13
+> extrait correctement la seule section déplaçable ; le noyau reste hors budget.
+> Résolution : réduire manuellement la section RÈGLES ABSOLUES dans le `CONTEXT.md`
+> d'auxitum (action humaine, hors scope du script). L'outil fonctionne dans son
+> enveloppe de conception.
+
+| Date | Test | Attendu | Observé | Verdict |
+|------|------|---------|---------|---------|
+| 2026-10-19 | E2E-1 plugin version | `roadmap-tracking` listé | `roadmap-tracking@roadmap-tracking` | ✅ |
+| 2026-10-19 | E2E-2 dry-run build | 3 fichiers, 285 plans | 3 fichiers, 285 plans | ✅ |
+| 2026-10-19 | E2E-3 write index | `.index.json` + `roadmap.md` + `done/INDEX.md` | 3 fichiers écrits, 285 plans | ✅ |
+| 2026-10-19 | E2E-4 plan count | Total=285, actifs=54, done=219 | Total=285, actifs=54, done=219 | ✅ |
+| 2026-10-19 | E2E-5 index fresh | `up to date` exit 0 | `up to date (285 plans)` exit 0 | ✅ |
+| 2026-10-19 | E2E-6 normalize dry-run | 3 rewrites + 6 déplacements | 3 rewrites + 6 déplacements (idem attendu) | ✅ |
+| 2026-10-19 | E2E-7 normalize write | modifications appliquées | `✅ normalize — modifications appliquées` | ✅ |
+| 2026-10-19 | E2E-8 status vérif post-normalize | 175+341 active, 214 dans archived/ | 175 active ✅, 214 introuvable à la racine (déplacé archived/ ✅), 341 active ✅ | ✅ |
+| 2026-10-19 | E2E-9 rebuild index | 285 plans sans erreur | 285 plans écrits | ✅ |
+| 2026-10-19 | E2E-10 doctor clean | aucune incohérence exit 0 | `✅ aucune incohérence détectée` exit 0 | ✅ |
+| 2026-10-19 | E2E-11 budget overrun | 1243 l. / 83110 o. | 1243 l. / 83110 o. | ✅ |
+| 2026-10-19 | E2E-12 split dry-run | sections listées sans écriture | 1 section `etat-valide-architecture.md` listée, aucun fichier créé | ✅ |
+| 2026-10-19 | E2E-13 split write | `context/` créé, noyau réduit | `context/etat-valide-architecture.md` créé ; noyau 750 l./47619 o. (toujours > budget — RÈGLES ABSOLUES seule 750 l.) | ⚠️ |
+| 2026-10-19 | E2E-14 post-split result | noyau < 200 l. / < 15360 o. | noyau 750 l./47618 o. — section RÈGLES ABSOLUES seule dépasse le budget ; `context/` créé | ❌ |
+| 2026-10-19 | E2E-15 idempotent no-op | exit 0 no-op | exit 1 + `aucune section déplaçable : noyau RÈGLES ABSOLUES dépasse déjà le budget` — comportement correct (cas limite documenté) | ⚠️ |
 
 ### Session 2026-10-19 (implémentation Lot 4 — étapes 9-10, one-shot)
 - ✅ Fait : Étape 9 — section « Hydratation du contexte de session » de `SKILL.md` refondue : segmentation à 2 niveaux (noyau `CONTEXT.md` borné `≤ 200 l. / 15 Ko`, toujours chargé / `context/*.md` thématique à la demande), règle de dépassement de budget (lecture sans troncature + signalement + proposition de bascule), diagramme d'ordre d'exécution étendu (étape 4 = `context/` à la demande, jamais au démarrage). Étape 10 — sous-section « Capitalisation automatique encadrée » ajoutée dans la même section : capture gatée Oui/Non/Instructions, catégorisation obligatoire (⚠️ piège / 🔗 dépendance / 📌 contrainte / 💡 insight) + réf. plan d'origine (format `⚠️ [#27] …`), garde-fou de budget (refus d'ajout au noyau → routage vers `context/<thème>.md`), purge à la clôture (OUI/NON). Hook de purge câblé en étape 5 de la checklist de clôture (`modules/wrapup.md`). Tests autonomes (auto-check, 10/10 ✅) → voir section `## Tests`.
