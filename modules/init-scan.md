@@ -216,6 +216,30 @@ Après le bloc A.0, si `roadmap-tracking.help.welcomed` est absent/`false` :
 **afficher la note de bienvenue** (voir « Système d'aide — Note de bienvenue » ci-dessus)
 puis écrire `help.welcomed: true` dans `.skill-config.yml`.
 
+#### Bloc A.1 — Garde universelle d'index (avant tout branchement)
+
+> **S'exécute immédiatement après A.0, quel que soit le prompt** — que
+> l'utilisateur référence un plan existant ou non. Ne sauter sous aucun prétexte.
+
+Vérifier si `./doc/roadmap/.index.json` existe :
+
+- **Présent** → continuer silencieusement (aucun tour supplémentaire).
+- **Absent** → proposer via `AskUserQuestion` (une seule question, deux options) :
+  > « Aucun index `.index.json` détecté — il accélère tous les démarrages et
+  > active la réconciliation automatique. Veux-tu le générer maintenant ? »
+  > - **Oui** → exécuter `python3 scripts/build_roadmap.py --roadmap-dir doc/roadmap --write`,
+  >   puis **enchaîner immédiatement la 🩺 Réconciliation au démarrage**
+  >   (l'index est tout frais — détecter les plans mal placés avant de continuer).
+  > - **Non** → continuer en mode fallback (lecture bornée de `roadmap.md`) ;
+  >   l'index ne sera plus proposé cette session.
+
+> **Pourquoi ici et pas dans la règle de listing** : quand l'utilisateur
+> référence directement un plan existant (« reprends le plan #341 »), le skill
+> entre immédiatement dans le workflow de reprise sans passer par le listing.
+> La règle de source du listing ne s'exécute alors jamais. Cette garde A.1
+> garantit que l'index est disponible (ou son absence connue) avant tout
+> branchement listing / reprise.
+
 > ⛔ **Lecture bornée de `roadmap.md` — règle non négociable (toutes phases)**
 > Ne jamais lire `./doc/roadmap/roadmap.md` en intégralité, à aucune phase du
 > workflow. La lecture complète peut dépasser 50 Ko sur un portfolio de 500+ plans
