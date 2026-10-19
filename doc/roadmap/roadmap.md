@@ -1,7 +1,7 @@
 # Roadmap roadmap-tracking
 
 > Backlog actif. L'historique détaillé est archivé dans `_archives/`.
-> Dernière mise à jour : 2026-09-22.
+> Dernière mise à jour : 2026-10-19.
 
 ## Contexte
 
@@ -13,7 +13,14 @@ Backlog consolidé : plans nommés d'après leur issue GitHub (voir `doc/roadmap
 
 ## À faire
 
-*(aucun plan actif)*
+### [Issue: #27] Scalability & Token Architecture [PRIORITÉ: HAUTE] [Complexité: XL] 🟢
+
+Plan : [`27-scalability-token-architecture.md`](27-scalability-token-architecture.md)
+
+Rendre le skill scalable à 350/500/1000+ plans : `roadmap.md` + index générés
+depuis le front matter, listing paresseux, validation d'intégrité (`doctor`),
+`CONTEXT.md` segmenté/borné, capitalisation auto encadrée. Issu du rapport
+`doc/rapports/rapport-ameliorations-2026-10-17.md`. **Issue GitHub #27 à créer.**
 
 ---
 
