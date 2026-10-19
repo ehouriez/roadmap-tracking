@@ -108,8 +108,8 @@ intenable à 500/1000 plans. Principe directeur : **le skill lit un index compac
 > Comble le trou identifié en cadrage : la règle de dépassement de l'étape 9
 > (noyau > 200 l./15 Ko) est purement déclarative — « signaler + proposer » sans
 > outil de mesure ni de découpe. Ce lot l'outille réellement.
-- [ ] Étape 11 — `scripts/split_context.py` : mesure le noyau `CONTEXT.md` (lignes **ET** octets, seuil atteint si **l'un OU l'autre** dépasse 200 l. / 15 Ko) ; découpe le surplus par titres `##` vers `context/<slug-du-titre>.md` (le noyau ne garde que « RÈGLES ABSOLUES ») ; idempotent, `--dry-run` par défaut, `--self-check`, rollback git (M · reasoning → Opus)
-- [ ] Étape 12 — Câbler la détection de dépassement au démarrage dans `modules/init-scan.md` : check **bas coût** (`wc -l`/`wc -c` sur `CONTEXT.md` uniquement, jamais de lecture d'analyse) après l'hydratation du noyau ; si seuil dépassé → **PROPOSER** `split_context.py` via OUI/NON/snooze ; marqueur `.context-split-declined` réutilisant le pattern `.migration-declined` (re-proposition si snooze échu, silence si `declined`) (S · reasoning → Opus)
+- [x] Étape 11 — `scripts/split_context.py` : mesure le noyau `CONTEXT.md` (lignes **ET** octets, seuil atteint si **l'un OU l'autre** dépasse 200 l. / 15 Ko) ; découpe le surplus par titres `##` vers `context/<slug-du-titre>.md` (le noyau ne garde que « RÈGLES ABSOLUES ») ; idempotent, `--dry-run` par défaut, `--self-check`, rollback git (M · reasoning → Opus)
+- [x] Étape 12 — Câbler la détection de dépassement au démarrage dans `modules/init-scan.md` : check **bas coût** (`wc -l`/`wc -c` sur `CONTEXT.md` uniquement, jamais de lecture d'analyse) après l'hydratation du noyau ; si seuil dépassé → **PROPOSER** `split_context.py` via OUI/NON/snooze ; marqueur `.context-split-declined` réutilisant le pattern `.migration-declined` (re-proposition si snooze échu, silence si `declined`) (S · reasoning → Opus)
 
 ### Lot 6 — Migration & onboarding
 - [ ] Étape 13 — `scripts/normalize_status.py` (applique le mapping) + procédure de déplacement des plans mal placés (`done`→`done/`, `archived`→`_archives/`, créer `_archives/`) ; idempotent, `--dry-run`, rollback git (M · standard → Sonnet)
@@ -318,6 +318,54 @@ grep -n "Réconciliation au démarrage\|Si l'utilisateur ne référence pas un p
 | 2026-10-19 | E7.5 3 choix + instructions | Réconcilier/Reporter/Refuser + suivi | lignes 183-187 présentes | ✅ |
 | 2026-10-19 | E7.6 placement avant listing | section (134) < listing (194) | 134 < 194 | ✅ |
 
+### Lot 5 — procédure (étapes 11-12)
+
+```bash
+SKILL_REPO=/mnt/c/INETUM/AGV/agv-adm/GIT_GITHUB/skills/roadmap-tracking
+IS=$SKILL_REPO/modules/init-scan.md
+
+echo "=== E11.1 self-check ==="
+python3 -I $SKILL_REPO/scripts/split_context.py --self-check; echo "exit=$?"
+
+echo "=== E11.2 no CONTEXT.md in repo (no-op) ==="
+python3 -I $SKILL_REPO/scripts/split_context.py --roadmap-dir $SKILL_REPO/doc/roadmap; echo "exit=$?"
+
+echo "=== E11.3 real split on temp fixture (dry-run then write, idempotent) ==="
+# fixture: core 233 l. with RÈGLES ABSOLUES + 2 themed sections → dry-run, write, rerun
+
+echo "=== E11.4 collision safety ==="
+# pre-existing context/theme-a.md → refuse, exit 1, nothing written
+
+echo "=== E12.1 budget section present in init-scan ==="
+grep -n "Budget CONTEXT.md au démarrage" $IS
+echo "=== E12.2 wc -l / wc -c low-cost ==="
+grep -n "wc -c" $IS | head
+echo "=== E12.3 marker .context-split-declined ==="
+grep -n "\.context-split-declined" $IS
+echo "=== E12.4 three-choice proposal ==="
+grep -n "Découper maintenant" $IS
+echo "=== E12.5 threshold 200 / 15360 ==="
+grep -n "15360" $IS
+```
+
+**Résultats attendus :**
+- Étape 11 : `self-check passed` exit 0 ; no-op propre si pas de `CONTEXT.md` ; dry-run n'écrit rien (pas de `context/`), `--write` déporte les sections non-« RÈGLES ABSOLUES » vers `context/<slug>.md` et ramène le noyau sous le budget ; re-run idempotent (sous budget → no-op) ; collision = refus non destructif exit 1.
+- Étape 12 : section `### 📏 Budget CONTEXT.md au démarrage` présente ; signaux bas coût `wc -l`/`wc -c` uniquement ; marqueur `.context-split-declined` + snooze/declined ; 3 choix (Découper/Reporter/Refuser) ; seuil 200 l. / 15360 o.
+
+### Résultats joués et vérifiés — Lot 5 (étapes 11-12)
+
+| Date | Test | Attendu | Observé | Verdict |
+|------|------|---------|---------|---------|
+| 2026-10-19 | E11.1 self-check | `self-check passed` exit 0 | `✅ self-check passed` exit 0 | ✅ |
+| 2026-10-19 | E11.2 no CONTEXT (no-op) | message « rien à faire » exit 0 | `✅ pas de CONTEXT.md … rien à faire` exit 0 | ✅ |
+| 2026-10-19 | E11.3 split + idempotence | dry-run n'écrit rien, write déporte 2 sections, noyau 107 l., re-run sous budget | dry-run sans `context/`, write → `hydratation-du-contexte.md` + `decisions-en-cours.md`, noyau 107 l., re-run `dans le budget` exit 0 | ✅ |
+| 2026-10-19 | E11.4 collision safety | refus exit 1, cible intacte | `❌ cibles déjà présentes` exit 1, `theme-a.md` = `existing` | ✅ |
+| 2026-10-19 | E12.1 section budget présente | titre présent | ligne 250 | ✅ |
+| 2026-10-19 | E12.2 signaux bas coût | `wc -l`/`wc -c` | lignes 258, 265 | ✅ |
+| 2026-10-19 | E12.3 marqueur declined | `.context-split-declined` + snooze/declined | lignes 279-285, 293-295 | ✅ |
+| 2026-10-19 | E12.4 3 choix | Découper/Reporter/Refuser | lignes 293-295 | ✅ |
+| 2026-10-19 | E12.5 seuil | 200 l. / 15360 o. | lignes 265, 285 | ✅ |
+
 ## Journal de session
 
 ### Session 2026-10-19 (création)
@@ -454,6 +502,11 @@ grep -n "Purge de capitalisation CONTEXT" $WU
 | 2026-10-19 | E10.3 garde-fou budget | refus noyau → bascule thématique | ligne 72 | ✅ |
 | 2026-10-19 | E10.4 purge clôture SKILL | OUI/NON présent | ligne 73 | ✅ |
 | 2026-10-19 | E10.5 purge wrapup | étape 5 checklist clôture | ligne 159 | ✅ |
+
+### Session 2026-10-19 (implémentation Lot 5 — étapes 11-12, one-shot)
+- ✅ Fait : Étape 11 — `scripts/split_context.py` créé (stdlib pure : `re`/`unicodedata`, zéro dépendance, exécuté `-I`). Mesure le noyau `CONTEXT.md` (lignes **ET** octets ; seuil atteint si l'**un OU l'autre** dépasse 200 l. / 15360 o.) ; si hors budget, déporte chaque section `##` non-« RÈGLES ABSOLUES » vers `context/<slug>.md` (slug ASCII kebab dérivé du titre), le noyau ne gardant que préambule + « RÈGLES ABSOLUES ». Idempotent (re-run sous budget = no-op), `--dry-run` par défaut / `--write` / `--self-check` (12 assertions), collision = refus non destructif (exit 1, aucune écriture), ligne de rollback git affichée après `--write`. Étape 12 — section `### 📏 Budget CONTEXT.md au démarrage` ajoutée dans `modules/init-scan.md` (après la réconciliation `🩺`, avant le listing). Détection **bas coût uniquement** (`wc -l`/`wc -c` sur `CONTEXT.md`, jamais de relecture d'analyse) ; proposition OUI/NON/snooze via marqueur `.context-split-declined` (pattern `.reconcile-declined`/`.migration-declined`). Tests autonomes 11/11 ✅ → voir section `## Tests`.
+- 📋 Prochain : Lot 6 — étape 13 (`scripts/normalize_status.py` + déplacements), étape 14 (onboarding), étape 15 (doc + bump version). ⚠️ L'étape 13 débloque pleinement la branche « plans mal placés » de la réconciliation (étape 7).
+- 🚧 Blocages : aucun. ⚠️ Même réserve de sync cache plugin que les scripts précédents (le skill tourne depuis le cache ; `split_context.py` et le câblage init-scan n'y seront actifs qu'après publication/sync). ⚠️ Pas de `CONTEXT.md` dans ce projet : les étapes 11-12 définissent le **comportement du skill** (outil + garde normative), testées sur fixtures temporaires.
 
 ### Session 2026-10-19 (implémentation Lot 4 — étapes 9-10, one-shot)
 - ✅ Fait : Étape 9 — section « Hydratation du contexte de session » de `SKILL.md` refondue : segmentation à 2 niveaux (noyau `CONTEXT.md` borné `≤ 200 l. / 15 Ko`, toujours chargé / `context/*.md` thématique à la demande), règle de dépassement de budget (lecture sans troncature + signalement + proposition de bascule), diagramme d'ordre d'exécution étendu (étape 4 = `context/` à la demande, jamais au démarrage). Étape 10 — sous-section « Capitalisation automatique encadrée » ajoutée dans la même section : capture gatée Oui/Non/Instructions, catégorisation obligatoire (⚠️ piège / 🔗 dépendance / 📌 contrainte / 💡 insight) + réf. plan d'origine (format `⚠️ [#27] …`), garde-fou de budget (refus d'ajout au noyau → routage vers `context/<thème>.md`), purge à la clôture (OUI/NON). Hook de purge câblé en étape 5 de la checklist de clôture (`modules/wrapup.md`). Tests autonomes (auto-check, 10/10 ✅) → voir section `## Tests`.

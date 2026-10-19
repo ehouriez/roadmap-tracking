@@ -247,6 +247,56 @@ d'application silencieuse) :
 > **Aucun signal** → continuer silencieusement vers le listing (aucun tour
 > consommé, fidèle au principe de coût fixe nul).
 
+### 📏 Budget CONTEXT.md au démarrage (garde légère)
+
+> **Quand.** Une seule fois par session, **après l'hydratation du noyau
+> `CONTEXT.md`** (voir `SKILL.md` § Hydratation) et **avant le listing**,
+> uniquement si `./doc/roadmap/CONTEXT.md` existe.
+
+> ⚠️ **Contrainte dure — mesure à bas coût uniquement.** Cette garde ne relit
+> **jamais** le contenu de `CONTEXT.md` pour l'analyser : elle ne mesure que sa
+> **taille**. Les seuls signaux autorisés sont `wc -l` et `wc -c` sur
+> `CONTEXT.md` seul.
+
+**Signal détecté (bas coût) :**
+
+| Signal | Détection | Seuil |
+|---|---|---|
+| Noyau CONTEXT hors budget | `wc -l` **OU** `wc -c` sur `./doc/roadmap/CONTEXT.md` | > 200 lignes **OU** > 15 Ko (15360 o.) |
+
+**Marqueur de report / refus** — `./doc/roadmap/.context-split-declined` (même
+pattern que `.reconcile-declined`). Avant toute proposition, le lire :
+
+- **Absent** → proposer la découpe si le seuil est dépassé.
+- `snooze-until: YYYY-MM-DD` **dans le futur** → ne rien proposer.
+- `snooze-until: YYYY-MM-DD` **échu** (≤ aujourd'hui) → reproposer.
+- `declined` → ne rien proposer (sauf demande explicite « découpe le contexte »
+  ou suppression du fichier).
+
+**Si le seuil est dépassé** (et marqueur non bloquant) : afficher le constat
+puis **PROPOSER** via `AskUserQuestion` (jamais d'application silencieuse) :
+
+```
+📏 Noyau CONTEXT.md hors budget au démarrage :
+
+| Mesure | Valeur | Seuil |
+|---|---|---|
+| Lignes | 274 | 200 |
+| Octets | 18 420 | 15360 |
+
+Le noyau ne garde que « RÈGLES ABSOLUES » ; les autres sections `##` partent
+vers `context/<slug>.md` (chargées à la demande).
+```
+
+| Choix | Action |
+|---|---|
+| **Découper maintenant** | `python3 scripts/split_context.py --roadmap-dir doc/roadmap --write` (aperçu `--dry-run` d'abord si tu veux montrer les sections déplacées). Sur succès, supprimer un éventuel `.context-split-declined`. |
+| **Reporter (2 / 8 / 30 jours)** | Écrire `snooze-until: <aujourd'hui + N jours>` dans `./doc/roadmap/.context-split-declined`. |
+| **Refuser** | Écrire `declined` dans `./doc/roadmap/.context-split-declined` et indiquer : « Tu pourras relancer via *découpe le contexte* ou en supprimant `doc/roadmap/.context-split-declined`. » |
+
+> **Seuil non dépassé** → continuer silencieusement vers le listing (aucun tour
+> consommé).
+
 Si l'utilisateur ne référence pas un plan existant dans son premier prompt :
 
 1. **Listing paresseux (défaut)** — depuis `.index.json` (voir règle ci-dessus ;
