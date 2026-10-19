@@ -238,6 +238,9 @@ puis écrire `help.welcomed: true` dans `.skill-config.yml`.
 >   bornée de `roadmap.md` (règle ci-dessus) + inspection de `./doc/roadmap/`.
 >   Proposer de générer l'index : « Aucun index `.index.json` — veux-tu le créer
 >   via `python3 scripts/build_roadmap.py --write` ? (il accélère tous les démarrages) ».
+>   Si l'utilisateur accepte et que l'index est généré : **enchaîner immédiatement
+>   avec la 🩺 Réconciliation au démarrage** (l'index vient d'être créé —
+>   vérifier les plans mal placés depuis cet index tout frais avant le listing).
 > - **Index périmé** : la détection de péremption et sa proposition de
 >   régénération relèvent de la réconciliation au démarrage (règle ci-dessous),
 >   pas de cette règle de listing.
@@ -286,12 +289,12 @@ d'application silencieuse) :
 | Signal | Détail | Réconciliation proposée |
 |---|---|---|
 | Index périmé | 3 plan(s) modifié(s) après `.index.json` | `build_roadmap.py --write` |
-| Plan mal placé | `12-x.md` : `done` hors `done/` | déplacement `git mv` (ou `normalize_status.py`, livré étape 11) |
+| Plan mal placé | `12-x.md` : `done` hors `done/` | `python3 scripts/normalize_status.py --roadmap-dir doc/roadmap --write` |
 ```
 
 | Choix | Action |
 |---|---|
-| **Réconcilier maintenant** | Index périmé / `roadmap.md` désync → `python3 scripts/build_roadmap.py --roadmap-dir doc/roadmap --write`. Plans mal placés → proposer les `git mv` correspondants (le script `normalize_status.py` de l'étape 11 automatisera les déplacements ; d'ici là, déplacement manuel encadré). Sur succès, supprimer un éventuel `.reconcile-declined`. |
+| **Réconcilier maintenant** | Index périmé / `roadmap.md` désync → `python3 scripts/build_roadmap.py --roadmap-dir doc/roadmap --write`. Plans mal placés → `python3 scripts/normalize_status.py --roadmap-dir doc/roadmap --write` (dry-run d'abord pour confirmer). Sur succès, supprimer un éventuel `.reconcile-declined`. |
 | **Reporter (2 / 8 / 30 jours)** | Écrire `snooze-until: <aujourd'hui + N jours>` dans `./doc/roadmap/.reconcile-declined`. |
 | **Refuser** | Écrire `declined` dans `./doc/roadmap/.reconcile-declined` et indiquer : « Tu pourras relancer via *réconcilie* ou en supprimant `doc/roadmap/.reconcile-declined`. » |
 
