@@ -6,8 +6,4 @@
 
 ## À faire
 
-### [Issue: #28] [🔧] Plan #28 - Skill Scripts Path Resolution [PRIORITÉ: HAUTE] [Complexité: M] 🟢
-
-Plan : [`28-skill-scripts-path-resolution.md`](28-skill-scripts-path-resolution.md)
-
----
+_Aucun plan actif._

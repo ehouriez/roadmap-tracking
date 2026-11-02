@@ -4,7 +4,7 @@ plan:
   name: 28-skill-scripts-path-resolution.md
   link: doc/roadmap/28-skill-scripts-path-resolution.md
   source: local
-status: active
+status: done
 date: 2026-11-02
 description: >
   Rendre la résolution du chemin des scripts embarqués dans le skill agnostique
@@ -70,7 +70,7 @@ figé en version). La solution : convention unique `${SKILL_DIR}/scripts/X.py` o
 - [x] Étape 5 — Corriger `README.md` : 6 chemins figés → commandes de découverte autonome (S · standard → Sonnet)
 - [x] Étape 6 — Mettre à jour `.index.json` et `roadmap.md` (XS · standard → Sonnet)
 - [x] 🧪 Tests — Grep de non-régression : zéro forme fautive restante ; cohérence `${SKILL_DIR}`
-- [ ] ✅ Validation — Vérifier les résultats et clôturer
+- [x] ✅ Validation — Vérifier les résultats et clôturer
 
 ## Tests
 
@@ -117,4 +117,4 @@ grep -rn "\-\-roadmap-dir \${SKILL_DIR}" "$SKILL_DIR/modules/" "$SKILL_DIR/refer
 - ✅ Fait : Cadrage, proposition, validation utilisateur, création du fichier plan
 - ✅ Fait : Étapes 1→6 — section canonique + 14 corrections init-scan.md, 1 wrapup.md, 8 migration.md (+ note), 6 README.md → commandes de découverte autonome `find ~/.claude/plugins/cache/roadmap-tracking -name "SKILL.md" | sort -V | tail -1 | xargs dirname`
 - ✅ Fait : 🧪 Tests — 5/5 PASS. Zéro forme fautive restante.
-- 📋 Prochain : ✅ Validation utilisateur
+- ✅ Validation : fix confirmé en production — autre session a utilisé le chemin complet résolu `…/4.1.0/scripts/build_roadmap.py`. Plan clos.
