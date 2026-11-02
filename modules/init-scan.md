@@ -15,11 +15,35 @@
 harness à chaque chargement du skill (première ligne du résultat de `Skill(...)`).
 Il est agnostique du scope d'installation (project / user / cache) et auto-versionné.
 
-**Toutes les commandes `python3` de ce module utilisent `${SKILL_DIR}/scripts/X.py`.**
+**Toutes les commandes de ce module utilisent `${PY} ${SKILL_DIR}/scripts/X.py`.**
 
-L'agent substitue la valeur réelle de `${SKILL_DIR}` :
+L'agent substitue la valeur réelle de `${SKILL_DIR}` et `${PY}` :
 - Lors de l'exécution (appel Bash).
 - Avant affichage à l'utilisateur (messages « génère-le via … », aide migration, etc.).
+
+### Résolution de `${PY}` (interpréteur Python)
+
+`${PY}` désigne l'interpréteur Python 3 disponible dans l'environnement de l'agent.
+L'agent le résout **une fois** avant la première commande Python de chaque séquence :
+
+```bash
+PY=$(python3 -c "import sys; print(sys.executable)" 2>/dev/null || python -c "import sys; print(sys.executable)" 2>/dev/null || py -c "import sys; print(sys.executable)" 2>/dev/null)
+```
+
+> **Pourquoi `import sys` plutôt que `command -v` ?** Sur Windows, `python3.exe`
+> dans `WindowsApps` est un **stub Microsoft Store** détecté par `command -v` mais
+> qui ne lance pas Python réel. La tentative d'import échoue sur le stub → l'opérateur
+> `||` passe automatiquement au suivant (`python`, puis `py`).
+
+| Environnement | Valeur typique de `${PY}` |
+|---|---|
+| Linux / macOS / WSL | `/usr/bin/python3` |
+| Claude Code Windows natif (Git Bash) | chemin complet vers `python.exe` ou `py.exe` |
+
+> **Prérequis.** Python 3 est une **dépendance assumée** du skill. Si `${PY}`
+> reste vide après résolution, afficher :
+> « ⚠️ Python 3 introuvable. Installe-le via `winget install Python.Python.3`
+> (Windows) ou `python.org/downloads` avant de continuer. »
 
 **Invariant :** `--roadmap-dir doc/roadmap` reste **toujours relatif au CWD du projet**
 (le roadmap est dans le projet, les scripts sont dans le skill).
@@ -106,7 +130,7 @@ le doctor vérifie exhaustivement `doc/roadmap/` sans modifier aucun fichier.
 **Commande :**
 
 ```bash
-python3 ${SKILL_DIR}/scripts/doctor.py --roadmap-dir doc/roadmap
+${PY} ${SKILL_DIR}/scripts/doctor.py --roadmap-dir doc/roadmap
 ```
 
 Options : `--dry-run` (défaut — aucune modification) · `--self-check` (validation interne du script).
@@ -120,7 +144,7 @@ Le rapport est un tableau markdown. Les corrections sont **proposées**, jamais 
 Déclencheurs reconnus : `stats`, `portfolio`, `aide stats`.
 
 Comportement : lire `.index.json` et agréger. Si `.index.json` absent :
-indiquer « Index absent — génère-le via `python3 ${SKILL_DIR}/scripts/build_roadmap.py --roadmap-dir doc/roadmap --write`. »
+indiquer « Index absent — génère-le via `${PY} ${SKILL_DIR}/scripts/build_roadmap.py --roadmap-dir doc/roadmap --write`. »
 
 **Format de sortie :**
 
@@ -160,27 +184,27 @@ Déclencheurs reconnus : `aide migration`, `migration`.
 
    ```bash
    echo "=== Dry-run Index Generation ==="
-   python3 ${SKILL_DIR}/scripts/build_roadmap.py --roadmap-dir doc/roadmap
+   ${PY} ${SKILL_DIR}/scripts/build_roadmap.py --roadmap-dir doc/roadmap
 
    echo "=== Write Index And Roadmap ==="
-   python3 ${SKILL_DIR}/scripts/build_roadmap.py --roadmap-dir doc/roadmap --write
+   ${PY} ${SKILL_DIR}/scripts/build_roadmap.py --roadmap-dir doc/roadmap --write
    ```
 
 3. **Normaliser les statuts et déplacer les plans mal placés** :
 
    ```bash
    echo "=== Dry-run Normalisation ==="
-   python3 ${SKILL_DIR}/scripts/normalize_status.py --roadmap-dir doc/roadmap
+   ${PY} ${SKILL_DIR}/scripts/normalize_status.py --roadmap-dir doc/roadmap
 
    echo "=== Apply When Output Looks Correct ==="
-   python3 ${SKILL_DIR}/scripts/normalize_status.py --roadmap-dir doc/roadmap --write
+   ${PY} ${SKILL_DIR}/scripts/normalize_status.py --roadmap-dir doc/roadmap --write
    ```
 
 4. **Auditer l'intégrité** (optionnel mais recommandé) :
 
    ```bash
    echo "=== Run Integrity Audit ==="
-   python3 ${SKILL_DIR}/scripts/doctor.py --roadmap-dir doc/roadmap
+   ${PY} ${SKILL_DIR}/scripts/doctor.py --roadmap-dir doc/roadmap
    ```
 
 5. **Migrer les IDs de plans vers les numéros d'issues GitHub** (mode `github` uniquement) :
@@ -247,7 +271,7 @@ Vérifier si `./doc/roadmap/.index.json` existe :
   > « Aucun index `.index.json` détecté — il accélère tous les démarrages et
   > active la réconciliation automatique. Veux-tu le générer maintenant ? »
   > - **Oui** → exécuter dans l'ordre, sans sauter aucune sous-étape :
-  >   1. `python3 ${SKILL_DIR}/scripts/build_roadmap.py --roadmap-dir doc/roadmap --write`
+  >   1. `${PY} ${SKILL_DIR}/scripts/build_roadmap.py --roadmap-dir doc/roadmap --write`
   >   2. **Lire immédiatement l'index tout frais** (`.index.json`) et chercher
   >      les plans mal placés : `status: done` hors `done/`, `status: archived`
   >      hors `archived/`, ou `status: active`/`blocked` sous `done/`/`archived/`.
@@ -292,9 +316,9 @@ Vérifier si `./doc/roadmap/.index.json` existe :
 > - **Index absent** (projet non encore migré = rétrocompat) → fallback : lecture
 >   bornée de `roadmap.md` (règle ci-dessus) + inspection de `./doc/roadmap/`.
 >   Proposer de générer l'index : « Aucun index `.index.json` — veux-tu le créer
->   via `python3 ${SKILL_DIR}/scripts/build_roadmap.py --write` ? (il accélère tous les démarrages) ».
+>   via `${PY} ${SKILL_DIR}/scripts/build_roadmap.py --write` ? (il accélère tous les démarrages) ».
 >   Si l'utilisateur accepte : exécuter dans l'ordre :
->   1. `python3 ${SKILL_DIR}/scripts/build_roadmap.py --roadmap-dir doc/roadmap --write`
+>   1. `${PY} ${SKILL_DIR}/scripts/build_roadmap.py --roadmap-dir doc/roadmap --write`
 >   2. Lire l'index tout frais et chercher les plans mal placés (`status: done`
 >      hors `done/`, `status: archived` hors `archived/`, `active`/`blocked`
 >      sous `done/`/`archived/`).
@@ -354,12 +378,12 @@ d'application silencieuse) :
 | Signal | Détail | Réconciliation proposée |
 |---|---|---|
 | Index périmé | 3 plan(s) modifié(s) après `.index.json` | `build_roadmap.py --write` |
-| Plan mal placé | `12-x.md` : `done` hors `done/` | `python3 ${SKILL_DIR}/scripts/normalize_status.py --roadmap-dir doc/roadmap --write` |
+| Plan mal placé | `12-x.md` : `done` hors `done/` | `${PY} ${SKILL_DIR}/scripts/normalize_status.py --roadmap-dir doc/roadmap --write` |
 ```
 
 | Choix | Action |
 |---|---|
-| **Réconcilier maintenant** | Index périmé / `roadmap.md` désync → `python3 ${SKILL_DIR}/scripts/build_roadmap.py --roadmap-dir doc/roadmap --write`. Plans mal placés → `python3 ${SKILL_DIR}/scripts/normalize_status.py --roadmap-dir doc/roadmap --write` (dry-run d'abord pour confirmer). Sur succès, supprimer un éventuel `.reconcile-declined`. |
+| **Réconcilier maintenant** | Index périmé / `roadmap.md` désync → `${PY} ${SKILL_DIR}/scripts/build_roadmap.py --roadmap-dir doc/roadmap --write`. Plans mal placés → `${PY} ${SKILL_DIR}/scripts/normalize_status.py --roadmap-dir doc/roadmap --write` (dry-run d'abord pour confirmer). Sur succès, supprimer un éventuel `.reconcile-declined`. |
 | **Reporter (2 / 8 / 30 jours)** | Écrire `snooze-until: <aujourd'hui + N jours>` dans `./doc/roadmap/.reconcile-declined`. |
 | **Refuser** | Écrire `declined` dans `./doc/roadmap/.reconcile-declined` et indiquer : « Tu pourras relancer via *réconcilie* ou en supprimant `doc/roadmap/.reconcile-declined`. » |
 
@@ -413,7 +437,7 @@ vers `context/<slug>.md` (chargées à la demande).
 
 | Choix | Action |
 |---|---|
-| **Découper maintenant** | `python3 ${SKILL_DIR}/scripts/split_context.py --roadmap-dir doc/roadmap --write` (aperçu `--dry-run` d'abord si tu veux montrer les sections déplacées). Sur succès, supprimer un éventuel `.context-split-declined`. |
+| **Découper maintenant** | `${PY} ${SKILL_DIR}/scripts/split_context.py --roadmap-dir doc/roadmap --write` (aperçu `--dry-run` d'abord si tu veux montrer les sections déplacées). Sur succès, supprimer un éventuel `.context-split-declined`. |
 | **Reporter (2 / 8 / 30 jours)** | Écrire `snooze-until: <aujourd'hui + N jours>` dans `./doc/roadmap/.context-split-declined`. |
 | **Refuser** | Écrire `declined` dans `./doc/roadmap/.context-split-declined` et indiquer : « Tu pourras relancer via *découpe le contexte* ou en supprimant `doc/roadmap/.context-split-declined`. » |
 
@@ -543,7 +567,7 @@ Poser un choix à **3 options** via `AskUserQuestion` :
    lance l'aperçu (aucune modification) :
 
    ```bash
-   python3 ${SKILL_DIR}/scripts/migrate_plan_ids.py --dry-run
+   ${PY} ${SKILL_DIR}/scripts/migrate_plan_ids.py --dry-run
    ```
 
    > Cette exécution **ne modifie rien** : elle liste les renommages
@@ -559,7 +583,7 @@ Poser un choix à **3 options** via `AskUserQuestion` :
    commentaire de traçage) :
 
    ```bash
-   python3 ${SKILL_DIR}/scripts/migrate_plan_ids.py --patch-issues
+   ${PY} ${SKILL_DIR}/scripts/migrate_plan_ids.py --patch-issues
    ```
 
    Si le dry-run signale une anomalie, **ne pas** lancer la migration : la
@@ -568,7 +592,7 @@ Poser un choix à **3 options** via `AskUserQuestion` :
 3. **Après la migration réelle** : exécuter et afficher le rapport :
 
    ```bash
-   python3 ${SKILL_DIR}/scripts/doctor.py --roadmap-dir doc/roadmap
+   ${PY} ${SKILL_DIR}/scripts/doctor.py --roadmap-dir doc/roadmap
    ```
 
    Un rapport propre (`✅ aucune incohérence`) confirme que la migration n'a
@@ -621,7 +645,7 @@ Vérifier **dans l'ordre** :
    détecté — veux-tu le générer maintenant via `build_roadmap.py --write` ?
    (accélère tous les démarrages et active la réconciliation automatique) »
    - **Oui** → exécuter dans l'ordre :
-     1. `python3 ${SKILL_DIR}/scripts/build_roadmap.py --roadmap-dir doc/roadmap --write`
+     1. `${PY} ${SKILL_DIR}/scripts/build_roadmap.py --roadmap-dir doc/roadmap --write`
      2. Lire l'index tout frais et chercher les plans mal placés (`status: done`
         hors `done/`, `status: archived` hors `archived/`, `active`/`blocked`
         sous `done/`/`archived/`).

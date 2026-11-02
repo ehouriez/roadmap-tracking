@@ -26,30 +26,31 @@ racine (là où vit `doc/roadmap/`).
 
 ```bash
 # 1. Aperçu, aucune modification
-python3 ${SKILL_DIR}/scripts/migrate_plan_ids.py --dry-run
+${PY} ${SKILL_DIR}/scripts/migrate_plan_ids.py --dry-run
 
 # 2. Migration réelle (fichiers + roadmap.md)
-python3 ${SKILL_DIR}/scripts/migrate_plan_ids.py
+${PY} ${SKILL_DIR}/scripts/migrate_plan_ids.py
 
 # 3. Migration + correction des références dans les issues GitHub
-python3 ${SKILL_DIR}/scripts/migrate_plan_ids.py --patch-issues
+${PY} ${SKILL_DIR}/scripts/migrate_plan_ids.py --patch-issues
 
 # Répertoire non standard
-python3 ${SKILL_DIR}/scripts/migrate_plan_ids.py --roadmap-dir chemin/roadmap
+${PY} ${SKILL_DIR}/scripts/migrate_plan_ids.py --roadmap-dir chemin/roadmap
 
 # Plans sans issue.id : fournir la correspondance ancien-id → numéro d'issue
-python3 ${SKILL_DIR}/scripts/migrate_plan_ids.py --map 10=42,8=51
+${PY} ${SKILL_DIR}/scripts/migrate_plan_ids.py --map 10=42,8=51
 
 # Même chose depuis un fichier (une paire OLD=ISSUE par ligne, '#' = commentaire)
-python3 ${SKILL_DIR}/scripts/migrate_plan_ids.py --map-file migration-map.txt
+${PY} ${SKILL_DIR}/scripts/migrate_plan_ids.py --map-file migration-map.txt
 
 # Forcer le mode (par défaut : lu depuis .skill-config.yml, sinon github)
-python3 ${SKILL_DIR}/scripts/migrate_plan_ids.py --mode local
+${PY} ${SKILL_DIR}/scripts/migrate_plan_ids.py --mode local
 ```
 
 > **`${SKILL_DIR}`** = le "Base directory for this skill" communiqué par le harness à chaque
-> chargement du skill. L'agent le substitue par la valeur réelle avant d'afficher ou d'exécuter
-> ces commandes. Voir `modules/init-scan.md § Convention de chemin des scripts embarqués`.
+> chargement du skill. **`${PY}`** = l'interpréteur Python 3 résolu par l'agent
+> (`python3` → `python` → `py`). L'agent substitue les deux valeurs avant d'afficher ou
+> d'exécuter ces commandes. Voir `modules/init-scan.md § Convention de chemin des scripts embarqués`.
 
 > En mode `local` (projet sans issue GitHub), le script ne **migre rien** : il
 > **liste** à la place les plans locaux et signale, pour chacun, ce qui manque
@@ -87,7 +88,7 @@ deviner leur numéro d'issue. Il faut le lui donner. Concrètement, à l'agent :
 L'agent traduit ça en une seule commande :
 
 ```bash
-python3 ${SKILL_DIR}/scripts/migrate_plan_ids.py --map 10=42,8=51
+${PY} ${SKILL_DIR}/scripts/migrate_plan_ids.py --map 10=42,8=51
 ```
 
 Règles pour la correspondance :

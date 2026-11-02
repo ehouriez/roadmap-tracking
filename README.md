@@ -29,16 +29,19 @@ migration step automatically at session start. Or run manually:
 
 ```bash
 echo "=== Resolve Skill Install Directory ==="
-SKILL_DIR=$(find ~/.claude/plugins/cache/roadmap-tracking -name "SKILL.md" | sort -V | tail -1 | xargs dirname)
+SKILL_DIR=$(find ~/.claude/plugins/cache/roadmap-tracking -maxdepth 3 -name "SKILL.md" | sort -V | tail -1 | xargs dirname)
+
+echo "=== Resolve Python Interpreter ==="
+PY=$(python3 -c "import sys; print(sys.executable)" 2>/dev/null || python -c "import sys; print(sys.executable)" 2>/dev/null || py -c "import sys; print(sys.executable)" 2>/dev/null)
 
 echo "=== Generate Index ==="
-python3 "$SKILL_DIR/scripts/build_roadmap.py" --roadmap-dir doc/roadmap --write
+"$PY" "$SKILL_DIR/scripts/build_roadmap.py" --roadmap-dir doc/roadmap --write
 
 echo "=== Normalise Statuses And Move Misplaced Plans ==="
-python3 "$SKILL_DIR/scripts/normalize_status.py" --roadmap-dir doc/roadmap --write
+"$PY" "$SKILL_DIR/scripts/normalize_status.py" --roadmap-dir doc/roadmap --write
 
 echo "=== Run Integrity Audit ==="
-python3 "$SKILL_DIR/scripts/doctor.py" --roadmap-dir doc/roadmap
+"$PY" "$SKILL_DIR/scripts/doctor.py" --roadmap-dir doc/roadmap
 ```
 
 ### Update the plugin
@@ -94,16 +97,19 @@ To adopt manually or migrate an existing `roadmap.md`:
 
 ```bash
 echo "=== Resolve Skill Install Directory ==="
-SKILL_DIR=$(find ~/.claude/plugins/cache/roadmap-tracking -name "SKILL.md" | sort -V | tail -1 | xargs dirname)
+SKILL_DIR=$(find ~/.claude/plugins/cache/roadmap-tracking -maxdepth 3 -name "SKILL.md" | sort -V | tail -1 | xargs dirname)
+
+echo "=== Resolve Python Interpreter ==="
+PY=$(python3 -c "import sys; print(sys.executable)" 2>/dev/null || python -c "import sys; print(sys.executable)" 2>/dev/null || py -c "import sys; print(sys.executable)" 2>/dev/null)
 
 echo "=== Generate Index And Roadmap From Front Matter ==="
-python3 "$SKILL_DIR/scripts/build_roadmap.py" --roadmap-dir doc/roadmap --write
+"$PY" "$SKILL_DIR/scripts/build_roadmap.py" --roadmap-dir doc/roadmap --write
 
 echo "=== Normalise Legacy Statuses And Move Misplaced Plans ==="
-python3 "$SKILL_DIR/scripts/normalize_status.py" --roadmap-dir doc/roadmap
+"$PY" "$SKILL_DIR/scripts/normalize_status.py" --roadmap-dir doc/roadmap
 
 echo "=== Apply When Output Looks Correct ==="
-python3 "$SKILL_DIR/scripts/normalize_status.py" --roadmap-dir doc/roadmap --write
+"$PY" "$SKILL_DIR/scripts/normalize_status.py" --roadmap-dir doc/roadmap --write
 ```
 
 > Type `aide migration` inside any Claude Code session with the skill active to
@@ -121,6 +127,25 @@ python3 "$SKILL_DIR/scripts/normalize_status.py" --roadmap-dir doc/roadmap --wri
 | **Autonomous tests** | `tests.mode: autonomous` — Executor/Verifier loop with real sub-agents |
 | **Self-contained** | No external rule files needed — all formatting rules embedded |
 | **Embedded hook** | `SessionStart` hook fires automatically when `doc/roadmap/` exists |
+
+## Prerequisites
+
+- **Claude Code** (or any compatible IDE).
+- **Python 3** — required to run the embedded scripts (`build_roadmap.py`, `doctor.py`,
+  `normalize_status.py`, `split_context.py`, `migrate_plan_ids.py`).
+
+  | Platform | Install | Verify |
+  |---|---|---|
+  | Linux / macOS | `python3` already present | `python3 --version` |
+  | WSL | `sudo apt install python3` | `python3 --version` |
+  | **Windows (native)** | `winget install Python.Python.3` or [python.org/downloads](https://www.python.org/downloads/) | `py --version` |
+
+  > On Windows, Python installs as `python` or `py` (not `python3`). The skill
+  > detects the right interpreter automatically when invoked through Claude Code.
+  > For manual scripts, substitute `python3` with `python` or `py`.
+
+- **git** — for plan file moves (`git mv`).
+- **gh** *(optional)* — only if you use GitHub issues mode (`--patch-issues`).
 
 ## Install
 
