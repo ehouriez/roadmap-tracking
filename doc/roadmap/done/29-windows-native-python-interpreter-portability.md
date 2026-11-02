@@ -3,7 +3,7 @@ plan:
   id: '29'
   name: 29-windows-native-python-interpreter-portability.md
   link: doc/roadmap/done/29-windows-native-python-interpreter-portability.md
-  source: local
+
 status: done
 date: 2026-11-02
 description: >
@@ -20,8 +20,8 @@ scope:
     - references/migration.md
     - README.md
 issue:
-  id: null
-  url: null
+  id: 29
+  url: https://github.com/ehouriez/roadmap-tracking/issues/29
 depends_on:
   - '28'
 ---

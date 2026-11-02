@@ -256,13 +256,13 @@
   },
   {
     "id": "29",
-    "status": "active",
+    "status": "done",
     "priority": "high",
     "complexity": "M",
     "title": "[🪟] Plan #29 - Windows Native Python Interpreter Portability",
     "deps": [
       "28"
     ],
-    "path": "29-windows-native-python-interpreter-portability.md"
+    "path": "done/29-windows-native-python-interpreter-portability.md"
   }
 ]

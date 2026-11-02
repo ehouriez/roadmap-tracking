@@ -2,8 +2,7 @@
 plan:
   id: '28'
   name: 28-skill-scripts-path-resolution.md
-  link: doc/roadmap/28-skill-scripts-path-resolution.md
-  source: local
+  link: doc/roadmap/done/28-skill-scripts-path-resolution.md
 status: done
 date: 2026-11-02
 description: >
@@ -21,8 +20,8 @@ scope:
     - references/migration.md
     - README.md
 issue:
-  id: null
-  url: null
+  id: 28
+  url: https://github.com/ehouriez/roadmap-tracking/issues/28
 ---
 
 # [🔧] Plan #28 - Skill Scripts Path Resolution

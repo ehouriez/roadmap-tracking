@@ -6,10 +6,4 @@
 
 ## À faire
 
-### [Issue: #29] [🪟] Plan #29 - Windows Native Python Interpreter Portability [PRIORITÉ: HAUTE] [Complexité: M] 🟢
-
-Plan : [`29-windows-native-python-interpreter-portability.md`](29-windows-native-python-interpreter-portability.md)
-
-Dépend de : #28
-
----
+_Aucun plan actif._

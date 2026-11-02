@@ -31,3 +31,4 @@
 | #26 | [🧪] Plan #26 - Autonomous Test Prerequisites | medium | M | [`26-autonomous-test-prerequisites.md`](26-autonomous-test-prerequisites.md) |
 | #27 | [🏗️] Plan #27 - Scalability & Token Architecture | high | XL | [`27-scalability-token-architecture.md`](27-scalability-token-architecture.md) |
 | #28 | [🔧] Plan #28 - Skill Scripts Path Resolution | high | M | [`28-skill-scripts-path-resolution.md`](28-skill-scripts-path-resolution.md) |
+| #29 | [🪟] Plan #29 - Windows Native Python Interpreter Portability | high | M | [`29-windows-native-python-interpreter-portability.md`](29-windows-native-python-interpreter-portability.md) |
