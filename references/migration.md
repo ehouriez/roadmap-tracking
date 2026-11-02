@@ -26,26 +26,30 @@ racine (là où vit `doc/roadmap/`).
 
 ```bash
 # 1. Aperçu, aucune modification
-python3 ~/.claude/skills/roadmap-tracking/scripts/migrate_plan_ids.py --dry-run
+python3 ${SKILL_DIR}/scripts/migrate_plan_ids.py --dry-run
 
 # 2. Migration réelle (fichiers + roadmap.md)
-python3 ~/.claude/skills/roadmap-tracking/scripts/migrate_plan_ids.py
+python3 ${SKILL_DIR}/scripts/migrate_plan_ids.py
 
 # 3. Migration + correction des références dans les issues GitHub
-python3 ~/.claude/skills/roadmap-tracking/scripts/migrate_plan_ids.py --patch-issues
+python3 ${SKILL_DIR}/scripts/migrate_plan_ids.py --patch-issues
 
 # Répertoire non standard
-python3 ~/.claude/skills/roadmap-tracking/scripts/migrate_plan_ids.py --roadmap-dir chemin/roadmap
+python3 ${SKILL_DIR}/scripts/migrate_plan_ids.py --roadmap-dir chemin/roadmap
 
 # Plans sans issue.id : fournir la correspondance ancien-id → numéro d'issue
-python3 ~/.claude/skills/roadmap-tracking/scripts/migrate_plan_ids.py --map 10=42,8=51
+python3 ${SKILL_DIR}/scripts/migrate_plan_ids.py --map 10=42,8=51
 
 # Même chose depuis un fichier (une paire OLD=ISSUE par ligne, '#' = commentaire)
-python3 ~/.claude/skills/roadmap-tracking/scripts/migrate_plan_ids.py --map-file migration-map.txt
+python3 ${SKILL_DIR}/scripts/migrate_plan_ids.py --map-file migration-map.txt
 
 # Forcer le mode (par défaut : lu depuis .skill-config.yml, sinon github)
-python3 ~/.claude/skills/roadmap-tracking/scripts/migrate_plan_ids.py --mode local
+python3 ${SKILL_DIR}/scripts/migrate_plan_ids.py --mode local
 ```
+
+> **`${SKILL_DIR}`** = le "Base directory for this skill" communiqué par le harness à chaque
+> chargement du skill. L'agent le substitue par la valeur réelle avant d'afficher ou d'exécuter
+> ces commandes. Voir `modules/init-scan.md § Convention de chemin des scripts embarqués`.
 
 > En mode `local` (projet sans issue GitHub), le script ne **migre rien** : il
 > **liste** à la place les plans locaux et signale, pour chacun, ce qui manque
@@ -83,7 +87,7 @@ deviner leur numéro d'issue. Il faut le lui donner. Concrètement, à l'agent :
 L'agent traduit ça en une seule commande :
 
 ```bash
-python3 ~/.claude/skills/roadmap-tracking/scripts/migrate_plan_ids.py --map 10=42,8=51
+python3 ${SKILL_DIR}/scripts/migrate_plan_ids.py --map 10=42,8=51
 ```
 
 Règles pour la correspondance :

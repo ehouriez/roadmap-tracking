@@ -244,5 +244,14 @@
     "title": "[🏗️] Plan #27 - Scalability & Token Architecture",
     "deps": [],
     "path": "done/27-scalability-token-architecture.md"
+  },
+  {
+    "id": "28",
+    "status": "active",
+    "priority": "high",
+    "complexity": "M",
+    "title": "[🔧] Plan #28 - Skill Scripts Path Resolution",
+    "deps": [],
+    "path": "28-skill-scripts-path-resolution.md"
   }
 ]

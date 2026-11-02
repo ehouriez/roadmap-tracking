@@ -28,14 +28,17 @@ After updating the plugin, the skill detects and proposes every required
 migration step automatically at session start. Or run manually:
 
 ```bash
+echo "=== Resolve Skill Install Directory ==="
+SKILL_DIR=$(find ~/.claude/plugins/cache/roadmap-tracking -name "SKILL.md" | sort -V | tail -1 | xargs dirname)
+
 echo "=== Generate Index ==="
-python3 ~/.claude/plugins/cache/roadmap-tracking/roadmap-tracking/4.0.0/scripts/build_roadmap.py --roadmap-dir doc/roadmap --write
+python3 "$SKILL_DIR/scripts/build_roadmap.py" --roadmap-dir doc/roadmap --write
 
 echo "=== Normalise Statuses And Move Misplaced Plans ==="
-python3 ~/.claude/plugins/cache/roadmap-tracking/roadmap-tracking/4.0.0/scripts/normalize_status.py --roadmap-dir doc/roadmap --write
+python3 "$SKILL_DIR/scripts/normalize_status.py" --roadmap-dir doc/roadmap --write
 
 echo "=== Run Integrity Audit ==="
-python3 ~/.claude/plugins/cache/roadmap-tracking/roadmap-tracking/4.0.0/scripts/doctor.py --roadmap-dir doc/roadmap
+python3 "$SKILL_DIR/scripts/doctor.py" --roadmap-dir doc/roadmap
 ```
 
 ### Update the plugin
@@ -90,14 +93,17 @@ Inside the session, the skill fires automatically and asks:
 To adopt manually or migrate an existing `roadmap.md`:
 
 ```bash
+echo "=== Resolve Skill Install Directory ==="
+SKILL_DIR=$(find ~/.claude/plugins/cache/roadmap-tracking -name "SKILL.md" | sort -V | tail -1 | xargs dirname)
+
 echo "=== Generate Index And Roadmap From Front Matter ==="
-python3 ~/.claude/plugins/cache/roadmap-tracking/roadmap-tracking/latest/scripts/build_roadmap.py --roadmap-dir doc/roadmap --write
+python3 "$SKILL_DIR/scripts/build_roadmap.py" --roadmap-dir doc/roadmap --write
 
 echo "=== Normalise Legacy Statuses And Move Misplaced Plans ==="
-python3 ~/.claude/plugins/cache/roadmap-tracking/roadmap-tracking/latest/scripts/normalize_status.py --roadmap-dir doc/roadmap
+python3 "$SKILL_DIR/scripts/normalize_status.py" --roadmap-dir doc/roadmap
 
 echo "=== Apply When Output Looks Correct ==="
-python3 ~/.claude/plugins/cache/roadmap-tracking/roadmap-tracking/latest/scripts/normalize_status.py --roadmap-dir doc/roadmap --write
+python3 "$SKILL_DIR/scripts/normalize_status.py" --roadmap-dir doc/roadmap --write
 ```
 
 > Type `aide migration` inside any Claude Code session with the skill active to

@@ -1,6 +1,6 @@
 # Historique des plans clôturés
 
-> Index généré par `scripts/build_roadmap.py` — dernière génération : 2026-10-19.
+> Index généré par `scripts/build_roadmap.py` — dernière génération : 2026-11-02.
 > Non lu au démarrage de session ; consultable sur demande.
 
 | Issue | Titre | Priorité | Complexité | Fichier |

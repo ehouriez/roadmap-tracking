@@ -141,7 +141,7 @@
 >    `status: done` (support 1) et le `git mv` vers `done/` (support 2),
 >    régénérer :
 >    ```bash
->    python3 scripts/build_roadmap.py --roadmap-dir doc/roadmap --write
+>    python3 ${SKILL_DIR}/scripts/build_roadmap.py --roadmap-dir doc/roadmap --write
 >    ```
 >    L'entrée quitte automatiquement « À faire » (le plan n'est plus `active`) et
 >    bascule dans `done/INDEX.md`. Si le script est absent (projet non migré),
