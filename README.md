@@ -1,5 +1,9 @@
 # roadmap-tracking
 
+## Documentation
+
+[Index de la documentation retro-doc](doc/retro/INDEX.md)
+
 > **v4.0.0 — Breaking change.** See [What changed](#whats-new-in-v400) and
 > [update instructions](#update) before upgrading an existing project.
 

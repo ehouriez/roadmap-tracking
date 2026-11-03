@@ -1,0 +1,181 @@
+language: fr
+schema_version: 2
+source_sha: d35b89d5603dedca7d79152517a059d906c4ef3e
+entities:
+  - id: skill-core
+    status: generated
+    description: Skill principal — workflow à 7 phases, règles absolues, matrice d'applicabilité, signaux de mode et capitalisation du contexte inter-sessions
+    quadrants: [reference, explanation]
+    docs:
+      reference: reference-skill-core.md
+      explanation: explanation-skill-core.md
+    sources:
+      - SKILL.md:1
+      - SKILL.md:36
+      - SKILL.md:113
+      - SKILL.md:121
+      - SKILL.md:151
+      - SKILL.md:173
+      - SKILL.md:200
+      - SKILL.md:243
+      - SKILL.md:279
+    deps: [module-init-scan, module-plan, module-execute, module-wrapup, references, plugin-config]
+    confidence: high
+
+  - id: module-init-scan
+    status: generated
+    description: Module d'initialisation et de scan — garde d'entrée universelle, création de doc/roadmap/ et matrice d'auto-calibrage Axe A
+    quadrants: [reference, explanation]
+    docs:
+      reference: reference-module-init-scan.md
+      explanation: explanation-module-init-scan.md
+    sources:
+      - modules/init-scan.md:14
+      - modules/init-scan.md:29
+      - modules/init-scan.md:244
+      - modules/init-scan.md:265
+      - modules/init-scan.md:337
+      - modules/init-scan.md:397
+      - modules/init-scan.md:525
+      - modules/init-scan.md:611
+      - modules/init-scan.md:737
+    deps: [skill-core, scripts-python, plugin-config, references]
+    confidence: high
+
+  - id: module-plan
+    status: generated
+    description: Module de planification (phases 2-4) — cadrage interactif, grilling adaptatif à frontier illimitée, proposition de plan et gate de recommandation modèle
+    quadrants: [reference, explanation]
+    docs:
+      reference: reference-module-plan.md
+      explanation: explanation-module-plan.md
+    sources:
+      - modules/plan.md:10
+      - modules/plan.md:57
+      - modules/plan.md:108
+      - modules/plan.md:175
+      - modules/plan.md:214
+      - modules/plan.md:329
+      - modules/plan.md:379
+    deps: [skill-core, module-init-scan, references]
+    confidence: high
+
+  - id: module-execute
+    status: generated
+    description: Module d'exécution (phases 5-7) — création du fichier plan et de l'issue GitHub, implémentation étape par étape, tests et validation
+    quadrants: [reference, explanation]
+    docs:
+      reference: reference-module-execute.md
+      explanation: explanation-module-execute.md
+    sources:
+      - modules/execute.md:18
+      - modules/execute.md:58
+      - modules/execute.md:86
+      - modules/execute.md:134
+      - modules/execute.md:318
+      - modules/execute.md:553
+    deps: [module-plan, references, scripts-python]
+    confidence: high
+
+  - id: module-wrapup
+    status: generated
+    description: Module de clôture et de reprise — clôture d'un plan validé, workflow de reprise d'un plan existant et capitalisation encadrée vers CONTEXT.md
+    quadrants: [reference, explanation]
+    docs:
+      reference: reference-module-wrapup.md
+      explanation: explanation-module-wrapup.md
+    sources:
+      - modules/wrapup.md:4
+      - modules/wrapup.md:18
+      - modules/wrapup.md:39
+      - modules/wrapup.md:64
+      - modules/wrapup.md:119
+    deps: [module-plan, module-execute, references, scripts-python]
+    confidence: high
+
+  - id: scripts-python
+    status: generated
+    description: Cinq scripts Python autonomes (build_roadmap, doctor, normalize_status, split_context, migrate_plan_ids) — génération de l'index et du roadmap, audit d'intégrité, normalisation des statuts et migration d'IDs
+    quadrants: [reference, explanation]
+    docs:
+      reference: reference-scripts-python.md
+      explanation: explanation-scripts-python.md
+    sources:
+      - scripts/build_roadmap.py:1
+      - scripts/doctor.py:1
+      - scripts/normalize_status.py:1
+      - scripts/split_context.py:1
+      - scripts/migrate_plan_ids.py:105
+    deps: [references]
+    confidence: high
+
+  - id: hooks-system
+    status: generated
+    description: Hooks SessionStart/UserPromptSubmit/PreToolUse pour Claude Code et Codex — déclenchement automatique du skill et garde anti-bypass en écriture
+    quadrants: [reference, explanation]
+    docs:
+      reference: reference-hooks-system.md
+      explanation: explanation-hooks-system.md
+    sources:
+      - hooks/hooks.json:1
+      - hooks/codex-hooks.json:1
+      - hooks/pretooluse_gate.py:54
+    deps: [plugin-config]
+    confidence: high
+
+  - id: references
+    status: generated
+    description: Sept fichiers de référence chargés à la demande (environment, forms, templates, roadmap-file, github-issues, migration, autonomous-tests) — contrats et formats du workflow
+    quadrants: [reference, explanation]
+    docs:
+      reference: reference-references.md
+      explanation: explanation-references.md
+    sources:
+      - references/environment.md:1
+      - references/forms.md:1
+      - references/templates.md:1
+      - references/roadmap-file.md:1
+      - references/github-issues.md:1
+      - references/migration.md:1
+      - references/autonomous-tests.md:1
+    deps: [skill-core]
+    confidence: high
+
+  - id: plugin-config
+    status: generated
+    description: Manifestes de publication du plugin (.claude-plugin/plugin.json, .codex-plugin/plugin.json) — métadonnées et déclaration des hooks pour les marketplaces Claude Code et Codex
+    quadrants: [reference]
+    docs:
+      reference: reference-plugin-config.md
+    sources:
+      - .claude-plugin/plugin.json:1
+      - .codex-plugin/plugin.json:1
+    deps: [hooks-system]
+    confidence: high
+
+  - id: openspec-integration
+    status: generated
+    description: Intégration du workflow OpenSpec (.claude/skills/openspec-*/, openspec/) — propose, apply, archive, explore, sync et update pour la gestion structurée des changements
+    quadrants: [reference, explanation]
+    docs:
+      reference: reference-openspec-integration.md
+      explanation: explanation-openspec-integration.md
+    sources:
+      - .claude/skills/openspec-apply-change/SKILL.md:1
+      - .claude/skills/openspec-propose/SKILL.md:1
+      - openspec/config.yaml:1
+    deps: []
+    confidence: high
+
+  - id: tests-e2e
+    status: generated
+    description: Projet de test isolé (tests/my-project--s-solo/) et script de setup (scripts/e2e_fresh_install_setup.sh) — 6 fixtures couvrant tous les scénarios d'usage
+    quadrants: [reference, explanation]
+    docs:
+      reference: reference-tests-e2e.md
+      explanation: explanation-tests-e2e.md
+    sources:
+      - tests/my-project--s-solo/doc/roadmap/1-weather-forecast-script.md:1
+      - scripts/e2e_fresh_install_setup.sh:1
+    deps: [scripts-python, hooks-system, references]
+    confidence: high
